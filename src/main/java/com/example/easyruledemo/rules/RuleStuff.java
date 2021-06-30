@@ -1,6 +1,9 @@
 package com.example.easyruledemo.rules;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.easyruledemo.entity.RuleConditionEntity;
 import com.example.easyruledemo.repository.EmailServiceImpl;
+import com.example.easyruledemo.util.MapObjUtil;
 import org.jeasy.rules.annotation.Action;
 import org.jeasy.rules.annotation.Condition;
 import org.jeasy.rules.annotation.Fact;
@@ -11,6 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Frank
@@ -76,5 +84,18 @@ public class RuleStuff {
 //        }
 //    }
 
+
+    /**
+     * 静态调用
+     */
+    public static boolean rule(final RuleConditionEntity entity, final Map factsMap) {
+        return Objects.equals(entity, MapObjUtil.map2Object(factsMap, RuleConditionEntity.class));
+    }
+
+
+    public static Integer fire(final String actionType,final String actions) {
+        System.out.println("fire rule with actionType:" + actionType + ",download or download and copy file from:" + actions);
+        return null;
+    }
 
 }

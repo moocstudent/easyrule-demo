@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 /**
  * @Author: Frank
  * @Date: 2021-06-25 9:59
+ * =ruleConditions
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -35,5 +36,7 @@ public class EasyRuleEntity {
     private String actions;
 
     private Integer deleteFlag;
+
+
 
 }

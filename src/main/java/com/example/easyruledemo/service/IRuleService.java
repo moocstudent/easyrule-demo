@@ -1,8 +1,10 @@
 package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EasyRuleEntity;
+import com.example.easyruledemo.entity.RuleConditionEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Frank
@@ -21,6 +23,11 @@ public interface IRuleService {
 
     List<EasyRuleEntity> getAllUsed();
 
-    Integer fireRuleByType(String ruleType,String action);
+    Integer fireRuleByType(final String ruleType,final String action);
+
+    /**
+     * 规则条件实体判定
+     */
+//    boolean rule(final RuleConditionEntity entity, final Map factsMap);
 
 }

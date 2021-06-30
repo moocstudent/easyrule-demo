@@ -1,12 +1,10 @@
 package com.example.easyruledemo;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.example.easyruledemo.BaseTest;
 import com.example.easyruledemo.entity.EasyRuleEntity;
+import com.example.easyruledemo.rules.EmailAction;
+import com.example.easyruledemo.rules.EmailCondition;
 import com.example.easyruledemo.ruletest.EmailEntity;
-import com.example.easyruledemo.ruletest.RuleConditionEntity;
 import com.example.easyruledemo.service.IRuleService;
 import org.jeasy.rules.api.Facts;
 import org.jeasy.rules.api.Rule;
@@ -14,11 +12,12 @@ import org.jeasy.rules.api.Rules;
 import org.jeasy.rules.api.RulesEngine;
 import org.jeasy.rules.core.DefaultRulesEngine;
 import org.jeasy.rules.core.RuleBuilder;
+
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +29,8 @@ class RuleTest extends BaseTest {
 
     @Autowired
     private IRuleService ruleService;
+//    @Autowired
+//    private EmailCondition emailCondition;
 
     @Test
     void testRuleAll() {
@@ -55,21 +56,28 @@ class RuleTest extends BaseTest {
 //        }
         //获取所有使用中的easy rule
         List<EasyRuleEntity> allUsedRules = ruleService.getAllUsed();
+        System.out.println("allUsedRules:"+allUsedRules);
+
         Rules rules = new Rules();
-        allUsedRules.stream()
+        List<Rule> collect = allUsedRules.stream()
                 .map(r -> {
+                    System.out.println("r::"+r);
                     Rule rule = new RuleBuilder()
                             .name(r.getRuleName())
                             .description(r.getRuleDesc())
                             .priority(r.getPriority().intValue())
-                            .when(facts -> facts.get("subject").toString().equals(JSON.parseObject(r.getRuleConditions(), RuleConditionEntity.class).getSubject()))
-                            .then(facts -> ruleService.fireRuleByType(r.getActionType(), r.getActions()))
+                            .when(EmailCondition.builder().ruleConditions(r.getRuleConditions()).build())
+                            .then(EmailAction.builder().actionType(r.getActionType()).actions(r.getActions()).build())
                             .build();
+                    System.out.println("rule::"+rule);
                     return rule;
                 }).map(rl -> {
-            rules.register(rl);
-            return rl;
-        }).collect(Collectors.toList());
+                    rules.register(rl);
+                    return rl;
+                }).collect(Collectors.toList());
+
+        System.out.println("rules::"+rules);
+        System.out.println("collect::"+collect);
 
         emailList.stream()
                 .map(el->{
