@@ -20,8 +20,8 @@ import lombok.experimental.Accessors;
 @TableName("easy_rule")
 public class EasyRuleEntity {
 
-    @TableId(type= IdType.AUTO)
-    private Long ruleId;
+    @TableId(type= IdType.ASSIGN_UUID)
+    private String ruleId;
 
     private Long priority;
 
