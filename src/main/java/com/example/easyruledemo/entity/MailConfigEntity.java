@@ -11,8 +11,7 @@ import lombok.experimental.Accessors;
 
 /**
  * @Author: Frank
- * @Date: 2021-06-30 17:47
- * 邮箱配置,对应多个收件邮箱
+ * @Date: 2021-07-01 9:04
  */
 @Data
 @AllArgsConstructor
@@ -22,7 +21,7 @@ import lombok.experimental.Accessors;
 @TableName("mail_config")
 public class MailConfigEntity {
 
-    @TableId(type= IdType.ASSIGN_UUID)
+    @TableId(type= IdType.AUTO)
     private String configId;
 
     private String email;

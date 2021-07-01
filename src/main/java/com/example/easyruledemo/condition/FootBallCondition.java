@@ -1,4 +1,4 @@
-package com.example.easyruledemo.rules;
+package com.example.easyruledemo.condition;
 
 import lombok.Builder;
 import org.jeasy.rules.api.Condition;

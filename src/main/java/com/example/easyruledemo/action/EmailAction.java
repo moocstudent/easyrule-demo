@@ -1,5 +1,6 @@
-package com.example.easyruledemo.rules;
+package com.example.easyruledemo.action;
 
+import com.example.easyruledemo.rules.RuleStuff;
 import lombok.Builder;
 import org.jeasy.rules.api.Action;
 import org.jeasy.rules.api.Facts;

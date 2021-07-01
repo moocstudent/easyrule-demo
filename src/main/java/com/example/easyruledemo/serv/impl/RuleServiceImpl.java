@@ -1,10 +1,10 @@
-package com.example.easyruledemo.service;
+package com.example.easyruledemo.serv.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.entity.EasyRuleEntity;
-import com.example.easyruledemo.entity.RuleConditionEntity;
 import com.example.easyruledemo.mapper.EasyRuleMapper;
+import com.example.easyruledemo.serv.IRuleService;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;

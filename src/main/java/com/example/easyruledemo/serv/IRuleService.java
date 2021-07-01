@@ -1,7 +1,6 @@
-package com.example.easyruledemo.service;
+package com.example.easyruledemo.serv;
 
 import com.example.easyruledemo.entity.EasyRuleEntity;
-import com.example.easyruledemo.entity.RuleConditionEntity;
 
 import java.util.List;
 import java.util.Map;

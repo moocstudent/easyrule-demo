@@ -1,7 +1,8 @@
-package com.example.easyruledemo.rules;
+package com.example.easyruledemo.condition;
 
 import com.alibaba.fastjson.JSON;
 import com.example.easyruledemo.entity.RuleConditionEntity;
+import com.example.easyruledemo.rules.RuleStuff;
 import lombok.Builder;
 import org.jeasy.rules.api.Condition;
 import org.jeasy.rules.api.Facts;
