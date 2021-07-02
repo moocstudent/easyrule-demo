@@ -1,7 +1,6 @@
 package com.example.easyruledemo.controller;
 
-import com.example.easyruledemo.serv.IRuleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,9 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @Date: 2021-07-01 9:08
  */
 @RestController
-@RequestMapping("easyRule")
+@RequestMapping("")
 public class EasyRuleController {
-
-    @Autowired
-    private IRuleService ruleService;
+//
+//    @Autowired
+//    private IRuleService ruleService;
+    @GetMapping("/notify")
+    public String notify1(){
+        System.out.println("notify invoke");
+        return "notify invoke";
+    }
 }

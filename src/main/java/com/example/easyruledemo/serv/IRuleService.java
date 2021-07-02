@@ -1,6 +1,6 @@
 package com.example.easyruledemo.serv;
 
-import com.example.easyruledemo.entity.EasyRuleEntity;
+//import com.example.easyruledemo.entity.EasyRuleEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public interface IRuleService {
 
     List<?> getAll();
 
-    List<EasyRuleEntity> getAllUsed();
+//    List<EasyRuleEntity> getAllUsed();
 
     Integer fireRuleByType(final String ruleType,final String action);
 

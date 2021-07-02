@@ -1,8 +1,8 @@
 package com.example.easyruledemo.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+//import com.baomidou.mybatisplus.annotation.IdType;
+//import com.baomidou.mybatisplus.annotation.TableId;
+//import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,10 +18,10 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Builder
 @Accessors(chain = true)
-@TableName("mail_config")
+//@TableName("mail_config")
 public class MailConfigEntity {
 
-    @TableId(type= IdType.AUTO)
+//    @TableId(type= IdType.AUTO)
     private String configId;
 
     private String email;
