@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import javax.persistence.Transient;
+import java.util.List;
+
 /**
  * @Author: Frank
  * @Date: 2021-07-01 9:04
@@ -33,4 +36,9 @@ public class MailConfigEntity {
     private Integer port;
 
     private Integer recvHour;
+
+    //这里联查回来,做为该邮件的创建文件夹初始化依据
+    @Transient
+    private EwsFoldersEntity mailFolders;
+
 }

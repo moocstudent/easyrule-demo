@@ -1,6 +1,9 @@
 package com.example.easyruledemo.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.entity.EwsActionsEntity;
+import com.example.easyruledemo.entity.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.util.BeanUtil;
@@ -8,6 +11,7 @@ import microsoft.exchange.webservices.data.property.complex.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,8 +87,8 @@ public class EwsRuleServiceImpl implements IEwsRuleService {
             }
         }
         for (Rule rule : ruleCollection) {
-            boolean add = ewsRuleEntityList.add(BeanUtil.copyInstance(rule,EwsRuleEntity.builder().build()));
-            System.out.println("add one?"+add);
+            boolean add = ewsRuleEntityList.add(BeanUtil.getClass(EwsRuleEntity.class, rule).orElse(new EwsRuleEntity()));
+            System.out.println("add one?" + add);
         }
         return ewsRuleEntityList;
     }
@@ -147,5 +151,65 @@ public class EwsRuleServiceImpl implements IEwsRuleService {
             return -1;
         }
         return disabledRules.size();
+    }
+
+    @Override
+    public Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity) {
+        //basic field copy
+        Rule rule = BeanUtil.getClass(Rule.class, ewsRuleEntity).orElse(new Rule());
+        //the conditions actions and others
+
+        EwsConditionsEntity ewsConditionsEntity
+                = JSON.parseObject(ewsRuleEntity.getConditions(), EwsConditionsEntity.class);
+        EwsActionsEntity ewsActionsEntity
+                = JSON.parseObject(ewsRuleEntity.getActions(), EwsActionsEntity.class);
+
+        try {
+            Field[] declaredFields = ewsConditionsEntity.getClass().getDeclaredFields();
+            for (Field conditionF : declaredFields) {
+                conditionF.setAccessible(true);
+                if (conditionF.get(ewsConditionsEntity) != null) {
+                    String conditionFName = conditionF.getName();
+                    RulePredicates conditions = rule.getConditions();
+                    Field declaredFieldPredicates = conditions.getClass().getDeclaredField(conditionFName);
+                    if (conditionFName.endsWith("Strings")) {
+                        declaredFieldPredicates.setAccessible(true);
+                        StringList thisConditionList = new StringList((Iterable<String>) conditionF.get(ewsConditionsEntity));
+                        declaredFieldPredicates.set(conditions, thisConditionList);
+                    } else if (conditionFName.endsWith("Addresses")) {
+                        declaredFieldPredicates.setAccessible(true);
+                        EmailAddressCollection thisEmailAddresses = new EmailAddressCollection();
+                        List<String> dbFromEmailList = (List<String>) conditionF.get(ewsConditionsEntity);
+                        for (String from : dbFromEmailList) {
+                            thisEmailAddresses.add(from);
+                        }
+                    }
+
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        //todo 设定folder和folder unionId 邮箱关联 actions
+
+
+        RulePredicates conditions = rule.getConditions();
+        StringList containsSubjectStrings = conditions.getContainsSubjectStrings();
+        //testok
+        containsSubjectStrings.add("带附件");
+        RuleActions actions = rule.getActions();
+        try {
+//            actions.setMoveToFolder(new FolderId(WellKnownFolderName.DeletedItems));
+            actions.setMoveToFolder(FolderId.getFolderIdFromString(ewsRuleEntity.getItemMovedFolderIdStr()));
+//            actions.set
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("set error");
+            return null;
+        }
+        return rule;
+
     }
 }

@@ -1,6 +1,8 @@
 package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsRuleEntity;
+import microsoft.exchange.webservices.data.property.complex.Rule;
+import microsoft.exchange.webservices.data.property.complex.RulePredicates;
 
 import java.util.List;
 
@@ -24,5 +26,8 @@ public interface IEwsRuleService {
 
         //testok 让邮件中的规则disabled不再奏效
         Integer disabledRuleByEmAddr(String emailAddr);
+
+        //将数据库中的ruleEntity转换为可用的ewsRule
+        Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity);
 
 }

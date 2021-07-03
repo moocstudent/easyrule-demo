@@ -30,10 +30,10 @@ class FolderTest extends BaseTest{
      */
     @Test
     public void testCreateFolder() {
-        String folderId = ewsFolderService.createFolder("待下载附件邮件", WellKnownFolderName.Inbox);
-        String folderId2 = ewsFolderService.createFolder("已下载附件邮件", WellKnownFolderName.Inbox);
-        System.out.println("folderId:"+folderId);
-        System.out.println("folderId2:"+folderId2);
+//        String folderId = ewsFolderService.createFolder("待下载附件邮件", WellKnownFolderName.Inbox);
+//        String folderId2 = ewsFolderService.createFolder("已下载附件邮件", WellKnownFolderName.Inbox);
+//        System.out.println("folderId:"+folderId);
+//        System.out.println("folderId2:"+folderId2);
     }
 
 }

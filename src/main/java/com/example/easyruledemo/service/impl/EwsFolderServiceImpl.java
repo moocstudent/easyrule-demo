@@ -1,6 +1,8 @@
 package com.example.easyruledemo.service.impl;
 
 import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.entity.EwsFoldersEntity;
+import com.example.easyruledemo.entity.MailConfigEntity;
 import com.example.easyruledemo.service.IEwsFolderService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
@@ -19,14 +21,14 @@ import java.util.stream.Collectors;
 public class EwsFolderServiceImpl implements IEwsFolderService {
 
     @Override
-    public String createFolder(String folderName) {
-        return this.createFolder(folderName, null);
+    public String createFolder(String folderName, MailConfigEntity mailConfig) {
+        return this.createFolder(folderName, null,mailConfig);
     }
 
     @Override
-    public String createFolder(String folderName, WellKnownFolderName parentFolder) {
+    public String createFolder(String folderName, WellKnownFolderName parentFolder,MailConfigEntity mailConfig) {
         try {
-            Folder folder = new Folder(EwsContainer.defaultExchangeService());
+            Folder folder = new Folder(EwsContainer.getExchangeService(mailConfig.getEmail(),mailConfig.getPassword()));
             folder.setDisplayName(folderName);
             if (parentFolder == null) {
                 folder.save(WellKnownFolderName.MsgFolderRoot);
@@ -40,6 +42,15 @@ public class EwsFolderServiceImpl implements IEwsFolderService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public List<String> createFolder(List<String> folderNames, WellKnownFolderName parentFolder, MailConfigEntity mailConfig) {
+        List<String> folderIds = new ArrayList<>();
+        for (String folderName:folderNames){
+            folderIds.add(this.createFolder(folderName,parentFolder,mailConfig));
+        }
+        return folderIds;
     }
 
     @Override
@@ -86,5 +97,32 @@ public class EwsFolderServiceImpl implements IEwsFolderService {
         }
         folders.add(folderId);
         return folders;
+    }
+
+    @Override
+    public List<FolderId> getWatchingFolderByIds(List<String> folderIdsStr) {
+        List<FolderId> folders = new ArrayList<FolderId>();
+        FolderId folderId = null;
+        for (String str:folderIdsStr){
+            try {
+                //TODO 这里的folderId需要从多个邮箱中拿过来(创建时存入数据库) 做为list
+                folderId = new FolderId(str);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            folders.add(folderId);
+        }
+        return folders;
+    }
+
+    @Override
+    public Integer saveFolder(EwsFoldersEntity ewsFoldersEntity) {
+        return null;
+    }
+
+    @Override
+    public EwsFoldersEntity getByEmail(String email) {
+        //todo 联查email_config拿到id,获取mail_folders数据
+        return null;
     }
 }

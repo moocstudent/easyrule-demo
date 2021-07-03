@@ -11,6 +11,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 //@RunWith(SpringRunner.class)
 @SpringBootTest(classes = EasyruleDemoApplication.class)
+public
 class BaseTest {
 
 //    protected MockMvc mockMvc;

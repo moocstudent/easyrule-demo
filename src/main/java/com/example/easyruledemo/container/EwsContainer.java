@@ -8,7 +8,9 @@ import microsoft.exchange.webservices.data.credential.WebCredentials;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: zhangQi
@@ -17,9 +19,9 @@ import java.util.List;
 public class EwsContainer {
 
     //测试使用
-    static ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
-    static ExchangeCredentials credentials = new WebCredentials("implementsteam@outlook.com", "zhangqi1112");
-
+    private static ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
+    private static ExchangeCredentials credentials = new WebCredentials("implementsteam@outlook.com", "zhangqi1112");
+    final private static String EX_URI = "https://outlook.office365.com/EWS/Exchange.asmx";
     //TODO 当WebCredentials相同时,则设置为单例,使用List<ExchangeService> 进行 单例 ExchangeService 管理
 
     /**
@@ -52,7 +54,7 @@ public class EwsContainer {
 //        }
         //测试使用了ews/Exchange.asmx
         try {
-            service.setUrl(new URI("https://outlook.office365.com/EWS/Exchange.asmx"));
+            service.setUrl(new URI(EX_URI));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -60,7 +62,26 @@ public class EwsContainer {
         return service;
     }
 
+    //singleton map
+    private static Map<String,ExchangeService> exchangeServiceMap = new HashMap<>();
+
     /**
-     * 其它传入参数的exchangeService获取
+     * 其它传入参数的exchangeService获取,支持多个邮箱
      */
+    public static ExchangeService getExchangeService(String email,String password){
+        String key = email+password;
+        if(exchangeServiceMap.get(key)!=null){
+            return exchangeServiceMap.get(key);
+        }
+        ExchangeCredentials credentials = new WebCredentials(email, password);
+        service.setCredentials(credentials);
+        try {
+            service.setUrl(new URI(EX_URI));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        System.out.println("exchangeService:"+service);
+        exchangeServiceMap.put(key,service);
+        return service;
+    }
 }

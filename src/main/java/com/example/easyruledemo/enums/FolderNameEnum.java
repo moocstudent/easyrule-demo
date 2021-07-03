@@ -11,10 +11,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FolderNameEnum {
 
-    ATTACH_UN("attach-un-download","未下载附件文件夹"),
-    ATTACH_ALREADY("attach-already-download","已下载附件文件夹");
+    ATTACH_UN("attach-un-download","待下载附件邮件"),
+    ATTACH_ALREADY("attach-already-download","已下载附件邮件");
 
     private String code;
-    private String description;
+    private String usename;
 
 }

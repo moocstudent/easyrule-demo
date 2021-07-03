@@ -23,16 +23,28 @@ public class EwsRuleEntity {
 
     private String displayName;
 
+    private String ruleTopic;
+
     private Integer priority;
 
     private Boolean isEnabled;
 
+    /**
+     * {@link com.example.easyruledemo.entity.EwsConditionsEntity}
+     */
     private String conditions;
 
-    private String actionType;
-
+    /**
+     * {@link com.example.easyruledemo.entity.EwsActionsEntity}
+     */
     private String actions;
 
+    /**
+     * {@link com.example.easyruledemo.entity.ItemActionsEntity}
+     */
+    private String itemActions;
+
+    private String actionType;
     /**
      * The rule status of is supported or not.
      * 这个字段来自实际规则去update create操作后,在远端实际的状态
