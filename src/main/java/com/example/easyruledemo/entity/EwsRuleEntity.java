@@ -23,18 +23,27 @@ public class EwsRuleEntity {
 
     private String displayName;
 
-    private String ruleTopic;
-
     private Integer priority;
 
+    /**
+     * 是否启用
+     */
     private Boolean isEnabled;
 
+    //简介
+    private String ruleDesc;
+
+    //规则等级
+    private Integer ruleLevel;
+
     /**
+     * {见测试类 TransformTest}
      * {@link com.example.easyruledemo.entity.EwsConditionsEntity}
      */
     private String conditions;
 
     /**
+     * {见测试类 TransformTest}
      * {@link com.example.easyruledemo.entity.EwsActionsEntity}
      */
     private String actions;
@@ -49,14 +58,12 @@ public class EwsRuleEntity {
      * The rule status of is supported or not.
      * 这个字段来自实际规则去update create操作后,在远端实际的状态
      */
-    @Transient
     private boolean isNotSupported;
 
     /**
      * The rule status of in error or not.
      * 这个字段来自实际规则去update create操作后,在远端实际的状态
      */
-    @Transient
     private boolean isInError;
 
     //TODo 可以配置更新到邮件对应字段中,fireRule时不再单独传入

@@ -7,6 +7,7 @@ import com.example.easyruledemo.entity.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.util.BeanUtil;
+import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.property.complex.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -157,6 +158,7 @@ public class EwsRuleServiceImpl implements IEwsRuleService {
     public Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity) {
         //basic field copy
         Rule rule = BeanUtil.getClass(Rule.class, ewsRuleEntity).orElse(new Rule());
+        System.out.println("impl name:"+rule.getDisplayName());
         //the conditions actions and others
 
         EwsConditionsEntity ewsConditionsEntity
@@ -164,6 +166,31 @@ public class EwsRuleServiceImpl implements IEwsRuleService {
         EwsActionsEntity ewsActionsEntity
                 = JSON.parseObject(ewsRuleEntity.getActions(), EwsActionsEntity.class);
 
+        this.reflectConditions(ewsConditionsEntity,rule);
+        this.reflectActions(ewsActionsEntity,rule);
+        //todo 设定folder和folder unionId 邮箱关联 actions
+
+//
+//        RulePredicates conditions = rule.getConditions();
+//        StringList containsSubjectStrings = conditions.getContainsSubjectStrings();
+//        //testok
+//        containsSubjectStrings.add("带附件");
+//        RuleActions actions = rule.getActions();
+//        try {
+////            actions.setMoveToFolder(new FolderId(WellKnownFolderName.DeletedItems));
+//            actions.setMoveToFolder(FolderId.getFolderIdFromString(ewsRuleEntity.getItemMovedFolderIdStr()));
+////            actions.set
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("set error");
+//            return null;
+//        }
+        return rule;
+
+    }
+
+    //testok
+    private void reflectConditions(EwsConditionsEntity ewsConditionsEntity,Rule rule){
         try {
             Field[] declaredFields = ewsConditionsEntity.getClass().getDeclaredFields();
             for (Field conditionF : declaredFields) {
@@ -172,19 +199,20 @@ public class EwsRuleServiceImpl implements IEwsRuleService {
                     String conditionFName = conditionF.getName();
                     RulePredicates conditions = rule.getConditions();
                     Field declaredFieldPredicates = conditions.getClass().getDeclaredField(conditionFName);
+                    declaredFieldPredicates.setAccessible(true);
                     if (conditionFName.endsWith("Strings")) {
-                        declaredFieldPredicates.setAccessible(true);
                         StringList thisConditionList = new StringList((Iterable<String>) conditionF.get(ewsConditionsEntity));
                         declaredFieldPredicates.set(conditions, thisConditionList);
                     } else if (conditionFName.endsWith("Addresses")) {
-                        declaredFieldPredicates.setAccessible(true);
                         EmailAddressCollection thisEmailAddresses = new EmailAddressCollection();
                         List<String> dbFromEmailList = (List<String>) conditionF.get(ewsConditionsEntity);
                         for (String from : dbFromEmailList) {
                             thisEmailAddresses.add(from);
                         }
+                        declaredFieldPredicates.set(conditions,thisEmailAddresses);
+                    }else{
+                        declaredFieldPredicates.set(conditions, conditionF.get(ewsConditionsEntity));
                     }
-
                 }
             }
         } catch (IllegalAccessException e) {
@@ -192,24 +220,43 @@ public class EwsRuleServiceImpl implements IEwsRuleService {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-        //todo 设定folder和folder unionId 邮箱关联 actions
+    }
 
-
-        RulePredicates conditions = rule.getConditions();
-        StringList containsSubjectStrings = conditions.getContainsSubjectStrings();
-        //testok
-        containsSubjectStrings.add("带附件");
-        RuleActions actions = rule.getActions();
+    //todo test
+    public void reflectActions(EwsActionsEntity ewsActionsEntity,Rule rule){
         try {
-//            actions.setMoveToFolder(new FolderId(WellKnownFolderName.DeletedItems));
-            actions.setMoveToFolder(FolderId.getFolderIdFromString(ewsRuleEntity.getItemMovedFolderIdStr()));
-//            actions.set
+            Field[] declaredFields = ewsActionsEntity.getClass().getDeclaredFields();
+            for (Field actionF : declaredFields) {
+                actionF.setAccessible(true);
+                if (actionF.get(ewsActionsEntity) != null) {
+                    String actionFName = actionF.getName();
+                    RuleActions actions = rule.getActions();
+                    Field declaredFieldActions = actions.getClass().getDeclaredField(actionFName);
+                    declaredFieldActions.setAccessible(true);
+                    if (actionFName.endsWith("Categories")) {
+                        StringList thisActionList = new StringList((Iterable<String>) actionF.get(ewsActionsEntity));
+                        declaredFieldActions.set(actions, thisActionList);
+                    } else if (actionFName.endsWith("Recipients")) {
+                        EmailAddressCollection thisEmailAddresses = new EmailAddressCollection();
+                        List<String> dbFromEmailList = (List<String>) actionF.get(ewsActionsEntity);
+                        for (String from : dbFromEmailList) {
+                            thisEmailAddresses.add(from);
+                        }
+                        declaredFieldActions.set(actions,thisEmailAddresses);
+                    }else if(actionFName.endsWith("Folder")){
+                        FolderId thisFolderId = new FolderId(String.valueOf(actionF.get(ewsActionsEntity)));
+                        declaredFieldActions.set(actions,thisFolderId);
+                    }else{
+                        declaredFieldActions.set(actions,actionF.get(ewsActionsEntity));
+                    }
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("set error");
-            return null;
         }
-        return rule;
-
     }
 }

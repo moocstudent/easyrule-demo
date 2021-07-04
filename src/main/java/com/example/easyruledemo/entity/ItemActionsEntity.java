@@ -20,4 +20,6 @@ public class ItemActionsEntity {
 
     private String copyPath;
 
+//    private String otherActions;
+
 }

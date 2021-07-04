@@ -37,6 +37,9 @@ public class MailConfigEntity {
 
     private Integer recvHour;
 
+    //每个邮箱对应一个收件主题
+    private String topicId;
+
     //这里联查回来,做为该邮件的创建文件夹初始化依据
     @Transient
     private EwsFoldersEntity mailFolders;

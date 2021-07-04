@@ -160,7 +160,7 @@ public class SubscriptionContainer {
     }
 
 
-    ////////another subscription
+    ////////another subscription 暂时不使用
 
     private static EmailNotifyDelegate emailNotifyDelegate;
     private static EmailSubscriptionErrorDelegate emailSubscriptionErrorDelegate;

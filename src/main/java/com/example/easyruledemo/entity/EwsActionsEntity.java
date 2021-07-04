@@ -20,9 +20,10 @@ public class EwsActionsEntity {
     /**
      * The AssignCategories action.
      */
-    private String assignCategories;
+    private List<String> assignCategories;
 
     /**
+     * FolderId
      * The CopyToFolder action.
      */
     private String copyToFolder;
@@ -48,6 +49,7 @@ public class EwsActionsEntity {
     private boolean markAsRead;
 
     /**
+     * FolderId
      * The MoveToFolder action.
      */
     private String moveToFolder;
@@ -62,14 +64,17 @@ public class EwsActionsEntity {
      */
     private List<String> redirectToRecipients;
 
-    /**
-     * The ServerReplyWithMessage action.
-     */
-    private String serverReplyWithMessage;
+//    /**
+//     * ItemId
+//     * The ServerReplyWithMessage action.
+//     */
+//    private String serverReplyWithMessage;
 
     /**
      * The StopProcessingRules action.
      */
     private boolean stopProcessingRules;
+
+
 
 }
