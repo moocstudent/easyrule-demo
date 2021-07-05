@@ -16,6 +16,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@Deprecated
 public class EmailNotifyServiceImpl implements IEmailNotifyService {
     @Override
     public PullSubscription getPullSubscription(List<FolderId> foldersBeWatching, int timeout) {

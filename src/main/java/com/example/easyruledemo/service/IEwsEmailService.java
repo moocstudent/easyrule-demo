@@ -1,6 +1,7 @@
 package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
+import com.example.easyruledemo.entity.EwsTopicEntity;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface IEwsEmailService {
     Integer downLoadAttachment(EmailMessage message);
     //动态获取邮件配置list
     List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig);
+    //根据主键查1个
+    EwsMailEntity findOne(String mailId);
+
 }

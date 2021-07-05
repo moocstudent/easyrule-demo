@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 /**
  * @Author: zhangQi
  * @Date: 2021-07-05 11:14
+ * mailEvents多线程处理
  */
 @Slf4j
 @Data
@@ -47,6 +48,8 @@ public class MailEventsThread extends Thread {
                         AttachmentCollection attachments = message.getAttachments();
                         System.out.println("attachments:" + attachments);
                         log.info("进行附件下载");
+
+                        attachments.save();
 
                         log.info("下载完成后将邮件移入" + FolderNameEnum.ATTACH_ALREADY.getUsename());
                         //下载完成后将文件移动入已下载附件文件夹

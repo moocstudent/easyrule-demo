@@ -61,18 +61,20 @@ public class EwsRuleEntity {
      */
     private String itemActions;
 
-    private String actionType;
+    private String itemActionType;
     /**
      * The rule status of is supported or not.
      * 这个字段来自实际规则去update create操作后,在远端实际的状态
      */
-    private boolean isNotSupported;
+    private Boolean isNotSupported;
 
     /**
      * The rule status of in error or not.
      * 这个字段来自实际规则去update create操作后,在远端实际的状态
      */
-    private boolean isInError;
+    private Boolean isInError;
+
+    private Integer deleteFlag;
 
     //TODo 可以配置更新到邮件对应字段中,fireRule时不再单独传入
     private String itemMovedFolderIdStr;

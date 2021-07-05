@@ -11,16 +11,18 @@ import java.util.List;
  * @Date: 2021-07-01 16:12
  */
 //@FunctionalInterface
+@Deprecated
 public interface IEmailNotifyService {
 
     /**
      * Subscribe to pull notifications in the Inbox folder, and get notified when a new mail is received,
      * when an item or folder is created, or when an item or folder is deleted.
+     *
      * @param foldersBeWatching
      * @param timeout
      * @return
      */
-    PullSubscription getPullSubscription(List<FolderId> foldersBeWatching,int timeout);
+    PullSubscription getPullSubscription(List<FolderId> foldersBeWatching, int timeout);
 //
 //    public Integer notificationStart();
 //

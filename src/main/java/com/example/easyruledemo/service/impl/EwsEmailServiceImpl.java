@@ -1,9 +1,13 @@
 package com.example.easyruledemo.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
+import com.example.easyruledemo.entity.EwsTopicEntity;
+import com.example.easyruledemo.mapper.EwsMailMapper;
 import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsFolderService;
+import com.example.easyruledemo.service.IEwsTopicService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +20,12 @@ import java.util.*;
  * @Date: 2021-07-03 14:39
  */
 @Service
-public class EwsEmailServiceImpl implements IEwsEmailService {
+public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntity>
+        implements IEwsEmailService {
     @Autowired
     private IEwsFolderService ewsFolderService;
+    @Autowired
+    private IEwsTopicService ewsTopicService;
 
     @Override
     public Map<String, List<String>> createFolderByEmailConfigs(List<EwsMailEntity> mailConfigEntityList) {
@@ -51,14 +58,20 @@ public class EwsEmailServiceImpl implements IEwsEmailService {
          * 如有的需要进行附件下载，有的需要进行邮件清理，会分为不同的task执行
          */
         EwsMailEntity mailConfigEntity = EwsMailEntity.builder()
-                .configId("9id")
+                .mailId("9id")
                 .email("implementsteam@outlook.com")
                 .password("zhangqi1112")
                 .mailFolders(EwsFoldersEntity.builder()
-                .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
+                        .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
                 .build();
         List mailConfigList = new ArrayList<>();
         mailConfigList.add(mailConfigEntity);
         return mailConfigList;
     }
+
+    @Override
+    public EwsMailEntity findOne(String mailId) {
+        return baseMapper.selectById(mailId);
+    }
+
 }

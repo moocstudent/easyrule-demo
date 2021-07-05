@@ -1,10 +1,12 @@
 package com.example.easyruledemo.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsContainer;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
+import com.example.easyruledemo.mapper.EwsRuleMapper;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.util.BeanUtil;
 import microsoft.exchange.webservices.data.property.complex.*;
@@ -20,7 +22,8 @@ import java.util.List;
  * @Date: 2021-07-01 13:55
  */
 @Service
-public class EwsRuleServiceImpl implements IEwsRuleService {
+public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
+        implements IEwsRuleService {
 
     @Transactional
     @Override
@@ -186,6 +189,12 @@ public class EwsRuleServiceImpl implements IEwsRuleService {
 //        }
         return rule;
 
+    }
+
+    @Override
+    public List<EwsRuleEntity> getRulesByTopicId(String topicId) {
+        //关联查询, 获取topicId对应的ruleList table:ews_topic_rule_relation
+        return baseMapper.listRuleByTopicId(topicId);
     }
 
     //testok

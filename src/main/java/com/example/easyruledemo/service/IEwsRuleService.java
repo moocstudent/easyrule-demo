@@ -29,4 +29,7 @@ public interface IEwsRuleService {
         //将数据库中的ruleEntity转换为可用的ewsRule
         Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity);
 
+        //根据主题id获取旗下rule list
+        List<EwsRuleEntity> getRulesByTopicId(String topicId);
+
 }
