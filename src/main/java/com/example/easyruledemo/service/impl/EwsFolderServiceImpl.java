@@ -2,7 +2,7 @@ package com.example.easyruledemo.service.impl;
 
 import com.example.easyruledemo.container.EwsContainer;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
-import com.example.easyruledemo.entity.MailConfigEntity;
+import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.service.IEwsFolderService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 public class EwsFolderServiceImpl implements IEwsFolderService {
 
     @Override
-    public String createFolder(String folderName, MailConfigEntity mailConfig) {
+    public String createFolder(String folderName, EwsMailEntity mailConfig) {
         return this.createFolder(folderName, null,mailConfig);
     }
 
     @Override
-    public String createFolder(String folderName, WellKnownFolderName parentFolder,MailConfigEntity mailConfig) {
+    public String createFolder(String folderName, WellKnownFolderName parentFolder, EwsMailEntity mailConfig) {
         try {
             Folder folder = new Folder(EwsContainer.getExchangeService(mailConfig.getEmail(),mailConfig.getPassword()));
             folder.setDisplayName(folderName);
@@ -45,7 +45,7 @@ public class EwsFolderServiceImpl implements IEwsFolderService {
     }
 
     @Override
-    public List<String> createFolder(List<String> folderNames, WellKnownFolderName parentFolder, MailConfigEntity mailConfig) {
+    public List<String> createFolder(List<String> folderNames, WellKnownFolderName parentFolder, EwsMailEntity mailConfig) {
         List<String> folderIds = new ArrayList<>();
         for (String folderName:folderNames){
             folderIds.add(this.createFolder(folderName,parentFolder,mailConfig));

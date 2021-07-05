@@ -1,16 +1,6 @@
 package com.example.easyruledemo.callback;
 
-import com.example.easyruledemo.delegate.EmailNotifyDelegate;
-import com.example.easyruledemo.delegate.EmailSubscriptionErrorDelegate;
-import com.example.easyruledemo.serv.IRuleService;
-import com.example.easyruledemo.service.IEwsRuleService;
-import com.example.easyruledemo.service.impl.EwsRuleServiceImpl;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import microsoft.exchange.webservices.data.misc.AsyncCallbackImplementation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -18,8 +8,10 @@ import java.util.concurrent.Future;
 /**
  * @Author: Frank
  * @Date: 2021-07-01 10:01
+ * 这个异步执行实现类,会在创建subscription时指定
+ *
  */
-
+@Deprecated
 public class EmailAttachCallBack extends AsyncCallbackImplementation {
 
 

@@ -1,7 +1,7 @@
 package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsFoldersEntity;
-import com.example.easyruledemo.entity.MailConfigEntity;
+import com.example.easyruledemo.entity.EwsMailEntity;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
 
@@ -14,14 +14,14 @@ import java.util.List;
 public interface IEwsFolderService {
 
     //testok 创建新的文件夹, 顶级目录下
-    String createFolder(String folderName, MailConfigEntity mailConfig);
+    String createFolder(String folderName, EwsMailEntity mailConfig);
 
     //testok 创建文件夹,如果parentFolder为null,则顶级目录下创建,否则建立在parentFolder下
     //可为接口 也可以为启动创建
-    String createFolder(String folderName, WellKnownFolderName parentFolder,MailConfigEntity mailConfig);
+    String createFolder(String folderName, WellKnownFolderName parentFolder, EwsMailEntity mailConfig);
 
     //创建文件夹多个
-    List<String> createFolder(List<String> folderNames, WellKnownFolderName parentFolder,MailConfigEntity mailConfig);
+    List<String> createFolder(List<String> folderNames, WellKnownFolderName parentFolder, EwsMailEntity mailConfig);
 
     //fixme don't understood
     Integer bindFolderTest(String folderId);

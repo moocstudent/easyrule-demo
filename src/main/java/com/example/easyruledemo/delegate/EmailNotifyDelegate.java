@@ -19,8 +19,10 @@ import java.util.List;
 /**
  * @Author: zhangQi
  * @Date: 2021-07-02 14:23
+ * 之前用于邮件事件提醒,这里暂时没有使用这里回调提醒方式,不过是可执行的
  */
 @Component
+@Deprecated
 public class EmailNotifyDelegate implements StreamingSubscriptionConnection.INotificationEventDelegate {
     //提醒委派
     @Override

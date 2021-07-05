@@ -2,9 +2,9 @@ package com.example.easyruledemo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.example.easyruledemo.container.EwsContainer;
-import com.example.easyruledemo.entity.EwsActionsEntity;
-import com.example.easyruledemo.entity.EwsConditionsEntity;
-import com.example.easyruledemo.entity.rule.EwsRuleEntity;
+import com.example.easyruledemo.entity.sub.EwsActionsEntity;
+import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
+import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.util.BeanUtil;
 import microsoft.exchange.webservices.data.property.complex.*;

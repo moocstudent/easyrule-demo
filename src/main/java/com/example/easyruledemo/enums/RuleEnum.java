@@ -12,7 +12,7 @@ import lombok.Getter;
 public enum RuleEnum {
 
     D("D","下载"),
-    C("C","下载bing 拷贝");
+    DC("DC","下载并拷贝");
 
     private String code;
     private String description;

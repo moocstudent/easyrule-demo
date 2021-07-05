@@ -2,7 +2,8 @@ package com.example.easyruledemo.rules;
 
 import com.example.easyruledemo.container.EwsContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
-import com.example.easyruledemo.entity.MailConfigEntity;
+import com.example.easyruledemo.entity.EwsMailEntity;
+import com.example.easyruledemo.enums.FolderNameEnum;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
@@ -12,6 +13,7 @@ import microsoft.exchange.webservices.data.notification.GetEventsResults;
 import microsoft.exchange.webservices.data.notification.ItemEvent;
 import microsoft.exchange.webservices.data.notification.PullSubscription;
 import microsoft.exchange.webservices.data.property.complex.AttachmentCollection;
+import microsoft.exchange.webservices.data.property.complex.FolderId;
 
 import java.time.LocalDateTime;
 
@@ -21,28 +23,42 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 @Data
-public class MailEventsThread extends Thread{
+public class MailEventsThread extends Thread {
 
-    private MailConfigEntity mailConfig;
+    private EwsMailEntity mailConfig;
 
     @Override
     public void start() {
         try {
             //todo 需要改为每天初始化subscriptionContainer后等待几分钟再拉取
-            log.info("start poll email event : {}"+ LocalDateTime.now());
+            log.info("start poll email event : {}" + LocalDateTime.now());
             PullSubscription subscription = SubscriptionContainer.getSubscriptionToday(mailConfig);
             GetEventsResults events = subscription.getEvents();
             System.out.println("----");
             // Loop through all item-related events.
             for (ItemEvent itemEvent : events.getItemEvents()) {
                 if (itemEvent.getEventType() == EventType.NewMail) {
-                    EmailMessage message = EmailMessage.bind(EwsContainer.defaultExchangeService(), itemEvent.getItemId());
+                    log.error("新的邮件已到达 itemId:{}" + itemEvent.getItemId());
+                    EmailMessage message = EmailMessage.bind(EwsContainer.getExchangeService(
+                            mailConfig.getEmail(), mailConfig.getPassword()),
+                            itemEvent.getItemId()
+                    );
                     if (message.getHasAttachments()) {
                         AttachmentCollection attachments = message.getAttachments();
                         System.out.println("attachments:" + attachments);
+                        log.info("进行附件下载");
+
+                        log.info("下载完成后将邮件移入" + FolderNameEnum.ATTACH_ALREADY.getUsename());
+                        //下载完成后将文件移动入已下载附件文件夹
+                        message.move(new FolderId(
+                                mailConfig.getMailFoldersMap()
+                                        .get(FolderNameEnum.ATTACH_ALREADY.getCode()).getFolderId())
+                        );
                     }
                 } else if (itemEvent.getEventType() == EventType.Created) {
-                    Item item = Item.bind(EwsContainer.defaultExchangeService(), itemEvent.getItemId());
+                    Item item = Item.bind(EwsContainer.getExchangeService(
+                            mailConfig.getEmail(), mailConfig.getPassword()),
+                            itemEvent.getItemId());
                 } else if (itemEvent.getEventType() == EventType.Deleted) {
                     break;
                 }

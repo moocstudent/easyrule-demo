@@ -1,4 +1,4 @@
-package com.example.easyruledemo.entity;
+package com.example.easyruledemo.entity.sub;
 
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @Author: zhangQi
  * @Date: 2021-07-03 11:42
- * transform from com.example.easyruledemo.entity.rule.EwsRuleEntity.conditions
+ * transform from com.example.easyruledemo.entity.EwsRuleEntity.conditions
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

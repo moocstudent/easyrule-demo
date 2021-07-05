@@ -1,8 +1,13 @@
-package com.example.easyruledemo.entity.rule;
+package com.example.easyruledemo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.easyruledemo.entity.sub.EwsActionsEntity;
+import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
+import com.example.easyruledemo.entity.sub.ItemActionsEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
-import microsoft.exchange.webservices.data.property.complex.Rule;
 
 import javax.persistence.Transient;
 
@@ -16,13 +21,16 @@ import javax.persistence.Transient;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-//@TableName("ews_rule")
+@TableName("ews_rule")
 public class EwsRuleEntity {
 
+    @TableId(type = IdType.ASSIGN_UUID)
     private String ruleId;
 
     private String displayName;
 
+    //联查ews_topic_rule_relation获取
+    @Transient
     private Integer priority;
 
     /**
@@ -33,23 +41,23 @@ public class EwsRuleEntity {
     //简介
     private String ruleDesc;
 
-    //规则等级
+    //规则等级 是设定规则时预设的,rulelevel指定组合,priority指定顺序
     private Integer ruleLevel;
 
     /**
      * {见测试类 TransformTest}
-     * {@link com.example.easyruledemo.entity.EwsConditionsEntity}
+     * {@link EwsConditionsEntity}
      */
     private String conditions;
 
     /**
      * {见测试类 TransformTest}
-     * {@link com.example.easyruledemo.entity.EwsActionsEntity}
+     * {@link EwsActionsEntity}
      */
     private String actions;
 
     /**
-     * {@link com.example.easyruledemo.entity.ItemActionsEntity}
+     * {@link ItemActionsEntity}
      */
     private String itemActions;
 

@@ -1,7 +1,7 @@
 package com.example.easyruledemo.service.impl;
 
 import com.example.easyruledemo.entity.EwsFoldersEntity;
-import com.example.easyruledemo.entity.MailConfigEntity;
+import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsFolderService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -21,9 +21,9 @@ public class EwsEmailServiceImpl implements IEwsEmailService {
     private IEwsFolderService ewsFolderService;
 
     @Override
-    public Map<String, List<String>> createFolderByEmailConfigs(List<MailConfigEntity> mailConfigEntityList) {
+    public Map<String, List<String>> createFolderByEmailConfigs(List<EwsMailEntity> mailConfigEntityList) {
         Map<String, List<String>> emailFolderIds = new HashMap<>();
-        for (MailConfigEntity mailConfig : mailConfigEntityList) {
+        for (EwsMailEntity mailConfig : mailConfigEntityList) {
             try {
                 //todo 改为从mail对应主题对应规则对应的文件夹中获取
                 List<String> folderIds = ewsFolderService.createFolder(
@@ -43,14 +43,14 @@ public class EwsEmailServiceImpl implements IEwsEmailService {
     }
 
     @Override
-    public List<MailConfigEntity> getMailConfigList(MailConfigEntity mailConfig) {
+    public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig) {
         //for test
         /**
          * LambdaQuery
          * .eq(MailConfigEntity::根据关联表查询符合这次要求的集合，
          * 如有的需要进行附件下载，有的需要进行邮件清理，会分为不同的task执行
          */
-        MailConfigEntity mailConfigEntity = MailConfigEntity.builder()
+        EwsMailEntity mailConfigEntity = EwsMailEntity.builder()
                 .configId("9id")
                 .email("implementsteam@outlook.com")
                 .password("zhangqi1112")
