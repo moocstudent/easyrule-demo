@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @Author: zhangQi
  * @Date: 2021-07-03 11:48
- * transform from com.example.easyruledemo.entity.EwsRuleEntity.actions
+ * transform from com.example.easyruledemo.entity.rule.EwsRuleEntity.actions
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

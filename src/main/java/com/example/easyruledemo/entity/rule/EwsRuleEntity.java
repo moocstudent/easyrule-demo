@@ -1,4 +1,4 @@
-package com.example.easyruledemo.entity;
+package com.example.easyruledemo.entity.rule;
 
 import lombok.*;
 import lombok.experimental.Accessors;

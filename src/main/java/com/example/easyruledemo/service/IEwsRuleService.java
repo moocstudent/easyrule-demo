@@ -1,8 +1,7 @@
 package com.example.easyruledemo.service;
 
-import com.example.easyruledemo.entity.EwsRuleEntity;
+import com.example.easyruledemo.entity.rule.EwsRuleEntity;
 import microsoft.exchange.webservices.data.property.complex.Rule;
-import microsoft.exchange.webservices.data.property.complex.RulePredicates;
 
 import java.util.List;
 

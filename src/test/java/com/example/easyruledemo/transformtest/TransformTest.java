@@ -1,14 +1,9 @@
 package com.example.easyruledemo.transformtest;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.example.easyruledemo.BaseTest;
-import com.example.easyruledemo.entity.EwsConditionsEntity;
-import com.example.easyruledemo.entity.EwsRuleEntity;
+import com.example.easyruledemo.entity.rule.EwsRuleEntity;
 import com.example.easyruledemo.service.IEwsRuleService;
 import microsoft.exchange.webservices.data.property.complex.Rule;
-import microsoft.exchange.webservices.data.property.complex.RulePredicates;
-import microsoft.exchange.webservices.data.property.complex.StringList;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

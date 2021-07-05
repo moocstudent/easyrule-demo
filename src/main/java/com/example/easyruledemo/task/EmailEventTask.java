@@ -3,7 +3,7 @@ package com.example.easyruledemo.task;
 import com.example.easyruledemo.container.EwsContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.MailConfigEntity;
-import com.example.easyruledemo.rules.MailEventThread;
+import com.example.easyruledemo.rules.MailEventsThread;
 import com.example.easyruledemo.service.IEwsEmailService;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
@@ -66,9 +66,9 @@ public class EmailEventTask {
         try {
             List<MailConfigEntity> mailConfigList = ewsEmailService.getMailConfigList(MailConfigEntity.builder().build());
             for (MailConfigEntity mailConfig : mailConfigList){
-                MailEventThread mailEventThread = new MailEventThread();
-                mailEventThread.setMailConfig(mailConfig);
-                mailEventThread.run();
+                MailEventsThread mailEventsThread = new MailEventsThread();
+                mailEventsThread.setMailConfig(mailConfig);
+                mailEventsThread.start();
             }
 //            executeThisDay++;
         } catch (Exception e) {

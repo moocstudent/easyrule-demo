@@ -1,6 +1,5 @@
 package com.example.easyruledemo.service.impl;
 
-import com.example.easyruledemo.container.EwsContainer;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.MailConfigEntity;
 import com.example.easyruledemo.service.IEwsEmailService;
@@ -26,6 +25,7 @@ public class EwsEmailServiceImpl implements IEwsEmailService {
         Map<String, List<String>> emailFolderIds = new HashMap<>();
         for (MailConfigEntity mailConfig : mailConfigEntityList) {
             try {
+                //todo 改为从mail对应主题对应规则对应的文件夹中获取
                 List<String> folderIds = ewsFolderService.createFolder(
                         mailConfig.getMailFolders().getFolderNames(), WellKnownFolderName.Inbox, mailConfig);
                 emailFolderIds.put(mailConfig.getEmail(), folderIds);
@@ -55,7 +55,7 @@ public class EwsEmailServiceImpl implements IEwsEmailService {
                 .email("implementsteam@outlook.com")
                 .password("zhangqi1112")
                 .mailFolders(EwsFoldersEntity.builder()
-                        .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
+                .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
                 .build();
         List mailConfigList = new ArrayList<>();
         mailConfigList.add(mailConfigEntity);

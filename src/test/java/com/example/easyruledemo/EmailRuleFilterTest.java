@@ -1,9 +1,8 @@
 package com.example.easyruledemo;
 
 
-import com.example.easyruledemo.entity.EwsRuleEntity;
+import com.example.easyruledemo.entity.rule.EwsRuleEntity;
 import com.example.easyruledemo.service.IEwsRuleService;
-import microsoft.exchange.webservices.data.property.complex.Rule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
