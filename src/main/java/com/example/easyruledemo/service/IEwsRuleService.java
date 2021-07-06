@@ -1,6 +1,8 @@
 package com.example.easyruledemo.service;
 
+import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
+import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.property.complex.Rule;
 
 import java.util.List;
@@ -11,25 +13,42 @@ import java.util.List;
  */
 public interface IEwsRuleService {
 
-        //testok 只设定这个规则奏效,其余的进行取消奏效
-        Integer ewsRuleFireJustThisOne(EwsRuleEntity ewsRuleEntity,String emailAddr);
+    //获取service
+//    ExchangeService getEwsService(EwsMailEntity ewsMail);
 
-        //TODO 执行规则,需要传入参数,这里需要传入数据库传过来的参数,并传入到ews的rule参数中
-        Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity);
+    //testok 只设定这个规则奏效,其余的进行取消奏效
+    Integer ewsRuleFireJustThisOne(EwsRuleEntity ewsRuleEntity, String emailAddr);
 
-        //testok 获取某个邮箱的规则名称集合
-        List<EwsRuleEntity> getEwsRulesByEmAddr(String emailAddr);
+    //只设定此规则奏效,其余取消
+    Integer ewsRuleFireJustThisOne(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail);
 
-        //testok 删除某个邮箱的所有规则,返回删除数量(全部)
-        Integer deleteRuleByEmAddr(String emailAddr);
+    //TODO 执行规则,需要传入参数,这里需要传入数据库传过来的参数,并传入到ews的rule参数中
+    Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity);
 
-        //testok 让邮件中的规则disabled不再奏效
-        Integer disabledRuleByEmAddr(String emailAddr);
+    //执行规则
+    Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity,EwsMailEntity ewsMail);
 
-        //将数据库中的ruleEntity转换为可用的ewsRule
-        Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity);
+    //testok 获取某个邮箱的规则名称集合
+    List<EwsRuleEntity> getEwsRulesByEmAddr(String emailAddr);
 
-        //根据主题id获取旗下rule list
-        List<EwsRuleEntity> getRulesByTopicId(String topicId);
+    //testok 删除某个邮箱的所有规则,返回删除数量(全部)
+    @Deprecated
+    Integer deleteRuleByEmAddr(String emailAddr);
+
+    //
+    Integer deleteRuleByEmAddr(EwsMailEntity ewsMail);
+
+    //testok 让邮件中的规则disabled不再奏效
+    //现在邮件已经跟topic关联,不再与单个rule关联
+    Integer disabledRuleByEmAddr(String emailAddr);
+
+    //让邮件中的规则disabled不再奏效
+    Integer disabledRuleByEmAddr(EwsMailEntity ewsMail);
+
+    //将数据库中的ruleEntity转换为可用的ewsRule
+    Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity);
+
+    //根据主题id获取旗下rule list
+    List<EwsRuleEntity> getRulesByTopicId(String topicId);
 
 }

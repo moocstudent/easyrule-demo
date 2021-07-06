@@ -1,4 +1,4 @@
-package com.example.easyruledemo.entity;
+package com.example.easyruledemo.vo;
 
 //import com.baomidou.mybatisplus.annotation.IdType;
 //import com.baomidou.mybatisplus.annotation.TableId;
@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.Transient;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,7 +29,7 @@ import java.util.Map;
 @Accessors(chain = true)
 @TableName("ews_mail_config")
 @ApiModel("ews邮箱配置实体")
-public class EwsMailEntity {
+public class EwsMailVO {
 
 //    @TableId(type = IdType.ASSIGN_UUID)
 //    private String mailId;
@@ -44,26 +43,10 @@ public class EwsMailEntity {
     @ApiModelProperty("密码")
     private String password;
 
-    private String host;
-
-    private Integer port;
-
     private Integer recvHour;
 
     //每个邮箱对应一个收件主题
     @ApiModelProperty("该邮件关联的收件主题id")
     private String topicId;
-
-    /**
-     * 这里联查回来,做为该邮件的创建文件夹初始化依据
-     * 这里的key为folderCode,value为对应该folderCode的实体类
-     * 比如获取 mailFolders.get("moveToFolder")获取要移动入的文件夹
-     */
-//    @Transient
-//    private Map<String,EwsFoldersEntity> mailFolders;
-    @Transient
-    private Map<String, EwsFoldersEntity> mailFoldersMap;
-    @Transient
-    private EwsFoldersEntity mailFolders;
 
 }

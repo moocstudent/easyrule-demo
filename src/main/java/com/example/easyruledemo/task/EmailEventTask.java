@@ -33,10 +33,12 @@ public class EmailEventTask {
 
     /**
      * 每天凌晨1点执行一次
+     * fixme 执行初始化订阅前,需要一次性创建被监测邮箱的初始化文件夹
      */
 //    @Scheduled(cron = "0 0 1 * * ?")
-    @PostConstruct
+//    @PostConstruct
     public void initialSubscriptionToday(){
+//        SubscriptionContainer.unsubscription();
         log.info("开始初始化今日邮箱订阅监听");
         Integer size = SubscriptionContainer.initialSubscriptionToday(ewsEmailService
                 .getMailConfigList(EwsMailEntity.builder().build()));
@@ -46,7 +48,7 @@ public class EmailEventTask {
     /**
      * 邮件监听
      */
-    @Scheduled(cron = "*/30 * * * * ?")
+//    @Scheduled(cron = "*/30 * * * * ?")
     public void emailEventPoll() {
         if(!(SubscriptionContainer.getInitialCount()>0)){
             log.info("如果subscription监听未初始化,则不进行事件处理");

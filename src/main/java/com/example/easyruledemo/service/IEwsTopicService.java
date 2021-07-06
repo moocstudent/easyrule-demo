@@ -21,4 +21,6 @@ public interface IEwsTopicService {
 
     //根据mail主键获取收件主题
     EwsTopicEntity getTopicByMailId(String mailId);
+
+
 }

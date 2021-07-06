@@ -1,5 +1,6 @@
 package com.example.easyruledemo.container;
 
+import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @Date: 2021-07-01 14:08
  * EwsService交换机获取容器
  */
+@Slf4j
 public class EwsContainer {
 
     //测试使用
@@ -35,6 +37,7 @@ public class EwsContainer {
     public static ExchangeService getExchangeService(String email,String password){
         String key = email+password;
         if(exchangeServiceMap.get(key)!=null){
+            log.info("exchangeServiceMap get ok:{}",exchangeServiceMap.get(key));
             return exchangeServiceMap.get(key);
         }
         ExchangeCredentials credentials = new WebCredentials(email, password);

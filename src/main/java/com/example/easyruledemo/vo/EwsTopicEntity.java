@@ -1,4 +1,4 @@
-package com.example.easyruledemo.entity;
+package com.example.easyruledemo.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

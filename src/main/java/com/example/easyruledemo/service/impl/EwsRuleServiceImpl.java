@@ -3,12 +3,14 @@ package com.example.easyruledemo.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.mapper.EwsRuleMapper;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.util.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.property.complex.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,8 @@ import java.util.List;
  * @Date: 2021-07-01 13:55
  */
 @Service
-public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
+@Slf4j
+public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity>
         implements IEwsRuleService {
 
     @Transactional
@@ -39,33 +42,53 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
         }
     }
 
+    @Transactional
+    @Override
+    public Integer ewsRuleFireJustThisOne(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
+        Integer disabledRuleSize = this.disabledRuleByEmAddr(ewsMail);
+        System.out.println("disabled rule size:" + disabledRuleSize);
+        Integer fireRuleCode = this.ewsRuleFire(ewsRuleEntity,ewsMail);
+        if (fireRuleCode > 0) {
+            System.out.println("fire rule just this one is ok:" + fireRuleCode);
+            return fireRuleCode;
+        } else {
+            return fireRuleCode;
+        }
+    }
+
     @Override
     public Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity) {
-        Rule rule = new Rule();
-        rule.setDisplayName(ewsRuleEntity.getDisplayName());
-        rule.setPriority(1);
+        Rule rule = this.transformRuleEntity(ewsRuleEntity);
         //是否启用
         rule.setIsEnabled(true);
-        RulePredicates conditions = rule.getConditions();
-        StringList containsSubjectStrings = conditions.getContainsSubjectStrings();
-        //testok
-        containsSubjectStrings.add("带附件");
-        RuleActions actions = rule.getActions();
-        try {
-//            actions.setMoveToFolder(new FolderId(WellKnownFolderName.DeletedItems));
-            actions.setMoveToFolder(FolderId.getFolderIdFromString(ewsRuleEntity.getItemMovedFolderIdStr()));
-//            actions.set
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("set error");
-            return -1;
-        }
+
         CreateRuleOperation createOperation = new CreateRuleOperation(rule);
         List<RuleOperation> ruleList = new ArrayList<RuleOperation>();
         ruleList.add(createOperation);
         try {
             //执行规则更新
             EwsContainer.defaultExchangeService().updateInboxRules(ruleList, true);
+//            EwsContainer.defaultExchangeService().update(ruleList,true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return 1;
+    }
+
+    @Override
+    public Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
+        Rule rule = this.transformRuleEntity(ewsRuleEntity);
+        log.debug("transformRule:{}",rule);
+        //是否启用
+        rule.setIsEnabled(true);
+        CreateRuleOperation createOperation = new CreateRuleOperation(rule);
+        List<RuleOperation> ruleList = new ArrayList<RuleOperation>();
+        ruleList.add(createOperation);
+        try {
+            //执行规则更新
+            EwsContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
+                    .updateInboxRules(ruleList, true);
 //            EwsContainer.defaultExchangeService().update(ruleList,true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,6 +147,35 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
     }
 
     @Override
+    public Integer deleteRuleByEmAddr(EwsMailEntity ewsMail) {
+        RuleCollection ruleCollection = null;
+        try {
+            ruleCollection = EwsContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
+                    .getInboxRules(ewsMail.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+        System.out.println("Collection count: " + ruleCollection.getCount());
+        List<RuleOperation> deleterules = new ArrayList<RuleOperation>();
+        // Write the DisplayName and ID of each rule.
+        for (Rule rule : ruleCollection) {
+            System.out.println(rule.getDisplayName());
+            System.out.println(rule.getId());
+            DeleteRuleOperation d = new DeleteRuleOperation(rule.getId());
+            deleterules.add(d);
+        }
+        try {
+            EwsContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
+                    .updateInboxRules(deleterules, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return deleterules.size();
+    }
+
+    @Override
     public Integer disabledRuleByEmAddr(String emailAddr) {
         RuleCollection ruleCollection = null;
         try {
@@ -157,10 +209,49 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
     }
 
     @Override
+    public Integer disabledRuleByEmAddr(EwsMailEntity ewsMail) {
+        RuleCollection ruleCollection = null;
+        try {
+            ruleCollection = EwsContainer
+                    .getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
+                    .getInboxRules(ewsMail.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+        System.out.println("Collection count: " + ruleCollection.getCount());
+        List<RuleOperation> disabledRules = new ArrayList<RuleOperation>();
+
+        if (ruleCollection.getCount()==0){
+            return 0;
+        }
+        // Write the DisplayName and ID of each rule.
+        for (Rule rule : ruleCollection) {
+            System.out.println(rule.getDisplayName());
+            System.out.println(rule.getId());
+            System.out.println(rule.getIsEnabled());
+            rule.setIsEnabled(false);
+//            rule.getActions().setMoveToFolder(new FolderId(WellKnownFolderName.Inbox));
+            System.out.println("rule isEnabled must be false now:" + rule.getIsEnabled());
+//            System.out.println("rule disabled:"+rule);
+            SetRuleOperation updateToDisabledRule = new SetRuleOperation(rule);
+            disabledRules.add(updateToDisabledRule);
+        }
+        try {
+            EwsContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
+                    .updateInboxRules(disabledRules, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return disabledRules.size();
+    }
+
+    @Override
     public Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity) {
         //basic field copy
         Rule rule = BeanUtil.getClass(Rule.class, ewsRuleEntity).orElse(new Rule());
-        System.out.println("impl name:"+rule.getDisplayName());
+        System.out.println("impl name:" + rule.getDisplayName());
         //the conditions actions and others
 
         EwsConditionsEntity ewsConditionsEntity
@@ -168,8 +259,8 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
         EwsActionsEntity ewsActionsEntity
                 = JSON.parseObject(ewsRuleEntity.getActions(), EwsActionsEntity.class);
 
-        this.reflectConditions(ewsConditionsEntity,rule);
-        this.reflectActions(ewsActionsEntity,rule);
+        this.reflectConditions(ewsConditionsEntity, rule);
+        this.reflectActions(ewsActionsEntity, rule);
         //todo 设定folder和folder unionId 邮箱关联 actions
 
 //
@@ -198,7 +289,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
     }
 
     //testok
-    private void reflectConditions(EwsConditionsEntity ewsConditionsEntity,Rule rule){
+    private void reflectConditions(EwsConditionsEntity ewsConditionsEntity, Rule rule) {
         try {
             Field[] declaredFields = ewsConditionsEntity.getClass().getDeclaredFields();
             for (Field conditionF : declaredFields) {
@@ -217,8 +308,8 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
                         for (String from : dbFromEmailList) {
                             thisEmailAddresses.add(from);
                         }
-                        declaredFieldPredicates.set(conditions,thisEmailAddresses);
-                    }else{
+                        declaredFieldPredicates.set(conditions, thisEmailAddresses);
+                    } else {
                         declaredFieldPredicates.set(conditions, conditionF.get(ewsConditionsEntity));
                     }
                 }
@@ -231,7 +322,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
     }
 
     //todo test
-    public void reflectActions(EwsActionsEntity ewsActionsEntity,Rule rule){
+    public void reflectActions(EwsActionsEntity ewsActionsEntity, Rule rule) {
         try {
             Field[] declaredFields = ewsActionsEntity.getClass().getDeclaredFields();
             for (Field actionF : declaredFields) {
@@ -250,12 +341,12 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper,EwsRuleEntity>
                         for (String from : dbFromEmailList) {
                             thisEmailAddresses.add(from);
                         }
-                        declaredFieldActions.set(actions,thisEmailAddresses);
-                    }else if(actionFName.endsWith("Folder")){
+                        declaredFieldActions.set(actions, thisEmailAddresses);
+                    } else if (actionFName.endsWith("Folder")) {
                         FolderId thisFolderId = new FolderId(String.valueOf(actionF.get(ewsActionsEntity)));
-                        declaredFieldActions.set(actions,thisFolderId);
-                    }else{
-                        declaredFieldActions.set(actions,actionF.get(ewsActionsEntity));
+                        declaredFieldActions.set(actions, thisFolderId);
+                    } else {
+                        declaredFieldActions.set(actions, actionF.get(ewsActionsEntity));
                     }
                 }
             }

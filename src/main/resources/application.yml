@@ -1,0 +1,19 @@
+spring:
+  # 数据源类型配置
+  datasource:
+      driverClassName: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/ews-cute?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&serverTimezone=Asia/Shanghai
+      username: root
+      password: zhangqi1112
+#      global:
+#        enabled: true
+#        databaseId: mysql
+#        idType: AUTO
+
+mybatis:
+  mapper-locations: classpath:mappings/*.xml
+#  config-location: classpath:mybatis-cfg.xml
+  type-aliases-package: com.example.easyruledemo.entity
+
+server:
+  port: 93

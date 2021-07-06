@@ -2,6 +2,7 @@ package com.example.easyruledemo.controller;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.service.IEwsEmailService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * @Author: zhangQi
  * @Date: 2021-07-05 13:37
  */
+@Api("ews邮箱配置接口层")
 @RequestMapping("/ews/mail")
 @RestController
 public class EwsMailController {
@@ -26,7 +28,7 @@ public class EwsMailController {
 
     }
 
-    @PostMapping
+    @PostMapping("/list")
     public void mailList(@RequestBody EwsMailEntity ewsMail){
 
     }

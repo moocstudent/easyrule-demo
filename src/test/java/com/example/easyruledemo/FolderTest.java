@@ -1,5 +1,6 @@
 package com.example.easyruledemo;
 
+import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.enums.FolderNameEnum;
 import com.example.easyruledemo.service.IEwsFolderService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -30,10 +31,10 @@ class FolderTest extends BaseTest{
      */
     @Test
     public void testCreateFolder() {
-//        String folderId = ewsFolderService.createFolder("待下载附件邮件", WellKnownFolderName.Inbox);
-//        String folderId2 = ewsFolderService.createFolder("已下载附件邮件", WellKnownFolderName.Inbox);
-//        System.out.println("folderId:"+folderId);
-//        System.out.println("folderId2:"+folderId2);
+        String folderId = ewsFolderService.createFolder("待下载附件邮件", WellKnownFolderName.Inbox, EwsMailEntity.builder().email("frankimplements@outlook.com").password("zhangqi1112").build());
+        String folderId2 = ewsFolderService.createFolder("已下载附件邮件", WellKnownFolderName.Inbox,EwsMailEntity.builder().email("frankimplements@outlook.com").password("zhangqi1112").build());
+        System.out.println("folderId:"+folderId);
+        System.out.println("folderId2:"+folderId2);
     }
 
 }

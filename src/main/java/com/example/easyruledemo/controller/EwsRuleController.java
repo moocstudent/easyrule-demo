@@ -2,6 +2,7 @@ package com.example.easyruledemo.controller;
 
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.service.IEwsRuleService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * @Author: zhangQi
  * @Date: 2021-07-05 13:36
  */
+@Api("ews子规则接口层")
 @RequestMapping("/ews/rule")
 @RestController
 public class EwsRuleController {
@@ -26,7 +28,7 @@ public class EwsRuleController {
 
     }
 
-    @PostMapping
+    @PostMapping("/list")
     public void ruleList(@RequestBody EwsRuleEntity ewsRule){
 
     }

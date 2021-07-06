@@ -1,4 +1,4 @@
-package com.example.easyruledemo.entity;
+package com.example.easyruledemo.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -23,7 +23,7 @@ import java.util.List;
 @Accessors(chain = true)
 @TableName("ews_mail_folders")
 @ApiModel("ews文件夹实体")
-public class EwsFoldersEntity {
+public class EwsFoldersVO {
     //使用单个文件id存一条形式
 
     //主键

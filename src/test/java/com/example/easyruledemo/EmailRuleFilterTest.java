@@ -1,11 +1,16 @@
 package com.example.easyruledemo;
 
 
+import com.alibaba.fastjson.JSON;
+import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
+import com.example.easyruledemo.entity.sub.EwsActionsEntity;
+import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
 import com.example.easyruledemo.service.IEwsRuleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,11 +24,17 @@ class EmailRuleFilterTest extends BaseTest {
 
 
     //testok
+
+    /**
+     * 测试权重生成到邮箱中后,权重排列的顺序不按照正常顺序1-10,而是有部分乱序如2,1-3,4,5,10,7
+     * 而outlook.live.com的规则执行是按从上到下来执行规则
+     */
     @Test
     public void testRuleFireEws() {
         ewsRuleService.ewsRuleFire(EwsRuleEntity
                 .builder()
-                .displayName("only 1")
+                .displayName("only 7")
+                .priority(7)
                 .itemMovedFolderIdStr("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")
                 .build());
     }
@@ -33,9 +44,22 @@ class EmailRuleFilterTest extends BaseTest {
     public void testRuleFireEwsJustThisOne(){
         ewsRuleService.ewsRuleFireJustThisOne(EwsRuleEntity
                 .builder()
-                .displayName("just this one 4")
-                .itemMovedFolderIdStr("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")
-                .build(),"implementsteam@outlook.com");
+                .displayName("just this one 1")
+                .conditions(JSON.toJSONString(EwsConditionsEntity.builder()
+                .containsSubjectStrings(Arrays.asList("带附件")).build()))
+                .actions(JSON.toJSONString(EwsActionsEntity.builder()
+                .moveToFolder("AQMkADAwATM0MDAAMS0zNjVjLTZmODctMDACLTAwCgAuAAADRJzEnDGzDkiFHa7PpA6vRgEAL3jSJ1Y43EaEjeMalrFpowAAAiQTAAAA").build()))
+                .build(),
+                EwsMailEntity.builder()
+                        .email("frankimplements@outlook.com")
+                        .password("zhangqi1112")
+                        .build());
+//                .moveToFolder("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==").build()))
+//                .build(),
+//                EwsMailEntity.builder()
+//                        .email("implementsteam@outlook.com")
+//                        .password("zhangqi1112")
+//                        .build());
     }
 
     @Test

@@ -2,6 +2,8 @@ package com.example.easyruledemo;
 
 import com.example.easyruledemo.container.EwsContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
+import com.example.easyruledemo.entity.EwsFoldersEntity;
+import com.example.easyruledemo.entity.EwsMailEntity;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.core.service.item.Item;
@@ -13,6 +15,7 @@ import microsoft.exchange.webservices.data.property.complex.FolderId;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -72,5 +75,26 @@ class Notify2Test extends BaseTest {
             e.printStackTrace();
         }
 
+    }
+    @Test
+    public void notifyTest(){
+        SubscriptionContainer
+                .getEmailNotifySubscription(1, EwsMailEntity.builder()
+                .email("frankimplements@outlook.com").password("zhangqi1112")
+                        .mailFolders(EwsFoldersEntity.builder().folderIds(
+                                Arrays.asList("AQMkADAwATM0MDAAMS0zNjVjLTZmODctMDACLTAwCgAuAAADRJzEnDGzDkiFHa7PpA6vRgEAL3jSJ1Y43EaEjeMalrFpowAAAiQTAAAA")
+                        ).build())
+                        .build());
+    }
+
+    @Test
+    public void notifyTest1(){
+        SubscriptionContainer
+                .getEmailNotifySubscription(1, EwsMailEntity.builder()
+                        .email("implementsteam@outlook.com").password("zhangqi1112")
+                        .mailFolders(EwsFoldersEntity.builder().folderIds(
+                                Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")
+                        ).build())
+                        .build());
     }
 }

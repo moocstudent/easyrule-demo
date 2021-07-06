@@ -15,11 +15,14 @@ import java.util.Map;
 public interface IEwsEmailService {
 
     //根据邮件配置创建各自的初始化文件夹用于筛选分拆邮件,返回folderId集合,以邮件为key
-    Map<String,List<String>> createFolderByEmailConfigs(List<EwsMailEntity> mailConfigEntityList);
+    Map<String, List<String>> createFolderByEmailConfigs(List<EwsMailEntity> mailConfigEntityList);
+
     //TODO 下载附件
     Integer downLoadAttachment(EmailMessage message);
+
     //动态获取邮件配置list
     List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig);
+
     //根据主键查1个
     EwsMailEntity findOne(String mailId);
 

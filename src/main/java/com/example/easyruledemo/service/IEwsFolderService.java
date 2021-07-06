@@ -27,6 +27,7 @@ public interface IEwsFolderService {
     Integer bindFolderTest(String folderId);
 
     //todo get folderId by email
+    //todo 先通过topicId查ruleId,ruleId查folderId 暂不使用这个
     List<FolderId> getWatchingFolderList(List<String> emailList);
 
     //
@@ -36,10 +37,29 @@ public interface IEwsFolderService {
     List<FolderId> getWatchingFolderByIds(List<String> folderIdsStr);
 
     //curd
-
     Integer saveFolder(EwsFoldersEntity ewsFoldersEntity);
 
+    //保存或更新folder
+    Boolean saveOrUpdateFolder(EwsFoldersEntity ewsFoldersEntity);
+
     EwsFoldersEntity getByEmail(String email);
+
+    //查folderId集合根据规则id
+//    List<FolderId> listFolderIdByRuleId(String ruleId);
+    List<FolderId> listFolderIdByRuleId(Long ruleId);
+
+    //获取folder名称集合根据规则id
+//    List<String> listFolderNamesByRuleId(String ruleId);
+    List<String> listFolderNamesByRuleId(Long ruleId);
+
+    //查folder实体根据ruleId
+//    List<EwsFoldersEntity> listFolderByRuleId(String ruleId);
+    List<EwsFoldersEntity> listFolderByRuleId(Long ruleId);
+
+    //生成folder根据主题id
+    List<FolderId> listFolderIdByTopicId(String topicId);
+
+
 
 
 }

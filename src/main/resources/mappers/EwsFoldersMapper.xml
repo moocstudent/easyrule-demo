@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.easyruledemo.mapper.EwsFoldersMapper">
+
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.example.easyruledemo.entity.EwsFoldersEntity">
+        <id column="ews_folder_id" jdbcType="VARCHAR2" property="ewsFolderId"/>
+        <result column="folder_id" property="folderId"/>
+        <result column="folder_code" property="folderCode"/>
+        <result column="folder_name" property="folderName"/>
+        <result column="delete_flag" property="deleteFlag"/>
+<!--        <result column="rule_type" property="ruleT"/>-->
+    </resultMap>
+    <!-- auto generated base column list -->
+    <sql id="Base_Column_List">
+        ews_folder_id,folder_id,folder_code,folder_name,delete_flag
+    </sql>
+
+    <select id="listFolderByRuleId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ews_rule
+        where ews_folder_id in
+        (select r.ews_folder_id
+        from ews_rule_folder_relation r
+        where r.rule_id = #{ruleId})
+    </select>
+
+    <!--    <sql id="Alias_Column_List">-->
+<!--        gra.repay_all_id, gra.org_num, gra.company_scale, gra.loan_no, gra.loan_amount, gra.interest_amount-->
+<!--        , gra.loan_rate, gra.loan_period, gra.loan_date, gra.expire_date, gra.loan_bank, gra.premium, gra.share_ratio, gra.premium_ratio, gra.delete_flag-->
+<!--        , gra.create_by, gra.create_time, gra.update_by, gra.update_time, gra.version, gra.process_id, gra.contract_id, gra.instance_id, gra.coagency_id-->
+<!--        , gra.settled_status, gra.valid, gra.failed_reasons-->
+<!--        , cb.clens_company_nm as company_name, cb.reg_addr, ccx.cate_1_nm as industry-->
+<!--    </sql>-->
+
+<!--    <update id="updateSettleStatus">-->
+<!--        update zyb_repay_all zra INNER JOIN zyb_project_item gpi on zra.loan_no=gpi.loan_no-->
+<!--        set zra.settled_status='settled'-->
+<!--        where zra.instance_id=#{instanceId} and zra.settled_status='unsettled' and gpi.status='pass' and zra.delete_flag=0 and gpi.delete_flag=0-->
+<!--    </update>-->
+
+<!--    <select id="selectListByBO" resultType="com.chinacscs.fgf.gi.entity.repay.ZybRepayAllEntity">-->
+<!--        select <include refid="Alias_Column_List" />-->
+<!--        from zyb_repay_all gra, zyb_project_item pi, compy_basicinfo cb-->
+<!--        left join compy_category_xygs ccx on cb.company_id = ccx.company_id-->
+<!--        where gra.loan_no = pi.loan_no-->
+<!--        and pi.company_id = cb.company_id-->
+<!--        and pi.delete_flag = 0-->
+<!--        and gra.delete_flag = 0-->
+<!--        and gra.valid = 'valid'-->
+<!--        <if test="instanceId != null">-->
+<!--            and gra.instance_id = #{instanceId}-->
+<!--        </if>-->
+<!--        <if test="contractId != null">-->
+<!--            and gra.contract_id = #{contractId}-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--    <select id="selectCountInstance" resultType="java.lang.Long">-->
+<!--        select count(1) from zyb_repay_all-->
+<!--        where instance_id = #{instanceId}-->
+<!--        and delete_flag = 0-->
+<!--    </select>-->
+
+</mapper>
