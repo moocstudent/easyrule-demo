@@ -1,6 +1,6 @@
 package com.example.easyruledemo.rules;
 
-import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.enums.FolderNameEnum;
@@ -40,7 +40,7 @@ public class MailEventsThread extends Thread {
             for (ItemEvent itemEvent : events.getItemEvents()) {
                 if (itemEvent.getEventType() == EventType.NewMail) {
                     log.error("新的邮件已到达 itemId:{}" + itemEvent.getItemId());
-                    EmailMessage message = EmailMessage.bind(EwsContainer.getExchangeService(
+                    EmailMessage message = EmailMessage.bind(EwsExContainer.getExchangeService(
                             mailConfig.getEmail(), mailConfig.getPassword()),
                             itemEvent.getItemId()
                     );
@@ -59,7 +59,7 @@ public class MailEventsThread extends Thread {
                         );
                     }
                 } else if (itemEvent.getEventType() == EventType.Created) {
-                    Item item = Item.bind(EwsContainer.getExchangeService(
+                    Item item = Item.bind(EwsExContainer.getExchangeService(
                             mailConfig.getEmail(), mailConfig.getPassword()),
                             itemEvent.getItemId());
                 } else if (itemEvent.getEventType() == EventType.Deleted) {

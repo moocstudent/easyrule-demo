@@ -1,16 +1,14 @@
 package com.example.easyruledemo;
 
 import com.example.easyruledemo.callback.EmailAttachCallBack;
-import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.delegate.EmailNotifyDelegate;
 import com.example.easyruledemo.delegate.EmailSubscriptionErrorDelegate;
 import com.example.easyruledemo.service.IEmailNotifyService;
-import com.sun.jndi.toolkit.url.Uri;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.core.service.item.Item;
-import microsoft.exchange.webservices.data.credential.CredentialConstants;
 import microsoft.exchange.webservices.data.misc.IAsyncResult;
 import microsoft.exchange.webservices.data.notification.*;
 import microsoft.exchange.webservices.data.property.complex.AttachmentCollection;
@@ -20,8 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
-import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,14 +41,14 @@ class NotifyTest extends BaseTest {
 //            folder.add(foldIdEntity);
             folder.add(folderId);
 
-            IAsyncResult asyncResult = EwsContainer.defaultExchangeService().beginSubscribeToStreamingNotifications(new EmailAttachCallBack(), null, folder, EventType.NewMail);
+            IAsyncResult asyncResult = EwsExContainer.defaultExchangeService().beginSubscribeToStreamingNotifications(new EmailAttachCallBack(), null, folder, EventType.NewMail);
 //            IAsyncResult subscription = EwsContainer.defaultExchangeService().beginSubscribeToPullNotifications(new EmailAttachCallBack(), null, folder, 5, null, EventType.NewMail, EventType.Created, EventType.Deleted);
 
             boolean completeSynchronously = asyncResult.getCompleteSynchronously();
             System.out.println("complete::::::" + completeSynchronously);
 
             Thread.sleep(40000);
-            StreamingSubscription subscription = EwsContainer.defaultExchangeService().endSubscribeToStreamingNotifications(asyncResult);
+            StreamingSubscription subscription = EwsExContainer.defaultExchangeService().endSubscribeToStreamingNotifications(asyncResult);
             System.out.println(subscription.getId());
             System.out.println(subscription);
 
@@ -71,11 +67,11 @@ class NotifyTest extends BaseTest {
 
         GetEventsResults events = null;
         try {
-            IAsyncResult asyncresult = EwsContainer.defaultExchangeService()
+            IAsyncResult asyncresult = EwsExContainer.defaultExchangeService()
                     .beginSubscribeToPullNotificationsOnAllFolders(
                             null, null, 5, null, EventType.NewMail, EventType.Created, EventType.Deleted);
             Thread.sleep(40000);
-            PullSubscription subscription = EwsContainer.defaultExchangeService().endSubscribeToPullNotifications(asyncresult);
+            PullSubscription subscription = EwsExContainer.defaultExchangeService().endSubscribeToPullNotifications(asyncresult);
             events = subscription.getEvents();
             Iterable<ItemEvent> itemEvents = events.getItemEvents();
             List<EmailMessage> collect = StreamSupport.stream(itemEvents.spliterator(), false)
@@ -83,7 +79,7 @@ class NotifyTest extends BaseTest {
                         ItemId itemId = itemEvent.getItemId();
                         // Bind to an existing message using its unique identifier.
                         try {
-                            EmailMessage message = EmailMessage.bind(EwsContainer.defaultExchangeService(), itemId);
+                            EmailMessage message = EmailMessage.bind(EwsExContainer.defaultExchangeService(), itemId);
                             // Write the sender's name.
                             System.out.println(message.getSubject());
                             return message;
@@ -126,9 +122,9 @@ class NotifyTest extends BaseTest {
 //            folder.add(foldIdEntity);
         folder.add(folderId);
         try {
-            StreamingSubscription subscription = EwsContainer.defaultExchangeService().subscribeToStreamingNotifications(folder, EventType.NewMail);
+            StreamingSubscription subscription = EwsExContainer.defaultExchangeService().subscribeToStreamingNotifications(folder, EventType.NewMail);
             //StreamingSubscriptionConnection(service,lifetime[minutes])
-            StreamingSubscriptionConnection conn = new StreamingSubscriptionConnection(EwsContainer.defaultExchangeService(), 2);
+            StreamingSubscriptionConnection conn = new StreamingSubscriptionConnection(EwsExContainer.defaultExchangeService(), 2);
             conn.addSubscription(subscription);
             conn.addOnNotificationEvent(emailNotifyDelegate);
             conn.addOnDisconnect(emailSubscriptionErrorDelegate);
@@ -185,13 +181,13 @@ class NotifyTest extends BaseTest {
             // Loop through all item-related events.
             for (ItemEvent itemEvent : events.getItemEvents()) {
                 if (itemEvent.getEventType() == EventType.NewMail) {
-                    EmailMessage message = EmailMessage.bind(EwsContainer.defaultExchangeService(), itemEvent.getItemId());
+                    EmailMessage message = EmailMessage.bind(EwsExContainer.defaultExchangeService(), itemEvent.getItemId());
                     if(message.getHasAttachments()){
                         AttachmentCollection attachments = message.getAttachments();
                         System.out.println("attachments:"+attachments);
                     }
                 } else if (itemEvent.getEventType() == EventType.Created) {
-                    Item item = Item.bind(EwsContainer.defaultExchangeService(), itemEvent.getItemId());
+                    Item item = Item.bind(EwsExContainer.defaultExchangeService(), itemEvent.getItemId());
                 } else if (itemEvent.getEventType() == EventType.Deleted) {
                     break;
                 }
@@ -287,7 +283,7 @@ class NotifyTest extends BaseTest {
 //            FolderId foldIdEntity = FolderId.getFolderIdFromString(FolderNameEnum.ATTACH_UN.getCode());
 //            folder.add(foldIdEntity);
         folders.add(folderId);
-        PushSubscription pushSubscription = EwsContainer.defaultExchangeService()
+        PushSubscription pushSubscription = EwsExContainer.defaultExchangeService()
                 .subscribeToPushNotifications(folders,
                         new URI("http://localhost:93/notify"),
                         5,

@@ -1,6 +1,6 @@
 package com.example.easyruledemo;
 
-import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
@@ -60,13 +60,13 @@ class Notify2Test extends BaseTest {
             // Loop through all item-related events.
             for (ItemEvent itemEvent : events.getItemEvents()) {
                 if (itemEvent.getEventType() == EventType.NewMail) {
-                    EmailMessage message = EmailMessage.bind(EwsContainer.defaultExchangeService(), itemEvent.getItemId());
+                    EmailMessage message = EmailMessage.bind(EwsExContainer.defaultExchangeService(), itemEvent.getItemId());
                     if (message.getHasAttachments()) {
                         AttachmentCollection attachments = message.getAttachments();
                         System.out.println("attachments:" + attachments);
                     }
                 } else if (itemEvent.getEventType() == EventType.Created) {
-                    Item item = Item.bind(EwsContainer.defaultExchangeService(), itemEvent.getItemId());
+                    Item item = Item.bind(EwsExContainer.defaultExchangeService(), itemEvent.getItemId());
                 } else if (itemEvent.getEventType() == EventType.Deleted) {
                     break;
                 }

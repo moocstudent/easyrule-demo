@@ -34,7 +34,7 @@ public class EwsFoldersEntity {
     private Long ewsFolderId;
 
     //floderId字符串
-    @ApiModelProperty("文件夹id字符串")
+    @ApiModelProperty("文件夹id字符串,规则生成到邮箱后产生,不可被修改")
     private String folderId;
 
     //attach-un-download

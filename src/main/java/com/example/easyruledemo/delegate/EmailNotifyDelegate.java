@@ -1,6 +1,6 @@
 package com.example.easyruledemo.delegate;
 
-import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.container.EwsExContainer;
 import microsoft.exchange.webservices.data.core.PropertySet;
 import microsoft.exchange.webservices.data.core.response.GetItemResponse;
 import microsoft.exchange.webservices.data.core.response.ServiceResponseCollection;
@@ -45,7 +45,7 @@ public class EmailNotifyDelegate implements StreamingSubscriptionConnection.INot
         if(itemCount>0){
             // Now retrieve the Subject property of all the new emails in one call to EWS.
             try {
-                ServiceResponseCollection<GetItemResponse> responses = EwsContainer.defaultExchangeService().bindToItems(newEmailIds, new PropertySet(ItemSchema.Subject));
+                ServiceResponseCollection<GetItemResponse> responses = EwsExContainer.defaultExchangeService().bindToItems(newEmailIds, new PropertySet(ItemSchema.Subject));
                 System.out.println("count=======" + responses.getCount());
 
                 //this.listBox1.Items.Add(string.Format("{0} new mail(s)", newMailsIds.Count));

@@ -1,8 +1,8 @@
 package com.example.easyruledemo.service.impl;
 
-import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
-import com.example.easyruledemo.service.ISubcriptionService;
+import com.example.easyruledemo.service.ISubscriptionService;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class SubscriptionServiceImpl implements ISubcriptionService {
+public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     public Integer unSubscriptionById(String subscriptionId, EwsMailEntity ewsMail) {
-        ExchangeService exchangeService = EwsContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword());
+        ExchangeService exchangeService = EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword());
         try {
             exchangeService.unsubscribe(subscriptionId);
             log.info("取消订阅,订阅id每日更新一次,如果没有进行主动替换,则需要进行手动替换.");
@@ -30,7 +30,7 @@ public class SubscriptionServiceImpl implements ISubcriptionService {
 
     @Override
     public Integer unSubscriptionByMailCache(EwsMailEntity ewsMail) {
-        ExchangeService exchangeService = EwsContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword());
+        ExchangeService exchangeService = EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword());
         String key = ewsMail.getEmail()+ewsMail.getPassword();
         String subscriptionId = "从缓存中根据key拿取订阅id";
         try {
@@ -44,4 +44,6 @@ public class SubscriptionServiceImpl implements ISubcriptionService {
         }
         return 1;
     }
+
+
 }

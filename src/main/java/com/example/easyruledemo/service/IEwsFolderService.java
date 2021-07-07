@@ -13,6 +13,9 @@ import java.util.List;
  */
 public interface IEwsFolderService {
 
+    //动态获取list
+    List<EwsFoldersEntity> listSelective(EwsFoldersEntity ewsFolders);
+
     //testok 创建新的文件夹, 顶级目录下
     String createFolder(String folderName, EwsMailEntity mailConfig);
 
@@ -26,11 +29,14 @@ public interface IEwsFolderService {
     //fixme don't understood
     Integer bindFolderTest(String folderId);
 
+    //根据主键删除
+    Integer delByPriKey(String ewsFolderId);
+
     //todo get folderId by email
     //todo 先通过topicId查ruleId,ruleId查folderId 暂不使用这个
     List<FolderId> getWatchingFolderList(List<String> emailList);
 
-    //
+    //implementsteam@outlook的测试folderId unionId
     List<FolderId> getWatchingFolderListForTest();
 
     //str folderId -> FolderId
@@ -43,6 +49,9 @@ public interface IEwsFolderService {
     Boolean saveOrUpdateFolder(EwsFoldersEntity ewsFoldersEntity);
 
     EwsFoldersEntity getByEmail(String email);
+
+    //根据主键获取文件夹实体
+    EwsFoldersEntity getByPriKey(String ewsFolderId);
 
     //查folderId集合根据规则id
 //    List<FolderId> listFolderIdByRuleId(String ruleId);

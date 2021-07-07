@@ -1,10 +1,12 @@
 package com.example.easyruledemo.container;
 
 import lombok.extern.slf4j.Slf4j;
+import microsoft.exchange.webservices.data.core.ExchangeServerInfo;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
+import microsoft.exchange.webservices.data.misc.ImpersonatedUserId;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,7 +21,7 @@ import java.util.Map;
  * EwsService交换机获取容器
  */
 @Slf4j
-public class EwsContainer {
+public class EwsExContainer {
 
     //测试使用
     private static ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
@@ -49,6 +51,11 @@ public class EwsContainer {
         }
         System.out.println("exchangeService:"+service);
         exchangeServiceMap.put(key,service);
+//        ExchangeServerInfo serverInfo = service.getServerInfo();
+//        service.getImpersonatedUserId();
+//        ImpersonatedUserId impersonatedUserId = service.getImpersonatedUserId();
+//        String impersonatedUserIdId = impersonatedUserId.getId();
+//        System.out.println("impersonatedUserIdId:"+impersonatedUserIdId);
         return service;
     }
 

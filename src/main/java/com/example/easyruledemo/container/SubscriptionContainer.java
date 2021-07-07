@@ -5,8 +5,8 @@ import com.example.easyruledemo.delegate.EmailSubscriptionErrorDelegate;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsFolderService;
+import com.example.easyruledemo.service.ISubscriptionService;
 import lombok.extern.slf4j.Slf4j;
-import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
 import microsoft.exchange.webservices.data.notification.PullSubscription;
 import microsoft.exchange.webservices.data.notification.StreamingSubscription;
@@ -31,11 +31,15 @@ public class SubscriptionContainer {
     // 单例map
     private static Map<String, PullSubscription> pullSubscriptionMap = new HashMap<>();
     private static Map<String, StreamingSubscription> streamSubscriptionMap = new HashMap<>();
+    private static Map<String, PullSubscription> customSubscriptionMap = new HashMap<>();
 
     //日级别
     final private static String SUBSCRIPTION_KEY_INIT = "one_day_subscription";
     //分钟级别
     final private static String STREAM_SUBSCRIPTION_KEY_INIT = "minutes_subscription";
+    //定制级别
+    final private static String CUSTOM_INIT = "custom_subscription";
+
 
     final private static int ONE_DAY_MINUTES = 1440;
     final private static int ONE_MINUTES = 1;
@@ -55,6 +59,8 @@ public class SubscriptionContainer {
 
     private static IEwsEmailService ewsEmailService;
 
+    private static ISubscriptionService subcriptionService;
+
     @Autowired
     public void setEwsFolderService(IEwsFolderService ewsFolderService) {
         SubscriptionContainer.ewsFolderService = ewsFolderService;
@@ -63,6 +69,11 @@ public class SubscriptionContainer {
     @Autowired
     public void setEwsEmailService(IEwsEmailService ewsEmailService) {
         SubscriptionContainer.ewsEmailService = ewsEmailService;
+    }
+
+    @Autowired
+    public void setSubcriptionService(ISubscriptionService subcriptionService) {
+        SubscriptionContainer.subcriptionService = subcriptionService;
     }
 
     /**
@@ -102,7 +113,6 @@ public class SubscriptionContainer {
 
 //        List<EwsMailEntity> mailConfigList = ewsEmailService
 //                .getMailConfigList(EwsMailEntity.builder().build());
-
         log.info("pullSubscriptionSize:{}",pullSubscriptionMap.size());
         long unsubscribeCount = pullSubscriptionMap.keySet().stream()
                 .map(k -> {
@@ -127,7 +137,10 @@ public class SubscriptionContainer {
      * @param subscriptionId
      */
     public static void unsubscriptionBySubcriptionId(String subscriptionId,EwsMailEntity ewsMail){
-
+        Integer subscriptionCode = subcriptionService.unSubscriptionById(subscriptionId, ewsMail);
+        if(subscriptionCode>0){
+            log.info("取消订阅DONE");
+        }
     }
 
     /**
@@ -135,16 +148,9 @@ public class SubscriptionContainer {
      * @param ewsMail
      */
     public static void unsubscriptionByCache(EwsMailEntity ewsMail){
-        ExchangeService exchangeService = EwsContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword());
-        String key = ewsMail.getEmail()+ewsMail.getPassword();
-        String subscriptionId = "从缓存中根据key拿取";
-        try {
-            exchangeService.unsubscribe(subscriptionId);
-            log.info("取消订阅,相应清除redis中订阅id.订阅id每日更新一次,如果没有进行主动替换,则需要进行手动替换.");
-            //todo 清除id
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("通过缓存取消订阅异常");
+        Integer subscriptionCode = subcriptionService.unSubscriptionByMailCache(ewsMail);
+        if(subscriptionCode>0){
+            log.info("取消订阅DONE");
         }
     }
 
@@ -188,6 +194,24 @@ public class SubscriptionContainer {
         return emailNotifySubscription;
     }
 
+    /**
+     * 获取订阅,根据定义的超时时间分钟数
+     * @param mailConfig
+     * @param timeoutMinutes
+     * @return
+     */
+    public static PullSubscription getSubscriptionCustom(EwsMailEntity mailConfig,Integer timeoutMinutes){
+        String customSubscriptionKeyFull = CUSTOM_INIT + LocalDate.now() + mailConfig.getEmail() + mailConfig.getPassword();
+        log.info("customSubscriptionKeyFull is:" + customSubscriptionKeyFull);
+        if (customSubscriptionMap.get(customSubscriptionKeyFull) != null) {
+            return customSubscriptionMap.get(customSubscriptionKeyFull);
+        }
+        PullSubscription emailNotifySubscription =
+                getEmailNotifySubscription(timeoutMinutes, mailConfig);
+        customSubscriptionMap.put(customSubscriptionKeyFull, emailNotifySubscription);
+        return emailNotifySubscription;
+    }
+
     public static PullSubscription initialSubscriptionToday(EwsMailEntity mailConfig) {
         String todaySubscriptionKeyPrefix = SUBSCRIPTION_KEY_INIT + LocalDate.now();
         String keySuffix = mailConfig.getEmail() + mailConfig.getPassword();
@@ -206,7 +230,7 @@ public class SubscriptionContainer {
     public static PullSubscription getEmailNotifySubscription(List<FolderId> foldersBeWatching, int timeoutMinutes) {
         try {
             //挂起一个订阅,有效时长timeoutMinutes 之后通过轮询查看事件
-            PullSubscription pullSubscription = EwsContainer.defaultExchangeService().subscribeToPullNotifications(foldersBeWatching, timeoutMinutes
+            PullSubscription pullSubscription = EwsExContainer.defaultExchangeService().subscribeToPullNotifications(foldersBeWatching, timeoutMinutes
                     /* timeOut: the subscription will end if the server is not polled within 5 minutes. */, null /* watermark: null to start a new subscription. */,
                     EventType.NewMail, EventType.Created, EventType.Deleted);
             return pullSubscription;
@@ -228,8 +252,11 @@ public class SubscriptionContainer {
     public static PullSubscription getEmailNotifySubscription(int timeoutMinutes, EwsMailEntity mailConfig) {
         try {
             //挂起一个订阅,有效时长timeoutMinutes 之后通过轮询查看事件
-            PullSubscription pullSubscription = EwsContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword())
-                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderByIds(mailConfig.getMailFolders().getFolderIds()),
+            PullSubscription pullSubscription = EwsExContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword())
+                    //todo 这里的只是将字符串的folder unionId 转为folderId实体
+//                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderByIds(mailConfig.getMailFolders().getFolderIds()),
+                    //implementsteam@outlook.com邮箱的folderId
+                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderListForTest(),
                     //todo 通过ewsFolderService 根据topicId获取folderId实例list
 //                    .subscribeToPullNotifications(ewsFolderService.listFolderIdByTopicId(mailConfig.getTopicId()),
                             timeoutMinutes
@@ -239,13 +266,16 @@ public class SubscriptionContainer {
             log.info("pullSubscriptionId:{}",pullSubscriptionId);
             return pullSubscription;
         } catch (Exception e) {
-            if (e.getMessage().indexOf("401")>-1){
-                log.error("邮箱权限错误,请核实邮箱账户有效性.");
-            }
-            if(e.getMessage().indexOf("have exceeded the available subscriptions for your account")>-1){
-                log.warn("创建subscribe错误,已经进行了订阅,请勿重复订阅.");
-                //如果重复订阅不抛出异常
-                return null;
+            e.getMessage();
+            if(e.getMessage()!=null){
+                if (e.getMessage().indexOf("401")>-1){
+                    log.error("邮箱权限错误,请核实邮箱账户有效性.");
+                }
+                if(e.getMessage().indexOf("have exceeded the available subscriptions for your account")>-1){
+                    log.warn("创建subscribe错误,已经进行了订阅,请勿重复订阅.");
+                    //如果重复订阅不抛出异常
+                    return null;
+                }
             }
             e.printStackTrace();
             throw new RuntimeException("get subscription error:" + e);
@@ -295,9 +325,9 @@ public class SubscriptionContainer {
     public static StreamingSubscriptionConnection getEmailStreamSubcriptionConn(List<FolderId> foldersBeWatching, int lifeTimeMinutes) {
         StreamingSubscriptionConnection conn = null;
         try {
-            StreamingSubscription subscription = EwsContainer.defaultExchangeService().subscribeToStreamingNotifications(foldersBeWatching, EventType.NewMail);
+            StreamingSubscription subscription = EwsExContainer.defaultExchangeService().subscribeToStreamingNotifications(foldersBeWatching, EventType.NewMail);
             //StreamingSubscriptionConnection(service,lifetime[minutes])
-            conn = new StreamingSubscriptionConnection(EwsContainer.defaultExchangeService(), lifeTimeMinutes);
+            conn = new StreamingSubscriptionConnection(EwsExContainer.defaultExchangeService(), lifeTimeMinutes);
             conn.addSubscription(subscription);
             conn.addOnNotificationEvent(emailNotifyDelegate);
             conn.addOnDisconnect(emailSubscriptionErrorDelegate);

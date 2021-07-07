@@ -1,8 +1,10 @@
 package com.example.easyruledemo.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.container.EwsExContainer;
+import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.property.complex.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -67,7 +70,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         ruleList.add(createOperation);
         try {
             //执行规则更新
-            EwsContainer.defaultExchangeService().updateInboxRules(ruleList, true);
+            EwsExContainer.defaultExchangeService().updateInboxRules(ruleList, true);
 //            EwsContainer.defaultExchangeService().update(ruleList,true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,7 +90,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         ruleList.add(createOperation);
         try {
             //执行规则更新
-            EwsContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
+            EwsExContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
                     .updateInboxRules(ruleList, true);
 //            EwsContainer.defaultExchangeService().update(ruleList,true);
         } catch (Exception e) {
@@ -101,7 +104,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public List<EwsRuleEntity> getEwsRulesByEmAddr(String emailAddr) {
         RuleCollection ruleCollection = null;
         try {
-            ruleCollection = EwsContainer.defaultExchangeService().getInboxRules(emailAddr);
+            ruleCollection = EwsExContainer.defaultExchangeService().getInboxRules(emailAddr);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,7 +126,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public Integer deleteRuleByEmAddr(String emailAddr) {
         RuleCollection ruleCollection = null;
         try {
-            ruleCollection = EwsContainer.defaultExchangeService().getInboxRules(emailAddr);
+            ruleCollection = EwsExContainer.defaultExchangeService().getInboxRules(emailAddr);
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
@@ -138,7 +141,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             deleterules.add(d);
         }
         try {
-            EwsContainer.defaultExchangeService().updateInboxRules(deleterules, true);
+            EwsExContainer.defaultExchangeService().updateInboxRules(deleterules, true);
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
@@ -150,7 +153,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public Integer deleteRuleByEmAddr(EwsMailEntity ewsMail) {
         RuleCollection ruleCollection = null;
         try {
-            ruleCollection = EwsContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
+            ruleCollection = EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .getInboxRules(ewsMail.getEmail());
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,7 +169,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             deleterules.add(d);
         }
         try {
-            EwsContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
+            EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .updateInboxRules(deleterules, true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -179,7 +182,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public Integer disabledRuleByEmAddr(String emailAddr) {
         RuleCollection ruleCollection = null;
         try {
-            ruleCollection = EwsContainer.defaultExchangeService().getInboxRules(emailAddr);
+            ruleCollection = EwsExContainer.defaultExchangeService().getInboxRules(emailAddr);
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
@@ -200,7 +203,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             disabledRules.add(updateToDisabledRule);
         }
         try {
-            EwsContainer.defaultExchangeService().updateInboxRules(disabledRules, true);
+            EwsExContainer.defaultExchangeService().updateInboxRules(disabledRules, true);
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
@@ -209,10 +212,15 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
+    public Integer disabledRuleByEmAddrAndRuleId(String emailAddr, String ruleId) {
+        return null;
+    }
+
+    @Override
     public Integer disabledRuleByEmAddr(EwsMailEntity ewsMail) {
         RuleCollection ruleCollection = null;
         try {
-            ruleCollection = EwsContainer
+            ruleCollection = EwsExContainer
                     .getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .getInboxRules(ewsMail.getEmail());
         } catch (Exception e) {
@@ -238,7 +246,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             disabledRules.add(updateToDisabledRule);
         }
         try {
-            EwsContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
+            EwsExContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
                     .updateInboxRules(disabledRules, true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -286,6 +294,37 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public List<EwsRuleEntity> getRulesByTopicId(String topicId) {
         //关联查询, 获取topicId对应的ruleList table:ews_topic_rule_relation
         return baseMapper.listRuleByTopicId(topicId);
+    }
+
+    @Override
+    public Integer saveOne(EwsRuleEntity ewsRule) {
+        return baseMapper.insert(ewsRule);
+    }
+
+    @Override
+    public Boolean saveOrUpdateRule(EwsRuleEntity ewsRule) {
+        return super.saveOrUpdate(ewsRule);
+    }
+
+    @Override
+    public List<EwsRuleEntity> listSelective(EwsRuleEntity ewsRule) {
+        return new LambdaQueryChainWrapper<EwsRuleEntity>(baseMapper)
+                .eq(EwsRuleEntity::getDeleteFlag,0)
+                .like(StringUtils.isEmpty(ewsRule.getDisplayName()),EwsRuleEntity::getDisplayName,ewsRule.getDisplayName())
+                .eq(StringUtils.isEmpty(ewsRule.getIsEnabled()), EwsRuleEntity::getIsEnabled,ewsRule.getIsEnabled())
+                .eq(StringUtils.isEmpty(ewsRule.getItemActionType()), EwsRuleEntity::getItemActionType,ewsRule.getItemActionType())
+                .orderByDesc(EwsRuleEntity::getRuleId)
+                .list();
+    }
+
+    @Override
+    public EwsRuleEntity findOne(String ruleId) {
+        return baseMapper.selectById(ruleId);
+    }
+
+    @Override
+    public Integer delOne(String ruleId) {
+        return baseMapper.deleteById(ruleId);
     }
 
     //testok

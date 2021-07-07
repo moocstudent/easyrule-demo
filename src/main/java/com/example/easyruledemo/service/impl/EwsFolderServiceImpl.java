@@ -1,7 +1,9 @@
 package com.example.easyruledemo.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.easyruledemo.container.EwsContainer;
+import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
@@ -14,6 +16,7 @@ import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,16 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     private IEwsFolderService ewsFolderService;
 
     @Override
+    public List<EwsFoldersEntity> listSelective(EwsFoldersEntity ewsFolders) {
+        return new LambdaQueryChainWrapper<EwsFoldersEntity>(baseMapper)
+                .eq(EwsFoldersEntity::getDeleteFlag,0)
+                .eq(StringUtils.isEmpty(ewsFolders.getFolderCode()),EwsFoldersEntity::getFolderCode,ewsFolders.getFolderCode())
+                .like(StringUtils.isEmpty(ewsFolders.getFolderName()), EwsFoldersEntity::getFolderName,ewsFolders.getFolderName())
+                .orderByDesc(EwsFoldersEntity::getEwsFolderId)
+                .list();
+    }
+
+    @Override
     public String createFolder(String folderName, EwsMailEntity mailConfig) {
         return this.createFolder(folderName, null, mailConfig);
     }
@@ -40,7 +53,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     @Override
     public String createFolder(String folderName, WellKnownFolderName parentFolder, EwsMailEntity mailConfig) {
         try {
-            Folder folder = new Folder(EwsContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword()));
+            Folder folder = new Folder(EwsExContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword()));
             folder.setDisplayName(folderName);
             if (parentFolder == null) {
                 folder.save(WellKnownFolderName.MsgFolderRoot);
@@ -70,7 +83,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
         // Bind to an existing folder using its unique identifier.
         try {
             System.out.println("alreadyHasFolderName:" + folderId);
-            Folder folder = Folder.bind(EwsContainer.defaultExchangeService(), FolderId.getFolderIdFromString(folderId));
+            Folder folder = Folder.bind(EwsExContainer.defaultExchangeService(), FolderId.getFolderIdFromString(folderId));
             //testok
 //            Folder folder = Folder.bind(EwsContainer.defaultExchangeService(), WellKnownFolderName.Inbox);
         } catch (Exception e) {
@@ -78,6 +91,12 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
             return 0;
         }
         return 1;
+    }
+
+    @Override
+    public Integer delByPriKey(String ewsFolderId) {
+        //todo 改成假删
+        return baseMapper.deleteById(ewsFolderId);
     }
 
     @Override
@@ -112,6 +131,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
         return folders;
     }
 
+    //TODO 这里的folderId需要从多个邮箱中拿过来(创建时存入数据库) 做为list
     @Override
     public List<FolderId> getWatchingFolderByIds(List<String> folderIdsStr) {
         List<FolderId> folders = new ArrayList<FolderId>();
@@ -119,7 +139,6 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
         for (String str : folderIdsStr) {
             log.info("folderIdStr:{}", str);
             try {
-                //TODO 这里的folderId需要从多个邮箱中拿过来(创建时存入数据库) 做为list
                 folderId = new FolderId(str);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -143,6 +162,11 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     public EwsFoldersEntity getByEmail(String email) {
         //todo 联查email_config拿到id,获取mail_folders数据
         return null;
+    }
+
+    @Override
+    public EwsFoldersEntity getByPriKey(String ewsFolderId) {
+        return baseMapper.selectById(ewsFolderId);
     }
 
     @Override

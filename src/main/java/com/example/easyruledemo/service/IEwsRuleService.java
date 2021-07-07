@@ -2,7 +2,6 @@ package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
-import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.property.complex.Rule;
 
 import java.util.List;
@@ -42,6 +41,9 @@ public interface IEwsRuleService {
     //现在邮件已经跟topic关联,不再与单个rule关联
     Integer disabledRuleByEmAddr(String emailAddr);
 
+    //disabled the rule by email and ruleId
+    Integer disabledRuleByEmAddrAndRuleId(String emailAddr,String ruleId);
+
     //让邮件中的规则disabled不再奏效
     Integer disabledRuleByEmAddr(EwsMailEntity ewsMail);
 
@@ -51,4 +53,18 @@ public interface IEwsRuleService {
     //根据主题id获取旗下rule list
     List<EwsRuleEntity> getRulesByTopicId(String topicId);
 
+    //保存一个规则
+    Integer saveOne(EwsRuleEntity ewsRule);
+
+    //保存或更新一个rule
+    Boolean saveOrUpdateRule(EwsRuleEntity ewsRule);
+
+    //动态获取list
+    List<EwsRuleEntity> listSelective(EwsRuleEntity ewsRule);
+
+    //查找一个,根据规则id
+    EwsRuleEntity findOne(String ruleId);
+
+    //删除一个规则
+    Integer delOne(String ruleId);
 }
