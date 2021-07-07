@@ -1,3 +1,7 @@
+/**
+  全部表需要更改pk长度
+ */
+
 -- 规则
 create table ews_rule
 (

@@ -2,6 +2,7 @@ package com.example.easyruledemo.task;
 
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
+import com.example.easyruledemo.enums.RuleEnum;
 import com.example.easyruledemo.rules.MailEventsThread;
 import com.example.easyruledemo.service.IEwsEmailService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class EmailEventTask {
      */
 //    @Scheduled(cron = "0 0 1 * * ?")
 //    @PostConstruct
-    public void initialSubscriptionToday(){
+    public void initialAttachSubscriptionToday(){
 //        SubscriptionContainer.unsubscription();
         log.info("开始初始化今日邮箱订阅监听");
         Integer size = SubscriptionContainer.initialSubscriptionToday(ewsEmailService
@@ -46,19 +47,21 @@ public class EmailEventTask {
     }
 
     /**
+     * todo 将监听事件分离化
      * 邮件监听
      */
 //    @Scheduled(cron = "*/30 * * * * ?")
-    public void emailEventPoll() {
+    public void emailAttachEventPoll() {
         if(!(SubscriptionContainer.getInitialCount()>0)){
             log.info("如果subscription监听未初始化,则不进行事件处理");
             return;
         }
         try {
-            List<EwsMailEntity> mailConfigList = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build());
+            List<EwsMailEntity> mailConfigList = ewsEmailService
+                    .getMailConfigList(EwsMailEntity.builder().build(),
+                    /*邮件监听类型为下载以及下载并拷贝*/RuleEnum.D,RuleEnum.DC);
             for (EwsMailEntity mailConfig : mailConfigList){
-                MailEventsThread mailEventsThread = new MailEventsThread();
-                mailEventsThread.setMailConfig(mailConfig);
+                MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
                 mailEventsThread.start();
             }
 //            executeThisDay++;

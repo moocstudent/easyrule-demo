@@ -65,5 +65,11 @@ public class EwsMailEntity {
     private Map<String, EwsFoldersEntity> mailFoldersMap;
     @Transient
     private EwsFoldersEntity mailFolders;
+    //满足本次条件的mailRuleList集合
+    @Transient
+    @ApiModelProperty("满足本次条件的mailRuleList集合")
+    private List<EwsRuleEntity> mailRulesValidThisTime;
+
+    private Integer deleteFlag;
 
 }

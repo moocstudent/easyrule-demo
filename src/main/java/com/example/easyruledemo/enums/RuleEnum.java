@@ -11,8 +11,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum RuleEnum {
 
-    D("D","下载"),
-    DC("DC","下载并拷贝");
+    D("D","附件下载"),
+    DC("DC","附件下载并拷贝");
 
     private String code;
     private String description;

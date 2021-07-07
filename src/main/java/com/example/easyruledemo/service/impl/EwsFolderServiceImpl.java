@@ -187,6 +187,24 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     }
 
     @Override
+    public List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId) {
+        return this.listFolderByRuleId(ruleId)
+                .stream()
+                .filter(folder ->  folder.getFolderId() != null && folder.getFolderId().length() > 0
+                    && folder.getFolderCode().indexOf("un")>-1
+                ).map(folder->{
+                    FolderId folderId = null;
+                    try {
+                        folderId = new FolderId(folder.getFolderId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return folderId;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<String> listFolderNamesByRuleId(Long ruleId) {
         return this.listFolderByRuleId(ruleId)
                 .stream()
@@ -206,6 +224,24 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
         List<FolderId> folderIdList = rules.stream()
                 .map(rule -> {
                     List<FolderId> folderIds = this.listFolderIdByRuleId(rule.getRuleId());
+                    return folderIds;
+                })
+                .reduce((x, y) -> {
+                    x.addAll(y);
+                    return x;
+                })
+                .filter(collectList -> collectList != null && collectList.size() != 0)
+                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
+
+        return folderIdList;
+    }
+
+    @Override
+    public List<FolderId> listFolderIdByTopicIdUnAction(String topicId) {
+        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
+        List<FolderId> folderIdList = rules.stream()
+                .map(rule -> {
+                    List<FolderId> folderIds = this.listFolderIdByRuleIdJustUnAction(rule.getRuleId());
                     return folderIds;
                 })
                 .reduce((x, y) -> {

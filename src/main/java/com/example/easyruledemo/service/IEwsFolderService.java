@@ -57,6 +57,9 @@ public interface IEwsFolderService {
 //    List<FolderId> listFolderIdByRuleId(String ruleId);
     List<FolderId> listFolderIdByRuleId(Long ruleId);
 
+    //获取该规则下未执行action的folderId实体
+    List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId);
+
     //获取folder名称集合根据规则id
 //    List<String> listFolderNamesByRuleId(String ruleId);
     List<String> listFolderNamesByRuleId(Long ruleId);
@@ -67,6 +70,9 @@ public interface IEwsFolderService {
 
     //生成folder根据主题id
     List<FolderId> listFolderIdByTopicId(String topicId);
+
+    //生成folder根据主题,获取未执行操作的文件夹的folderId实体list用于newEmail事件监听
+    List<FolderId> listFolderIdByTopicIdUnAction(String topicId);
 
 
 

@@ -3,7 +3,6 @@ package com.example.easyruledemo.rules;
 import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
-import com.example.easyruledemo.enums.FolderNameEnum;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
@@ -12,8 +11,6 @@ import microsoft.exchange.webservices.data.core.service.item.Item;
 import microsoft.exchange.webservices.data.notification.GetEventsResults;
 import microsoft.exchange.webservices.data.notification.ItemEvent;
 import microsoft.exchange.webservices.data.notification.PullSubscription;
-import microsoft.exchange.webservices.data.property.complex.AttachmentCollection;
-import microsoft.exchange.webservices.data.property.complex.FolderId;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +24,10 @@ import java.time.LocalDateTime;
 public class MailEventsThread extends Thread {
 
     private EwsMailEntity mailConfig;
+
+    public MailEventsThread(EwsMailEntity mailConfig){
+        this.mailConfig = mailConfig;
+    }
 
     @Override
     public void start() {
@@ -44,20 +45,23 @@ public class MailEventsThread extends Thread {
                             mailConfig.getEmail(), mailConfig.getPassword()),
                             itemEvent.getItemId()
                     );
-                    if (message.getHasAttachments()) {
-                        AttachmentCollection attachments = message.getAttachments();
-                        System.out.println("attachments:" + attachments);
-                        log.info("进行附件下载");
+                    MailActionsThread actionsThread = new MailActionsThread(message,mailConfig);
+                    actionsThread.start();
+//                    if (message.getHasAttachments()) {
+//                        AttachmentCollection attachments = message.getAttachments();
+//                        System.out.println("attachments:" + attachments);
+//                        log.info("进行附件下载");
+//
+//                        attachments.save();
+//
+//                        log.info("下载完成后将邮件移入" + FolderNameEnum.ATTACH_ALREADY.getUsename());
+//                        //下载完成后将文件移动入已下载附件文件夹
+//                        message.move(new FolderId(
+//                                mailConfig.getMailFoldersMap()
+//                                        .get(FolderNameEnum.ATTACH_ALREADY.getCode()).getFolderId())
+//                        );
+//                    }
 
-                        attachments.save();
-
-                        log.info("下载完成后将邮件移入" + FolderNameEnum.ATTACH_ALREADY.getUsename());
-                        //下载完成后将文件移动入已下载附件文件夹
-                        message.move(new FolderId(
-                                mailConfig.getMailFoldersMap()
-                                        .get(FolderNameEnum.ATTACH_ALREADY.getCode()).getFolderId())
-                        );
-                    }
                 } else if (itemEvent.getEventType() == EventType.Created) {
                     Item item = Item.bind(EwsExContainer.getExchangeService(
                             mailConfig.getEmail(), mailConfig.getPassword()),

@@ -1,6 +1,7 @@
 package com.example.easyruledemo.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
@@ -9,6 +10,7 @@ import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
+import com.example.easyruledemo.enums.RuleEnum;
 import com.example.easyruledemo.mapper.EwsRuleMapper;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.util.BeanUtil;
@@ -20,7 +22,10 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Frank
@@ -315,6 +320,58 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
                 .eq(StringUtils.isEmpty(ewsRule.getItemActionType()), EwsRuleEntity::getItemActionType,ewsRule.getItemActionType())
                 .orderByDesc(EwsRuleEntity::getRuleId)
                 .list();
+    }
+
+    @Override
+    public List<EwsRuleEntity> listRulesByTopicConfig(String topicConfig) {
+        return null;
+    }
+
+    @Override
+    public List<EwsRuleEntity> filterRuleByConfigEnum(String config,RuleEnum... ruleTypes) {
+        JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
+        List<RuleEnum> ruleEnums = Arrays.asList(ruleTypes);
+        List<String> ruleIdList = ruleEnums.stream()
+                .filter(rull -> {
+                    return ruleConfigJsonObject.containsKey(rull.getCode());
+                })
+                .map(rule -> {
+                    return ruleConfigJsonObject.getString(rule.getCode());
+                })
+                .collect(Collectors.toList());
+        List<EwsRuleEntity> ruleEntityList = new ArrayList<>();
+        for(String ruleId:ruleIdList){
+//            if(ruleEntityList==null){
+//                ruleEntityList = new ArrayList<>();
+//            }
+            //fixme 需要加一个mapper sql 根据id查实体list
+            EwsRuleEntity ruleEntity = this.getById(ruleId);
+            ruleEntityList.add(ruleEntity);
+        }
+        return ruleEntityList;
+    }
+
+    @Override
+    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, List<RuleEnum> ruleEnums) {
+        JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
+        List<String> ruleIdList = ruleEnums.stream()
+                .filter(rull -> {
+                    return ruleConfigJsonObject.containsKey(rull.getCode());
+                })
+                .map(rule -> {
+                    return ruleConfigJsonObject.getString(rule.getCode());
+                })
+                .collect(Collectors.toList());
+        List<EwsRuleEntity> ruleEntityList = new ArrayList<>();
+        for(String ruleId:ruleIdList){
+//            if(ruleEntityList==null){
+//                ruleEntityList = new ArrayList<>();
+//            }
+            //fixme 需要加一个mapper sql 根据id查实体list
+            EwsRuleEntity ruleEntity = this.getById(ruleId);
+            ruleEntityList.add(ruleEntity);
+        }
+        return ruleEntityList;
     }
 
     @Override

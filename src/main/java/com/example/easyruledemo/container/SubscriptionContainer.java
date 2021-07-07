@@ -256,9 +256,9 @@ public class SubscriptionContainer {
                     //todo 这里的只是将字符串的folder unionId 转为folderId实体
 //                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderByIds(mailConfig.getMailFolders().getFolderIds()),
                     //implementsteam@outlook.com邮箱的folderId
-                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderListForTest(),
+//                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderListForTest(),
                     //todo 通过ewsFolderService 根据topicId获取folderId实例list
-//                    .subscribeToPullNotifications(ewsFolderService.listFolderIdByTopicId(mailConfig.getTopicId()),
+                    .subscribeToPullNotifications(ewsFolderService.listFolderIdByTopicIdUnAction(mailConfig.getTopicId()),
                             timeoutMinutes
                             /* timeOut: the subscription will end if the server is not polled within 5 minutes. */, null /* watermark: null to start a new subscription. */,
                             EventType.NewMail, EventType.Created, EventType.Deleted);

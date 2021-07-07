@@ -1,6 +1,7 @@
 package com.example.easyruledemo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsTopicEntity;
@@ -10,6 +11,7 @@ import com.example.easyruledemo.service.IEwsTopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -30,18 +32,34 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
     }
 
     @Override
+    public Boolean saveOrUpdateTopic(EwsTopicEntity ewsTopic) {
+        return super.saveOrUpdate(ewsTopic);
+    }
+
+    @Override
     public Integer updateOne(EwsTopicEntity ewsTopic) {
         return null;
     }
 
     @Override
-    public Integer delOne(String ews) {
-        return null;
+    public Integer delOne(String topicId) {
+        return baseMapper.deleteById(topicId);
     }
 
     @Override
     public List<EwsTopicEntity> getList(EwsTopicEntity ewsTopic) {
         return null;
+    }
+
+    @Override
+    public List<EwsTopicEntity> listSelective(EwsTopicEntity ewsTopic) {
+        return new LambdaQueryChainWrapper<EwsTopicEntity>(baseMapper)
+                .eq(EwsTopicEntity::getDeleteFlag,0)
+                .like(StringUtils.isEmpty(ewsTopic.getTopicName()),EwsTopicEntity::getTopicName,ewsTopic.getTopicName())
+                .like(StringUtils.isEmpty(ewsTopic.getTopicConfig()),EwsTopicEntity::getTopicConfig,ewsTopic.getTopicConfig())
+                .like(StringUtils.isEmpty(ewsTopic.getTopicDesc()),EwsTopicEntity::getTopicDesc,ewsTopic.getTopicDesc())
+                .orderByDesc(EwsTopicEntity::getTopicId)
+                .list();
     }
 
     @Transactional
@@ -52,6 +70,16 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
         if(mail!=null){
             topicId = mail.getTopicId();
         }
+        return baseMapper.selectById(topicId);
+    }
+
+    @Override
+    public EwsTopicEntity getTopicByMailId(Long mailId) {
+        return baseMapper.selectById(mailId);
+    }
+
+    @Override
+    public EwsTopicEntity findOne(String topicId) {
         return baseMapper.selectById(topicId);
     }
 

@@ -16,4 +16,7 @@ public interface EwsFoldersMapper extends BaseMapper<EwsFoldersEntity> {
     //根据规则id查询需创建文件夹列表
 //    List<EwsFoldersEntity> listFolderByRuleId(String ruleId);
     List<EwsFoldersEntity> listFolderByRuleId(Long ruleId);
+
+    //获取规则下未执行的folderId集合,这里是未下载附件 ,未...等文件夹
+//    List<EwsFoldersEntity> listFolderByRuleIdUnAction(Long ruleId);
 }

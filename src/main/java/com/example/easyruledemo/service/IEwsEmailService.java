@@ -2,6 +2,7 @@ package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsTopicEntity;
+import com.example.easyruledemo.enums.RuleEnum;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 
 import java.util.List;
@@ -23,7 +24,19 @@ public interface IEwsEmailService {
     //动态获取邮件配置list
     List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig);
 
+    //获取mailConfig符合某种规则类型的
+    List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, RuleEnum... ruleTypes);
+
     //根据主键查1个
     EwsMailEntity findOne(String mailId);
+
+    //保存或更新一个email
+    Boolean saveOrUpdateEmail(EwsMailEntity ewsMail);
+
+    //动态获取email list
+    List<EwsMailEntity> listSelective(EwsMailEntity ewsMail);
+
+    // delete one
+    Integer delOne(String mailId);
 
 }
