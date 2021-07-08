@@ -1,8 +1,7 @@
 package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
-import com.example.easyruledemo.entity.EwsTopicEntity;
-import com.example.easyruledemo.enums.RuleEnum;
+import com.example.easyruledemo.enums.ItemActionType;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public interface IEwsEmailService {
     List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig);
 
     //获取mailConfig符合某种规则类型的
-    List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, RuleEnum... ruleTypes);
+    List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, ItemActionType... ruleTypes);
 
     //根据主键查1个
     EwsMailEntity findOne(String mailId);

@@ -6,7 +6,7 @@ import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.sub.ItemActionsEntity;
 import com.example.easyruledemo.enums.FolderNameEnum;
-import com.example.easyruledemo.enums.RuleEnum;
+import com.example.easyruledemo.enums.ItemActionType;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -161,9 +161,9 @@ public class MailActionsThread extends Thread{
         List<EwsRuleEntity> rulesThisTime = mailConfig.getMailRulesValidThisTime();
         for(EwsRuleEntity rule:rulesThisTime){
             ItemActionsEntity itemActions = JSONObject.parseObject(JSON.toJSONString(rule.getItemActions()), ItemActionsEntity.class);
-            if(RuleEnum.D.getCode().equals(rule.getItemActionType())){
+            if(ItemActionType.D.getCode().equals(rule.getItemActionType())){
                 this.download(itemActions.getDownloadPath());
-            }else if (RuleEnum.DC.getCode().equals(rule.getItemActionType())){
+            }else if (ItemActionType.DC.getCode().equals(rule.getItemActionType())){
                 this.download(itemActions.getDownloadPath(),itemActions.getCopyPath());
             }else{
                 log.error("错误的itemAction执行动作");

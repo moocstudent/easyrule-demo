@@ -48,6 +48,9 @@ public interface IEwsFolderService {
     //保存或更新folder
     Boolean saveOrUpdateFolder(EwsFoldersEntity ewsFoldersEntity);
 
+    //保存或更新folder根据folderId(unionId)
+    Boolean saveOrUpdateByFUnionId(EwsFoldersEntity ewsFoldersEntity);
+
     EwsFoldersEntity getByEmail(String email);
 
     //根据主键获取文件夹实体

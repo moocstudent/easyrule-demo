@@ -9,7 +9,7 @@ create table ews_rule
     display_name     varchar2(1000),
     rule_desc        varchar2(1000),
     rule_level       number(2)      not null,
-    rule_type        char(3)        not null,
+    rule_type        varchar2(100)  not null,
     is_enabled       number(1),
     is_not_supported number(1),
     is_in_error      number(1),
@@ -42,11 +42,11 @@ create table ews_rule_folder_relation
 -- email配置
 create table ews_mail_config
 (
-    mail_id        varchar2(1000) primary key,
-    mail           varchar2(1500) not null unique,
-    password       varchar2(2000) not null,
-    topic_id  varchar2(1000),
-    delete_flag    number(1) default 0 check (delete_flag in (0, 1))
+    mail_id     varchar2(1000) primary key,
+    mail        varchar2(1500) not null unique,
+    password    varchar2(2000) not null,
+    topic_id    varchar2(1000),
+    delete_flag number(1) default 0 check (delete_flag in (0, 1))
 );
 
 -- 邮件收件主题
@@ -68,4 +68,15 @@ create table ews_topic_rule_relation
     rule_level  varchar2(1000) not null,
     priority    number(3)      not null,
     delete_flag number(1) default 0 check (delete_flag in (0, 1))
+);
+
+-- 监听 (先用表来做,可以改为缓存处理)
+create table ews_subscription
+(
+    ews_subscription_id  varchar2(1000) primary key,
+    subscription_id      varchar2(2000) not null,
+    subscription_key     varchar2(2000) not null,
+    subscription_minutes number(4)      not null,
+    subscription_date    timestamp default current_timestamp,
+    delete_flag          number(1) default 0 check (delete_flag in (0, 1))
 )

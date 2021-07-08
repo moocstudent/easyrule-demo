@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 @Builder
 @Accessors(chain = true)
 @TableName("ews_mail_topic")
-public class EwsTopicEntity {
+public class EwsTopicVO {
 
 //    @TableId(type = IdType.ASSIGN_UUID)
 //    private String topicId;

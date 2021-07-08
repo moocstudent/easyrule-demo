@@ -36,6 +36,12 @@ public class EwsRuleEntity {
     @ApiModelProperty("规则名称")
     private String displayName;
 
+    /**
+     * {@link com.example.easyruledemo.enums.RuleType}
+     */
+    @ApiModelProperty("规则类型,指的是ews的规则类型")
+    private String ruleType;
+
     //联查ews_topic_rule_relation获取
     /**
      * 权重1在规则的最下

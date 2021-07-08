@@ -39,6 +39,10 @@ public class EwsTopicEntity {
     @ApiModelProperty("主题简介")
     private String topicDesc;
 
+    /**
+     * 形式大概类似:
+     * {'D':'xxxkkkkkjdjj','DC':'kkkjjjddd'}
+     */
     @ApiModelProperty("主题配置串,根据子规则类型生成")
     private String topicConfig;
 

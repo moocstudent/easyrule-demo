@@ -1,13 +1,12 @@
 package com.example.easyruledemo.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.EwsTopicEntity;
-import com.example.easyruledemo.enums.RuleEnum;
+import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.mapper.EwsMailMapper;
 import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsFolderService;
@@ -18,7 +17,6 @@ import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFo
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -94,7 +92,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     }
 
     @Override
-    public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, RuleEnum... ruleTypes) {
+    public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, ItemActionType... ruleTypes) {
         //查包含指定ruleType的ewsMail集合
         List<EwsMailEntity> mailEntityList = new LambdaQueryChainWrapper<EwsMailEntity>(baseMapper)
                 .eq(EwsMailEntity::getDeleteFlag, 0)
@@ -103,7 +101,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
                 .eq(StringUtils.isEmpty(mailConfig.getHost()), EwsMailEntity::getHost, mailConfig.getHost())
                 .orderByDesc(EwsMailEntity::getMailId)
                 .list();
-        List<RuleEnum> ruleEnums = Arrays.asList(ruleTypes);
+        List<ItemActionType> ruleEnums = Arrays.asList(ruleTypes);
         long validRuleEnumCount = mailEntityList.stream()
                 .filter(mail -> ruleEnums.stream()
                         .filter(ruleType -> mail.getTopicId().indexOf(ruleType.getCode()) > 1)

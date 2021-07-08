@@ -1,11 +1,21 @@
 package com.example.easyruledemo.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
+import com.example.easyruledemo.entity.EwsSubscriptionEntity;
+import com.example.easyruledemo.mapper.EwsSubscriptionMapper;
 import com.example.easyruledemo.service.ISubscriptionService;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @Author: zhangQi
@@ -13,7 +23,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class SubscriptionServiceImpl implements ISubscriptionService {
+public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, EwsSubscriptionEntity> implements ISubscriptionService {
+
     @Override
     public Integer unSubscriptionById(String subscriptionId, EwsMailEntity ewsMail) {
         ExchangeService exchangeService = EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword());
@@ -43,6 +54,45 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
             return -1;
         }
         return 1;
+    }
+
+    @Override
+    public Boolean saveOrUpdateSubcription(EwsSubscriptionEntity ewsSubscription) {
+        return super.saveOrUpdate(ewsSubscription);
+    }
+
+    @Override
+    public String getSubscriptionIdByKey(String key) {
+        LambdaQueryWrapper<EwsSubscriptionEntity> queryWrapper = new LambdaQueryWrapper<EwsSubscriptionEntity>()
+                .eq(EwsSubscriptionEntity::getSubscriptionKey,key)
+                .eq(EwsSubscriptionEntity::getDeleteFlag,0);
+        List<EwsSubscriptionEntity> subscriptionList
+                = Optional.ofNullable(baseMapper.selectList(queryWrapper)).orElse(Collections.EMPTY_LIST);
+        if(subscriptionList.size()>0){
+            EwsSubscriptionEntity ewsSubscription = subscriptionList.stream().findFirst().get();
+            return ewsSubscription.getSubscriptionId();
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public List<EwsSubscriptionEntity> listSelective(EwsSubscriptionEntity ewsSubscription) {
+        return new LambdaQueryChainWrapper<EwsSubscriptionEntity>(baseMapper)
+                .eq(EwsSubscriptionEntity::getDeleteFlag, 0)
+                .like(StringUtils.isEmpty(ewsSubscription.getSubscriptionKey()), EwsSubscriptionEntity::getSubscriptionKey, ewsSubscription.getSubscriptionKey())
+                .eq(StringUtils.isEmpty(ewsSubscription.getSubscriptionMinutes()), EwsSubscriptionEntity::getSubscriptionMinutes, ewsSubscription.getSubscriptionMinutes())
+                .eq(StringUtils.isEmpty(ewsSubscription.getSubscriptionDate()), EwsSubscriptionEntity::getSubscriptionDate, ewsSubscription.getSubscriptionDate())
+                .orderByDesc(EwsSubscriptionEntity::getEwsSubscriptionId)
+                .list();
+    }
+
+    @Override
+    public Integer updateByKey(EwsSubscriptionEntity ewsSubscriptionEntity) {
+        LambdaQueryWrapper updateWrapper = new LambdaQueryWrapper<EwsSubscriptionEntity>()
+                .eq(EwsSubscriptionEntity::getSubscriptionKey,ewsSubscriptionEntity.getSubscriptionKey())
+                .eq(EwsSubscriptionEntity::getDeleteFlag,0);
+        return baseMapper.update(ewsSubscriptionEntity,updateWrapper);
     }
 
 

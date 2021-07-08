@@ -2,7 +2,7 @@ package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
-import com.example.easyruledemo.enums.RuleEnum;
+import com.example.easyruledemo.enums.ItemActionType;
 import microsoft.exchange.webservices.data.property.complex.Rule;
 
 import java.util.List;
@@ -67,12 +67,20 @@ public interface IEwsRuleService {
     List<EwsRuleEntity> listRulesByTopicConfig(String topicConfig);
 
     //过滤规则根据配置串以及枚举
-    List<EwsRuleEntity> filterRuleByConfigEnum(String config,RuleEnum... ruleTypes);
-    List<EwsRuleEntity> filterRuleByConfigEnum(String config,List<RuleEnum> ruleEnums);
+    List<EwsRuleEntity> filterRuleByConfigEnum(String config, ItemActionType... ruleTypes);
+    List<EwsRuleEntity> filterRuleByConfigEnum(String config,List<ItemActionType> ruleEnums);
 
     //查找一个,根据规则id
     EwsRuleEntity findOne(String ruleId);
 
     //删除一个规则
     Integer delOne(String ruleId);
+
+    /**
+     * 根据传入ruleId组合为topicConfig json串
+     * @param ids
+     */
+    String configTheTopicConfigStr(List ids);
+
+
 }

@@ -2,15 +2,13 @@ package com.example.easyruledemo.task;
 
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
-import com.example.easyruledemo.enums.RuleEnum;
+import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.rules.MailEventsThread;
 import com.example.easyruledemo.service.IEwsEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -59,7 +57,7 @@ public class EmailEventTask {
         try {
             List<EwsMailEntity> mailConfigList = ewsEmailService
                     .getMailConfigList(EwsMailEntity.builder().build(),
-                    /*邮件监听类型为下载以及下载并拷贝*/RuleEnum.D,RuleEnum.DC);
+                    /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.D, ItemActionType.DC);
             for (EwsMailEntity mailConfig : mailConfigList){
                 MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
                 mailEventsThread.start();

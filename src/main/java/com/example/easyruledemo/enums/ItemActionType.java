@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum RuleEnum {
+public enum ItemActionType {
 
     D("D","附件下载"),
     DC("DC","附件下载并拷贝");

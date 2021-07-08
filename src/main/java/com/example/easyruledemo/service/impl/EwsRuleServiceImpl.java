@@ -5,12 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
-import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
-import com.example.easyruledemo.enums.RuleEnum;
+import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.mapper.EwsRuleMapper;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.util.BeanUtil;
@@ -23,7 +22,6 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +53,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public Integer ewsRuleFireJustThisOne(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
         Integer disabledRuleSize = this.disabledRuleByEmAddr(ewsMail);
         System.out.println("disabled rule size:" + disabledRuleSize);
-        Integer fireRuleCode = this.ewsRuleFire(ewsRuleEntity,ewsMail);
+        Integer fireRuleCode = this.ewsRuleFire(ewsRuleEntity, ewsMail);
         if (fireRuleCode > 0) {
             System.out.println("fire rule just this one is ok:" + fireRuleCode);
             return fireRuleCode;
@@ -87,7 +85,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     @Override
     public Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
         Rule rule = this.transformRuleEntity(ewsRuleEntity);
-        log.debug("transformRule:{}",rule);
+        log.debug("transformRule:{}", rule);
         //是否启用
         rule.setIsEnabled(true);
         CreateRuleOperation createOperation = new CreateRuleOperation(rule);
@@ -95,7 +93,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         ruleList.add(createOperation);
         try {
             //执行规则更新
-            EwsExContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
+            EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .updateInboxRules(ruleList, true);
 //            EwsContainer.defaultExchangeService().update(ruleList,true);
         } catch (Exception e) {
@@ -235,7 +233,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         System.out.println("Collection count: " + ruleCollection.getCount());
         List<RuleOperation> disabledRules = new ArrayList<RuleOperation>();
 
-        if (ruleCollection.getCount()==0){
+        if (ruleCollection.getCount() == 0) {
             return 0;
         }
         // Write the DisplayName and ID of each rule.
@@ -251,7 +249,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             disabledRules.add(updateToDisabledRule);
         }
         try {
-            EwsExContainer.getExchangeService(ewsMail.getEmail(),ewsMail.getPassword())
+            EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .updateInboxRules(disabledRules, true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -314,10 +312,10 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     @Override
     public List<EwsRuleEntity> listSelective(EwsRuleEntity ewsRule) {
         return new LambdaQueryChainWrapper<EwsRuleEntity>(baseMapper)
-                .eq(EwsRuleEntity::getDeleteFlag,0)
-                .like(StringUtils.isEmpty(ewsRule.getDisplayName()),EwsRuleEntity::getDisplayName,ewsRule.getDisplayName())
-                .eq(StringUtils.isEmpty(ewsRule.getIsEnabled()), EwsRuleEntity::getIsEnabled,ewsRule.getIsEnabled())
-                .eq(StringUtils.isEmpty(ewsRule.getItemActionType()), EwsRuleEntity::getItemActionType,ewsRule.getItemActionType())
+                .eq(EwsRuleEntity::getDeleteFlag, 0)
+                .like(StringUtils.isEmpty(ewsRule.getDisplayName()), EwsRuleEntity::getDisplayName, ewsRule.getDisplayName())
+                .eq(StringUtils.isEmpty(ewsRule.getIsEnabled()), EwsRuleEntity::getIsEnabled, ewsRule.getIsEnabled())
+                .eq(StringUtils.isEmpty(ewsRule.getItemActionType()), EwsRuleEntity::getItemActionType, ewsRule.getItemActionType())
                 .orderByDesc(EwsRuleEntity::getRuleId)
                 .list();
     }
@@ -328,9 +326,9 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
-    public List<EwsRuleEntity> filterRuleByConfigEnum(String config,RuleEnum... ruleTypes) {
+    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, ItemActionType... ruleTypes) {
         JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
-        List<RuleEnum> ruleEnums = Arrays.asList(ruleTypes);
+        List<ItemActionType> ruleEnums = Arrays.asList(ruleTypes);
         List<String> ruleIdList = ruleEnums.stream()
                 .filter(rull -> {
                     return ruleConfigJsonObject.containsKey(rull.getCode());
@@ -340,7 +338,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
                 })
                 .collect(Collectors.toList());
         List<EwsRuleEntity> ruleEntityList = new ArrayList<>();
-        for(String ruleId:ruleIdList){
+        for (String ruleId : ruleIdList) {
 //            if(ruleEntityList==null){
 //                ruleEntityList = new ArrayList<>();
 //            }
@@ -352,7 +350,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
-    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, List<RuleEnum> ruleEnums) {
+    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, List<ItemActionType> ruleEnums) {
         JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
         List<String> ruleIdList = ruleEnums.stream()
                 .filter(rull -> {
@@ -363,7 +361,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
                 })
                 .collect(Collectors.toList());
         List<EwsRuleEntity> ruleEntityList = new ArrayList<>();
-        for(String ruleId:ruleIdList){
+        for (String ruleId : ruleIdList) {
 //            if(ruleEntityList==null){
 //                ruleEntityList = new ArrayList<>();
 //            }
@@ -382,6 +380,19 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     @Override
     public Integer delOne(String ruleId) {
         return baseMapper.deleteById(ruleId);
+    }
+
+    @Override
+    public String configTheTopicConfigStr(List ids) {
+        //根据ids查找符合条件的ruleEntity list
+        JSONObject configJson = new JSONObject();
+        List<EwsRuleEntity> ruleList = baseMapper.selectBatchIds(ids);
+        //config every rule to jsonObj
+        ruleList.forEach(rule -> {
+            String itemActionType = rule.getItemActionType();
+            configJson.put(itemActionType, rule.getRuleId());
+        });
+        return configJson.toJSONString();
     }
 
     //testok

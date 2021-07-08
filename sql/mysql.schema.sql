@@ -5,7 +5,7 @@ create table ews_rule
     display_name     varchar(1000),
     rule_desc        varchar(1000),
     rule_level       int(2)        not null,
-    rule_type        char(3)       not null,
+    rule_type        varchar(100)  not null,
     is_enabled       tinyint(1),
     is_not_supported tinyint(1),
     is_in_error      tinyint(1),
@@ -65,3 +65,14 @@ create table ews_topic_rule_relation
     priority    int(3)     not null,
     delete_flag tinyint(1) default 0 check (delete_flag in (0, 1))
 );
+
+-- 监听 (先用表来做,可以改为缓存处理)
+create table ews_subscription
+(
+    ews_subscription_id  bigint(20) primary key,
+    subscription_id      varchar(2000) not null,
+    subscription_key     varchar(2000) not null,
+    subscription_minutes int(4)        not null,
+    subscription_date    timestamp  default current_timestamp,
+    delete_flag          tinyint(1) default 0 check (delete_flag in (0, 1))
+)

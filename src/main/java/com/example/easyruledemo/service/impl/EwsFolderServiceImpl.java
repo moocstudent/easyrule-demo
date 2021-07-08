@@ -10,6 +10,7 @@ import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.mapper.EwsFoldersMapper;
 import com.example.easyruledemo.service.IEwsFolderService;
 import com.example.easyruledemo.service.IEwsRuleService;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
@@ -20,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -156,6 +158,18 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     @Override
     public Boolean saveOrUpdateFolder(EwsFoldersEntity ewsFoldersEntity) {
         return super.saveOrUpdate(ewsFoldersEntity);
+    }
+
+    @Override
+    public Boolean saveOrUpdateByFUnionId(EwsFoldersEntity ewsFoldersEntity) {
+        if (ewsFoldersEntity.getFolderId()==null && ewsFoldersEntity.getFolderId()==""){
+            return baseMapper.insert(ewsFoldersEntity)>0? Boolean.TRUE:Boolean.FALSE;
+        }
+        LambdaQueryWrapper<EwsFoldersEntity> updateWrapper
+                = new LambdaQueryWrapper<EwsFoldersEntity>()
+                .eq(EwsFoldersEntity::getFolderId,ewsFoldersEntity.getFolderId())
+                .eq(EwsFoldersEntity::getDeleteFlag,0);
+        return this.saveOrUpdate(ewsFoldersEntity,updateWrapper);
     }
 
     @Override
