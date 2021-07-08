@@ -5,7 +5,7 @@
 
     <!-- auto generated map -->
     <resultMap id="BaseResultMap" type="com.example.easyruledemo.entity.EwsFoldersEntity">
-        <id column="ews_folder_id" jdbcType="VARCHAR2" property="ewsFolderId"/>
+        <id column="ews_folder_id"  property="ewsFolderId"/>
         <result column="folder_id" property="folderId"/>
         <result column="folder_code" property="folderCode"/>
         <result column="folder_name" property="folderName"/>
@@ -20,7 +20,7 @@
     <select id="listFolderByRuleId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from ews_rule
+        from ews_mail_folders
         where ews_folder_id in
         (select r.ews_folder_id
         from ews_rule_folder_relation r

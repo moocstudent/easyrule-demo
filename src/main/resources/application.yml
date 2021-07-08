@@ -10,10 +10,12 @@ spring:
 #        databaseId: mysql
 #        idType: AUTO
 
-mybatis:
-  mapper-locations: classpath:mappings/*.xml
-#  config-location: classpath:mybatis-cfg.xml
+mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml
   type-aliases-package: com.example.easyruledemo.entity
+
+
 
 server:
   port: 93
+

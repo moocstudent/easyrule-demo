@@ -160,7 +160,11 @@ public class MailActionsThread extends Thread{
     public void start(){
         List<EwsRuleEntity> rulesThisTime = mailConfig.getMailRulesValidThisTime();
         for(EwsRuleEntity rule:rulesThisTime){
-            ItemActionsEntity itemActions = JSONObject.parseObject(JSON.toJSONString(rule.getItemActions()), ItemActionsEntity.class);
+            //fixme
+            log.info("rule in thread:{}",rule);
+//            ItemActionsEntity itemActions = JSONObject.parseObject(JSON.toJSONString(rule.getItemActions()), ItemActionsEntity.class);
+            log.info("rule item actions :{}",JSON.toJSONString(rule.getItemActions()));
+            ItemActionsEntity itemActions = JSONObject.parseObject(rule.getItemActions(), ItemActionsEntity.class);
             if(ItemActionType.D.getCode().equals(rule.getItemActionType())){
                 this.download(itemActions.getDownloadPath());
             }else if (ItemActionType.DC.getCode().equals(rule.getItemActionType())){

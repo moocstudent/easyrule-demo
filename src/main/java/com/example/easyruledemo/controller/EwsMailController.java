@@ -45,7 +45,7 @@ public class EwsMailController {
         return ResultUtil.success(ewsEmailService.findOne(mailId));
     }
 
-    @ApiOperation("动态获取邮箱列表")
+    @ApiOperation("删除邮箱")
     @DeleteMapping("/{mailId}")
     public Result delMail(@PathVariable("mailId") String mailId){
         return ResultUtil.success(ewsEmailService.delOne(mailId));

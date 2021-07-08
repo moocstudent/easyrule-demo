@@ -63,6 +63,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
 
     @Override
     public String getSubscriptionIdByKey(String key) {
+        log.info("getSubscriptionIdByKey invoke, the key:{}",key);
         LambdaQueryWrapper<EwsSubscriptionEntity> queryWrapper = new LambdaQueryWrapper<EwsSubscriptionEntity>()
                 .eq(EwsSubscriptionEntity::getSubscriptionKey,key)
                 .eq(EwsSubscriptionEntity::getDeleteFlag,0);

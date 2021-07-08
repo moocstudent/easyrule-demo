@@ -5,6 +5,7 @@ package com.example.easyruledemo.entity;
 //import com.baomidou.mybatisplus.annotation.TableName;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -38,20 +39,20 @@ public class EwsMailEntity {
     @ApiModelProperty("邮件配置表主键")
     private Long mailId;
 
-    @ApiModelProperty("邮件地址")
+    @ApiModelProperty(value = "邮件地址",required = true)
     private String email;
 
-    @ApiModelProperty("密码")
+    @ApiModelProperty(value = "密码",required = true)
     private String password;
 
-    private String host;
-
-    private Integer port;
-
-    private Integer recvHour;
+//    private String host;
+//
+//    private Integer port;
+//
+//    private Integer recvHour;
 
     //每个邮箱对应一个收件主题
-    @ApiModelProperty("该邮件关联的收件主题id")
+    @ApiModelProperty("[下拉选择赋值]该邮件关联的收件主题id")
     private String topicId;
 
     /**
@@ -62,12 +63,17 @@ public class EwsMailEntity {
 //    @Transient
 //    private Map<String,EwsFoldersEntity> mailFolders;
     @Transient
+    @ApiModelProperty(value = "【web不传入】")
+    @TableField(exist = false)
     private Map<String, EwsFoldersEntity> mailFoldersMap;
     @Transient
+    @ApiModelProperty("【web不传入】")
+    @TableField(exist = false)
     private EwsFoldersEntity mailFolders;
     //满足本次条件的mailRuleList集合
     @Transient
-    @ApiModelProperty("满足本次条件的mailRuleList集合")
+    @ApiModelProperty("【web不传入】满足本次条件的mailRuleList集合")
+    @TableField(exist = false)
     private List<EwsRuleEntity> mailRulesValidThisTime;
 
     private Integer deleteFlag;

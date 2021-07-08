@@ -41,8 +41,8 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     public List<EwsFoldersEntity> listSelective(EwsFoldersEntity ewsFolders) {
         return new LambdaQueryChainWrapper<EwsFoldersEntity>(baseMapper)
                 .eq(EwsFoldersEntity::getDeleteFlag,0)
-                .eq(StringUtils.isEmpty(ewsFolders.getFolderCode()),EwsFoldersEntity::getFolderCode,ewsFolders.getFolderCode())
-                .like(StringUtils.isEmpty(ewsFolders.getFolderName()), EwsFoldersEntity::getFolderName,ewsFolders.getFolderName())
+                .eq(!StringUtils.isEmpty(ewsFolders.getFolderCode()),EwsFoldersEntity::getFolderCode,ewsFolders.getFolderCode())
+                .like(!StringUtils.isEmpty(ewsFolders.getFolderName()), EwsFoldersEntity::getFolderName,ewsFolders.getFolderName())
                 .orderByDesc(EwsFoldersEntity::getEwsFolderId)
                 .list();
     }

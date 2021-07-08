@@ -7,6 +7,7 @@ import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.EwsTopicEntity;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
+import com.example.easyruledemo.entity.sub.ItemActionsEntity;
 import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.enums.RuleType;
 import com.example.easyruledemo.service.IEwsRuleService;
@@ -26,6 +27,24 @@ class TransformTest extends BaseTest {
 
     @Autowired
     private IEwsRuleService ewsRuleService;
+
+    @Test
+    public void testTransformAction(){
+        //
+        String actions = "{'downloadPath':'D://download1'}";
+        String actions2 = "{'downloadPath':'123'}";
+        JSONObject jsonObject = JSONObject.parseObject(actions);
+
+//        ItemActionsEntity itemActionsEntity = JSONObject.parseObject(actions, ItemActionsEntity.class);
+        ItemActionsEntity itemActionsEntity = JSON.toJavaObject(jsonObject, ItemActionsEntity.class);
+        System.out.println(itemActionsEntity);
+//        System.out.println();
+//
+//        JSONObject jsonObject1 = JSONObject.parseObject(actions2);
+////        ItemActionsEntity itemActionsEntity = JSONObject.parseObject(actions, ItemActionsEntity.class);
+//        ItemActionsEntity itemActionsEntity1 = JSON.toJavaObject(jsonObject1, ItemActionsEntity.class);
+//        System.out.println(itemActionsEntity1);
+    }
 
     //testok
     //testok actions
@@ -68,6 +87,7 @@ class TransformTest extends BaseTest {
                 .redirectToRecipients(Arrays.asList("implementsteam@163.com"))
                 .build();
 
+        System.out.println("actionsJSON:"+JSON.toJSONString(actionsEntity));
         EwsRuleEntity ruleEntity = EwsRuleEntity.builder()
                 .displayName("apple 123")
                 .conditions(JSON.toJSONString(conditionsEntity))

@@ -55,4 +55,5 @@ public class EwsFoldersController {
     public Result delFolder(@PathVariable("ewsFolderId") String ewsFolderId){
         return ResultUtil.success(ewsFolderService.delByPriKey(ewsFolderId));
     }
+
 }

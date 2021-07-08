@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -32,17 +33,17 @@ public class EwsSubscriptionEntity {
     @ApiModelProperty("主题表主键")
     private Long ewsSubscriptionId;
 
-    @ApiModelProperty("主题id")
+    @ApiModelProperty(value = "主题id",required = true)
     private String subscriptionId;
 
-    @ApiModelProperty("订阅mapKey")
+    @ApiModelProperty(value = "订阅mapKey",required = true)
     private String subscriptionKey;
 
-    @ApiModelProperty("订阅时长,分钟")
+    @ApiModelProperty(value = "订阅时长,分钟",required = true)
     private Integer subscriptionMinutes;
 
     @ApiModelProperty("订阅时间")
-    private Date subscriptionDate;
+    private LocalDateTime subscriptionDate;
 
     private Integer deleteFlag;
 }

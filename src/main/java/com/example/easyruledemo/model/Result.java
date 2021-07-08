@@ -1,5 +1,6 @@
 package com.example.easyruledemo.model;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.ToString;
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
  */
 @Data
 @ToString
+@ApiModel("ews返回实体")
 public class Result<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;

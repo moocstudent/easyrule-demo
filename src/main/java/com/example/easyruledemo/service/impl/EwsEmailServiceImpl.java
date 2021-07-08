@@ -37,22 +37,22 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     @Autowired
     private IEwsRuleService ewsRuleService;
 
-    @Override
-    public Map<String, List<String>> createFolderByEmailConfigs(List<EwsMailEntity> mailConfigEntityList) {
-        Map<String, List<String>> emailFolderIds = new HashMap<>();
-        for (EwsMailEntity mailConfig : mailConfigEntityList) {
-            try {
-                //todo 改为从mail对应主题对应规则对应的文件夹中获取
-                List<String> folderIds = ewsFolderService.createFolder(
-                        mailConfig.getMailFolders().getFolderNames(), WellKnownFolderName.Inbox, mailConfig);
-                emailFolderIds.put(mailConfig.getEmail(), folderIds);
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
-        }
-        return emailFolderIds;
-    }
+//    @Override
+//    public Map<String, List<String>> createFolderByEmailConfigs(List<EwsMailEntity> mailConfigEntityList) {
+//        Map<String, List<String>> emailFolderIds = new HashMap<>();
+//        for (EwsMailEntity mailConfig : mailConfigEntityList) {
+//            try {
+//                //todo 改为从mail对应主题对应规则对应的文件夹中获取
+//                List<String> folderIds = ewsFolderService.createFolder(
+//                        mailConfig.getMailFolders().getFolderNames(), WellKnownFolderName.Inbox, mailConfig);
+//                emailFolderIds.put(mailConfig.getEmail(), folderIds);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                continue;
+//            }
+//        }
+//        return emailFolderIds;
+//    }
 
     @Override
     public Integer downLoadAttachment(EmailMessage message) {
@@ -60,6 +60,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     }
 
     @Override
+    @Deprecated
     public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig) {
 
 
@@ -96,15 +97,20 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
         //查包含指定ruleType的ewsMail集合
         List<EwsMailEntity> mailEntityList = new LambdaQueryChainWrapper<EwsMailEntity>(baseMapper)
                 .eq(EwsMailEntity::getDeleteFlag, 0)
-                .eq(StringUtils.isEmpty(mailConfig.getEmail()), EwsMailEntity::getEmail, mailConfig.getEmail())
-                .eq(StringUtils.isEmpty(mailConfig.getTopicId()), EwsMailEntity::getTopicId, mailConfig.getTopicId())
-                .eq(StringUtils.isEmpty(mailConfig.getHost()), EwsMailEntity::getHost, mailConfig.getHost())
+                .eq(!StringUtils.isEmpty(mailConfig.getEmail()), EwsMailEntity::getEmail, mailConfig.getEmail())
+                .eq(!StringUtils.isEmpty(mailConfig.getTopicId()), EwsMailEntity::getTopicId, mailConfig.getTopicId())
+//                .eq(StringUtils.isEmpty(mailConfig.getHost()), EwsMailEntity::getHost, mailConfig.getHost())
                 .orderByDesc(EwsMailEntity::getMailId)
                 .list();
         List<ItemActionType> ruleEnums = Arrays.asList(ruleTypes);
         long validRuleEnumCount = mailEntityList.stream()
                 .filter(mail -> ruleEnums.stream()
-                        .filter(ruleType -> mail.getTopicId().indexOf(ruleType.getCode()) > 1)
+                        .filter(d->mail.getTopicId()!=null && mail.getTopicId()!="")
+                        .filter(ruleType -> {
+                            EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
+                            System.out.println(topic);
+                            return topic.getTopicConfig().indexOf(ruleType.getKey()) > -1;
+                        })
                         .count() > 0)
                 .count();
         if (validRuleEnumCount == 0) {
@@ -115,7 +121,9 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
                 .map(ruleType -> {
                     return mailEntityList.stream()
                             .filter(mail -> {
-                                return mail.getTopicId().indexOf(ruleType.getCode()) > 1;
+                                EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
+                                System.out.println(topic);
+                                return topic.getTopicConfig().indexOf(ruleType.getKey()) > -1;
                             })
                             .collect(Collectors.toList());
                 })
@@ -133,11 +141,17 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
 //            ewsRuleService.filterRuleByConfigEnum(mail.)
 //            List<EwsRuleEntity> rulesByTopicId = ewsRuleService.getRulesByTopicId(mail.getTopicId());
         }
+        log.info("满足itemActionType条件的mail:"+ewsMailList);
         return ewsMailList;
     }
 
     @Override
     public EwsMailEntity findOne(String mailId) {
+        return baseMapper.selectById(mailId);
+    }
+
+    @Override
+    public EwsMailEntity findOne(Long mailId) {
         return baseMapper.selectById(mailId);
     }
 
@@ -150,8 +164,8 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     public List<EwsMailEntity> listSelective(EwsMailEntity ewsMail) {
         return new LambdaQueryChainWrapper<EwsMailEntity>(baseMapper)
                 .eq(EwsMailEntity::getDeleteFlag, 0)
-                .like(StringUtils.isEmpty(ewsMail.getEmail()), EwsMailEntity::getEmail, ewsMail.getEmail())
-                .eq(StringUtils.isEmpty(ewsMail.getTopicId()), EwsMailEntity::getTopicId, ewsMail.getTopicId())
+                .like(!StringUtils.isEmpty(ewsMail.getEmail()), EwsMailEntity::getEmail, ewsMail.getEmail())
+                .eq(!StringUtils.isEmpty(ewsMail.getTopicId()), EwsMailEntity::getTopicId, ewsMail.getTopicId())
                 .orderByDesc(EwsMailEntity::getMailId)
                 .list();
     }

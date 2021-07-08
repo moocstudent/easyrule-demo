@@ -5,7 +5,7 @@
 
     <!-- auto generated map -->
     <resultMap id="BaseResultMap" type="com.example.easyruledemo.entity.EwsRuleEntity">
-        <id column="rule_id" jdbcType="VARCHAR2" property="ruleId"/>
+        <id column="rule_id"  property="ruleId"/>
         <result column="display_name" property="displayName"/>
         <result column="rule_desc" property="ruleDesc"/>
         <result column="rule_level" property="ruleLevel"/>
@@ -23,7 +23,7 @@
     <!-- auto generated base column list -->
     <sql id="Base_Column_List">
         rule_id,display_name,rule_desc,rule_level,rule_type,is_enabled,is_not_supported,
-        is_in_error,conditions,actions,item_action_tyoe,item_actions,delete_flag
+        is_in_error,conditions,actions,item_action_type,item_actions,delete_flag
     </sql>
 
     <select id="listRuleByTopicId" resultMap="BaseResultMap">

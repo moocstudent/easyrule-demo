@@ -39,7 +39,7 @@ create table ews_rule_folder_relation
 create table ews_mail_config
 (
     mail_id     bigint(20) primary key,
-    mail        varchar(1500) not null,
+    email        varchar(1500) not null,
     password    varchar(2000) not null,
     topic_id    bigint(20),
     delete_flag tinyint(1) default 0 check (delete_flag in (0, 1))

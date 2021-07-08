@@ -55,9 +55,9 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
     public List<EwsTopicEntity> listSelective(EwsTopicEntity ewsTopic) {
         return new LambdaQueryChainWrapper<EwsTopicEntity>(baseMapper)
                 .eq(EwsTopicEntity::getDeleteFlag,0)
-                .like(StringUtils.isEmpty(ewsTopic.getTopicName()),EwsTopicEntity::getTopicName,ewsTopic.getTopicName())
-                .like(StringUtils.isEmpty(ewsTopic.getTopicConfig()),EwsTopicEntity::getTopicConfig,ewsTopic.getTopicConfig())
-                .like(StringUtils.isEmpty(ewsTopic.getTopicDesc()),EwsTopicEntity::getTopicDesc,ewsTopic.getTopicDesc())
+                .like(!StringUtils.isEmpty(ewsTopic.getTopicName()),EwsTopicEntity::getTopicName,ewsTopic.getTopicName())
+                .like(!StringUtils.isEmpty(ewsTopic.getTopicConfig()),EwsTopicEntity::getTopicConfig,ewsTopic.getTopicConfig())
+                .like(!StringUtils.isEmpty(ewsTopic.getTopicDesc()),EwsTopicEntity::getTopicDesc,ewsTopic.getTopicDesc())
                 .orderByDesc(EwsTopicEntity::getTopicId)
                 .list();
     }
@@ -75,7 +75,12 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
 
     @Override
     public EwsTopicEntity getTopicByMailId(Long mailId) {
-        return baseMapper.selectById(mailId);
+        EwsMailEntity mail = ewsEmailService.findOne(mailId);
+        String topicId = null;
+        if(mail!=null){
+            topicId = mail.getTopicId();
+        }
+        return baseMapper.selectById(topicId);
     }
 
     @Override

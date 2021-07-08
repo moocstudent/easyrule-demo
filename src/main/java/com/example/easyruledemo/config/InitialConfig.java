@@ -9,6 +9,8 @@ import com.example.easyruledemo.service.IEwsFolderService;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.service.IEwsTopicService;
 import lombok.extern.slf4j.Slf4j;
+import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
+import microsoft.exchange.webservices.data.property.complex.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,16 +40,18 @@ public class InitialConfig {
     private IEwsTopicService ewsTopicService;
 
     /**
-     * 初始化邮件文件夹,全部
+     * 初始化邮件文件夹,全部并根据itemActionType.D
      * 也可以根据传入邮件来进行单条生成
      * 这里是默认获取全部的进行生成
-     * todo 做成接口单独调用产生文件夹
+     * todo 做成接口单独调用产生文件夹,根据email主体
+     * testok
      */
-//    @PostConstruct
+    @PostConstruct
     public void initMailFolders() {
         //the all mailConfig valid ItemActionTypes
         List<EwsMailEntity> mailConfigList
-                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D, ItemActionType.DC);
+                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D);
+        log.info("邮箱文件夹初始化:{}",mailConfigList);
 //        mailConfigList.stream()
 //                .filter(mail -> mail.getTopicId() != null && mail.getTopicId().length() > 0)
 //                .map(mail -> {
@@ -110,12 +114,53 @@ public class InitialConfig {
      */
     @Transactional
     protected Boolean createRuleNeedsFolders(EwsFoldersEntity ewsFolders, EwsMailEntity mail) {
-        String folderUnionId = ewsFolderService.createFolder(ewsFolders.getFolderName(), mail);
+        String folderUnionId = ewsFolderService.createFolder(ewsFolders.getFolderName(), WellKnownFolderName.Inbox, mail);
         log.info("folderUnionId:{}", folderUnionId);
         //保存folderUnionId到数据库表ews_mail_folders
         ewsFolders.setFolderId(folderUnionId);
         return ewsFolderService.saveOrUpdateFolder(ewsFolders);
     }
+
+    /**
+     * 初始化规则
+     */
+    @PostConstruct
+    public void initialRules(){
+        List<EwsMailEntity> mailConfigList
+                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D);
+        log.info("邮箱规则初始化:{}",mailConfigList);
+
+        List<Integer> fireRuleCodeList = mailConfigList.stream()
+                .filter(mail -> mail.getTopicId() != null && mail.getTopicId().length() > 0)
+                .map(mail -> {
+                    /**
+                     * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
+                     */
+                    List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(mail.getTopicId());
+                    log.info("rules in initial:{}",rules);
+                    return rules.stream()
+                            .map(rull -> {
+
+                                Integer fireCode = ewsRuleService.ewsRuleFire(rull, mail);
+                                if (fireCode > 0) {
+                                    log.info("This rule is fire !");
+                                    return fireCode;
+                                } else {
+                                    throw new RuntimeException("no rule to fire");
+                                }
+                            })
+                            .collect(Collectors.toList());
+                })
+                .reduce((fireOk1, fireOk2) -> {
+                    fireOk1.addAll(fireOk2);
+                    return fireOk1;
+                })
+                .get();
+        int fireRuleCode = fireRuleCodeList.size();
+        log.info("执行规则条数:{}",fireRuleCode);
+    }
+
+
 //
 //    /**
 //     * 如果有重复的文件夹，则过滤

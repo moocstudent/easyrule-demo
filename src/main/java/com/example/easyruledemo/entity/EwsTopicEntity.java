@@ -33,17 +33,17 @@ public class EwsTopicEntity {
     @ApiModelProperty("主题表主键")
     private Long topicId;
 
-    @ApiModelProperty("主题名称")
+    @ApiModelProperty(value = "主题名称",required = true)
     private String topicName;
 
-    @ApiModelProperty("主题简介")
+    @ApiModelProperty(value = "主题简介",required = true)
     private String topicDesc;
 
     /**
      * 形式大概类似:
      * {'D':'xxxkkkkkjdjj','DC':'kkkjjjddd'}
      */
-    @ApiModelProperty("主题配置串,根据子规则类型生成")
+    @ApiModelProperty(value = "主题配置串,根据子规则类型生成",required = true)
     private String topicConfig;
 
     private Integer deleteFlag;

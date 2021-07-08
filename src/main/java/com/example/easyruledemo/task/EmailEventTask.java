@@ -7,8 +7,10 @@ import com.example.easyruledemo.rules.MailEventsThread;
 import com.example.easyruledemo.service.IEwsEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -35,12 +37,11 @@ public class EmailEventTask {
      * fixme 执行初始化订阅前,需要一次性创建被监测邮箱的初始化文件夹
      */
 //    @Scheduled(cron = "0 0 1 * * ?")
-//    @PostConstruct
+    @PostConstruct
     public void initialAttachSubscriptionToday(){
-//        SubscriptionContainer.unsubscription();
         log.info("开始初始化今日邮箱订阅监听");
         Integer size = SubscriptionContainer.initialSubscriptionToday(ewsEmailService
-                .getMailConfigList(EwsMailEntity.builder().build()));
+                .getMailConfigList(EwsMailEntity.builder().build(),ItemActionType.D));
         log.info("今日邮箱订阅监听完成,监听数量:{}个",size);
     }
 
@@ -48,7 +49,7 @@ public class EmailEventTask {
      * todo 将监听事件分离化
      * 邮件监听
      */
-//    @Scheduled(cron = "*/30 * * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     public void emailAttachEventPoll() {
         if(!(SubscriptionContainer.getInitialCount()>0)){
             log.info("如果subscription监听未初始化,则不进行事件处理");
@@ -57,7 +58,7 @@ public class EmailEventTask {
         try {
             List<EwsMailEntity> mailConfigList = ewsEmailService
                     .getMailConfigList(EwsMailEntity.builder().build(),
-                    /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.D, ItemActionType.DC);
+                    /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.D);
             for (EwsMailEntity mailConfig : mailConfigList){
                 MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
                 mailEventsThread.start();

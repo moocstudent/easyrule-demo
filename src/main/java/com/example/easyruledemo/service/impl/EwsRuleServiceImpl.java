@@ -313,9 +313,9 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public List<EwsRuleEntity> listSelective(EwsRuleEntity ewsRule) {
         return new LambdaQueryChainWrapper<EwsRuleEntity>(baseMapper)
                 .eq(EwsRuleEntity::getDeleteFlag, 0)
-                .like(StringUtils.isEmpty(ewsRule.getDisplayName()), EwsRuleEntity::getDisplayName, ewsRule.getDisplayName())
-                .eq(StringUtils.isEmpty(ewsRule.getIsEnabled()), EwsRuleEntity::getIsEnabled, ewsRule.getIsEnabled())
-                .eq(StringUtils.isEmpty(ewsRule.getItemActionType()), EwsRuleEntity::getItemActionType, ewsRule.getItemActionType())
+                .like(!StringUtils.isEmpty(ewsRule.getDisplayName()), EwsRuleEntity::getDisplayName, ewsRule.getDisplayName())
+                .eq(!StringUtils.isEmpty(ewsRule.getIsEnabled()), EwsRuleEntity::getIsEnabled, ewsRule.getIsEnabled())
+                .eq(!StringUtils.isEmpty(ewsRule.getItemActionType()), EwsRuleEntity::getItemActionType, ewsRule.getItemActionType())
                 .orderByDesc(EwsRuleEntity::getRuleId)
                 .list();
     }
