@@ -6,15 +6,19 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
+import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.mapper.EwsRuleMapper;
+import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsRuleService;
+import com.example.easyruledemo.service.IRuleFolderRelationService;
 import com.example.easyruledemo.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.property.complex.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -33,6 +37,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity>
         implements IEwsRuleService {
+    @Autowired
+    private IRuleFolderRelationService ruleFolderRelationService;
+    @Autowired
+    private IEwsEmailService ewsEmailService;
 
     @Transactional
     @Override
@@ -64,7 +72,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
 
     @Override
     public Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity) {
-        Rule rule = this.transformRuleEntity(ewsRuleEntity);
+        Rule rule = this.transformRuleEntity(ewsRuleEntity, null);
         //是否启用
         rule.setIsEnabled(true);
 
@@ -84,10 +92,9 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
 
     @Override
     public Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
-        Rule rule = this.transformRuleEntity(ewsRuleEntity);
-        log.debug("transformRule:{}", rule);
+        Rule rule = this.transformRuleEntity(ewsRuleEntity, ewsMail);
+        log.warn("transformRule:{}", rule);
         //是否启用
-        rule.setIsEnabled(true);
         CreateRuleOperation createOperation = new CreateRuleOperation(rule);
         List<RuleOperation> ruleList = new ArrayList<RuleOperation>();
         ruleList.add(createOperation);
@@ -216,6 +223,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
 
     @Override
     public Integer disabledRuleByEmAddrAndRuleId(String emailAddr, String ruleId) {
+//        ewsEmailService.getMailConfigList()
         return null;
     }
 
@@ -259,7 +267,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
-    public Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity) {
+    public Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
         //basic field copy
         Rule rule = BeanUtil.getClass(Rule.class, ewsRuleEntity).orElse(new Rule());
         System.out.println("impl name:" + rule.getDisplayName());
@@ -270,25 +278,25 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         EwsActionsEntity ewsActionsEntity
                 = JSON.parseObject(ewsRuleEntity.getActions(), EwsActionsEntity.class);
 
+        //获取到文件夹的枚举code
+        String moveToFolder = ewsActionsEntity.getMoveToFolder();
+        String copyToFolder = ewsActionsEntity.getCopyToFolder();
+        if (!StringUtils.isEmpty(moveToFolder)) {
+            //根据枚举和mailId查folderId
+            EwsRuleFolderRelation oneByConditionCode = ruleFolderRelationService.findOneByConditionCode(ewsRuleEntity.getRuleId(), moveToFolder, ewsMail.getMailId());
+            log.info("folderId in rule impl move:{}",oneByConditionCode.getFolderId());
+            ewsActionsEntity.setMoveToFolder(oneByConditionCode.getFolderId());
+        }
+        if (!StringUtils.isEmpty(copyToFolder)) {
+            //根据枚举和mailId查folderId
+            EwsRuleFolderRelation oneByConditionCode = ruleFolderRelationService.findOneByConditionCode(ewsRuleEntity.getRuleId(), copyToFolder, ewsMail.getMailId());
+            log.info("folderId in rule impl copy:{}",oneByConditionCode.getFolderId());
+            ewsActionsEntity.setCopyToFolder(oneByConditionCode.getFolderId());
+        }
+
         this.reflectConditions(ewsConditionsEntity, rule);
         this.reflectActions(ewsActionsEntity, rule);
-        //todo 设定folder和folder unionId 邮箱关联 actions
 
-//
-//        RulePredicates conditions = rule.getConditions();
-//        StringList containsSubjectStrings = conditions.getContainsSubjectStrings();
-//        //testok
-//        containsSubjectStrings.add("带附件");
-//        RuleActions actions = rule.getActions();
-//        try {
-////            actions.setMoveToFolder(new FolderId(WellKnownFolderName.DeletedItems));
-//            actions.setMoveToFolder(FolderId.getFolderIdFromString(ewsRuleEntity.getItemMovedFolderIdStr()));
-////            actions.set
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.out.println("set error");
-//            return null;
-//        }
         return rule;
 
     }
@@ -352,6 +360,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     @Override
     public List<EwsRuleEntity> filterRuleByConfigEnum(String config, List<ItemActionType> ruleEnums) {
         JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
+        log.info("configObject:{}",ruleConfigJsonObject);
         List<String> ruleIdList = ruleEnums.stream()
                 .filter(rull -> {
                     return ruleConfigJsonObject.containsKey(rull.getCode());
@@ -365,7 +374,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
 //            if(ruleEntityList==null){
 //                ruleEntityList = new ArrayList<>();
 //            }
-            //fixme 需要加一个mapper sql 根据id查实体list
+            //fixme 需要加一个mapper sql 根据id查实体list ,而取消这种for循环
             EwsRuleEntity ruleEntity = this.getById(ruleId);
             ruleEntityList.add(ruleEntity);
         }
@@ -428,7 +437,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         }
     }
 
-    //todo test
+    //testok
     public void reflectActions(EwsActionsEntity ewsActionsEntity, Rule rule) {
         try {
             Field[] declaredFields = ewsActionsEntity.getClass().getDeclaredFields();
@@ -451,6 +460,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
                         declaredFieldActions.set(actions, thisEmailAddresses);
                     } else if (actionFName.endsWith("Folder")) {
                         FolderId thisFolderId = new FolderId(String.valueOf(actionF.get(ewsActionsEntity)));
+                        log.info("folder in reflect :{}",actionF.get(ewsActionsEntity));
                         declaredFieldActions.set(actions, thisFolderId);
                     } else {
                         declaredFieldActions.set(actions, actionF.get(ewsActionsEntity));

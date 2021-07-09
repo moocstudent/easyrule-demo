@@ -80,7 +80,8 @@ class EmailRuleFilterTest extends BaseTest {
 
     @Test
     public void testEmailDelete() {
-        Integer deleteRuleByEmAddr = ewsRuleService.deleteRuleByEmAddr("implementsteam@outlook.com");
+        Integer deleteRuleByEmAddr = ewsRuleService.deleteRuleByEmAddr(EwsMailEntity.builder()
+                .email("implementsteam@outlook.com").password("zhangqi1112").build());
         System.out.println("deleteSize:" + deleteRuleByEmAddr);
     }
 

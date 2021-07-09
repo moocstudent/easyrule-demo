@@ -1,6 +1,7 @@
 package com.example.easyruledemo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
@@ -42,7 +43,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
     @Override
     public Integer unSubscriptionByMailCache(EwsMailEntity ewsMail) {
         ExchangeService exchangeService = EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword());
-        String key = ewsMail.getEmail()+ewsMail.getPassword();
+        String key = ewsMail.getEmail() + ewsMail.getPassword();
         String subscriptionId = "从缓存中根据key拿取订阅id";
         try {
             exchangeService.unsubscribe(subscriptionId);
@@ -62,17 +63,36 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
     }
 
     @Override
+    public Boolean saveOrUpdateSubcriptionByKey(EwsSubscriptionEntity ewsSubscription) {
+        LambdaQueryWrapper<EwsSubscriptionEntity> queryWrapper =
+                new LambdaQueryWrapper<EwsSubscriptionEntity>()
+                        .eq(EwsSubscriptionEntity::getSubscriptionKey, ewsSubscription.getSubscriptionKey())
+                        .eq(EwsSubscriptionEntity::getDeleteFlag, 0);
+        List list = Optional.ofNullable(baseMapper.selectList(queryWrapper)).orElse(Collections.EMPTY_LIST);
+        if (list.size()==0){
+            return this.saveOrUpdateSubcription(ewsSubscription);
+        }
+        //有的话则更新
+        LambdaUpdateWrapper<EwsSubscriptionEntity> updateWrapper =
+                new LambdaUpdateWrapper<EwsSubscriptionEntity>()
+                        .eq(EwsSubscriptionEntity::getSubscriptionKey, ewsSubscription.getSubscriptionKey())
+                        .eq(EwsSubscriptionEntity::getDeleteFlag, 0);
+        return update(ewsSubscription, updateWrapper);
+    }
+
+    @Override
     public String getSubscriptionIdByKey(String key) {
-        log.info("getSubscriptionIdByKey invoke, the key:{}",key);
+        log.info("getSubscriptionIdByKey invoke, the key:{}", key);
         LambdaQueryWrapper<EwsSubscriptionEntity> queryWrapper = new LambdaQueryWrapper<EwsSubscriptionEntity>()
-                .eq(EwsSubscriptionEntity::getSubscriptionKey,key)
-                .eq(EwsSubscriptionEntity::getDeleteFlag,0);
+                .eq(EwsSubscriptionEntity::getSubscriptionKey, key)
+                .eq(EwsSubscriptionEntity::getDeleteFlag, 0)
+                .orderByDesc(EwsSubscriptionEntity::getSubscriptionDate);
         List<EwsSubscriptionEntity> subscriptionList
                 = Optional.ofNullable(baseMapper.selectList(queryWrapper)).orElse(Collections.EMPTY_LIST);
-        if(subscriptionList.size()>0){
+        if (subscriptionList.size() > 0) {
             EwsSubscriptionEntity ewsSubscription = subscriptionList.stream().findFirst().get();
             return ewsSubscription.getSubscriptionId();
-        }else{
+        } else {
             return null;
         }
     }
@@ -91,9 +111,9 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
     @Override
     public Integer updateByKey(EwsSubscriptionEntity ewsSubscriptionEntity) {
         LambdaQueryWrapper updateWrapper = new LambdaQueryWrapper<EwsSubscriptionEntity>()
-                .eq(EwsSubscriptionEntity::getSubscriptionKey,ewsSubscriptionEntity.getSubscriptionKey())
-                .eq(EwsSubscriptionEntity::getDeleteFlag,0);
-        return baseMapper.update(ewsSubscriptionEntity,updateWrapper);
+                .eq(EwsSubscriptionEntity::getSubscriptionKey, ewsSubscriptionEntity.getSubscriptionKey())
+                .eq(EwsSubscriptionEntity::getDeleteFlag, 0);
+        return baseMapper.update(ewsSubscriptionEntity, updateWrapper);
     }
 
 

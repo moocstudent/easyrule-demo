@@ -98,7 +98,7 @@ public class MailActionsThread extends Thread{
                 if (!saveDir.exists()){
                     saveDir.mkdir();
                 }
-                if(StringUtils.isEmpty(copyPath)){
+                if(!StringUtils.isEmpty(copyPath) && copyPath!=null){
                     if(copyPath.contains("YYYYMMDD")){
                         copyPath = copyPath.replace("YYYYMMDD",yyyyMMdd);
                         File copyDir = new File(copyPath);
@@ -116,7 +116,8 @@ public class MailActionsThread extends Thread{
                         if(!StringUtils.isEmpty(nameFilter) && !attachName.contains(nameFilter)){
                             continue;
                         }
-                        ((FileAttachment) attach).load(savePath+File.separator +attachName);
+//                        ((FileAttachment) attach).load(savePath+File.separator +attachName);
+                        ((FileAttachment) attach).load(savePath+attachName);
                         log.info("保存主题:"+emailMessage.getSubject()+"附件"+(savePath+File.separator+attachName));
                         //如果copyPath不为空,则进行文件拷贝,否则不然
                         if(!StringUtils.isEmpty(copyPath)){
@@ -160,11 +161,10 @@ public class MailActionsThread extends Thread{
     public void start(){
         List<EwsRuleEntity> rulesThisTime = mailConfig.getMailRulesValidThisTime();
         for(EwsRuleEntity rule:rulesThisTime){
-            //fixme
             log.info("rule in thread:{}",rule);
 //            ItemActionsEntity itemActions = JSONObject.parseObject(JSON.toJSONString(rule.getItemActions()), ItemActionsEntity.class);
-            log.info("rule item actions :{}",JSON.toJSONString(rule.getItemActions()));
             ItemActionsEntity itemActions = JSONObject.parseObject(rule.getItemActions(), ItemActionsEntity.class);
+            log.info("itemActions:{}",itemActions);
             if(ItemActionType.D.getCode().equals(rule.getItemActionType())){
                 this.download(itemActions.getDownloadPath());
             }else if (ItemActionType.DC.getCode().equals(rule.getItemActionType())){

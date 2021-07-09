@@ -40,7 +40,7 @@ public class MailEventsThread extends Thread {
             // Loop through all item-related events.
             for (ItemEvent itemEvent : events.getItemEvents()) {
                 if (itemEvent.getEventType() == EventType.NewMail) {
-                    log.error("新的邮件已到达 itemId:{}" + itemEvent.getItemId());
+                    log.info("新的邮件已到达 itemId:{}" + itemEvent.getItemId());
                     EmailMessage message = EmailMessage.bind(EwsExContainer.getExchangeService(
                             mailConfig.getEmail(), mailConfig.getPassword()),
                             itemEvent.getItemId()

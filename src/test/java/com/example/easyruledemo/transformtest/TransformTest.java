@@ -60,12 +60,12 @@ class TransformTest extends BaseTest {
                 .actions(json2)
                 .priority(1)
                 .build();
-        Rule rule1 = ewsRuleService.transformRuleEntity(build);
-        System.out.println("rule1:"+rule1);
-        System.out.println("rule1 bool:"+rule1.getConditions().getHasAttachments());
-        System.out.println("rule1 stringlist:"+rule1.getConditions().getContainsSubjectStrings());
-        System.out.println("rule1 actions stringlist:"+rule1.getActions().getAssignCategories());
-        System.out.println("rule1 actions stringlist:"+rule1.getActions().getMarkAsRead());
+//        Rule rule1 = ewsRuleService.transformRuleEntity(build);
+//        System.out.println("rule1:"+rule1);
+//        System.out.println("rule1 bool:"+rule1.getConditions().getHasAttachments());
+//        System.out.println("rule1 stringlist:"+rule1.getConditions().getContainsSubjectStrings());
+//        System.out.println("rule1 actions stringlist:"+rule1.getActions().getAssignCategories());
+//        System.out.println("rule1 actions stringlist:"+rule1.getActions().getMarkAsRead());
 
 //        String actionJson = "{}";
     }
@@ -95,12 +95,12 @@ class TransformTest extends BaseTest {
                 .priority(1)
                 .build();
 
-        Rule rule2 = ewsRuleService.transformRuleEntity(ruleEntity);
-        System.out.println("rule2:"+rule2);
-        System.out.println("rule2 bool:"+rule2.getConditions().getHasAttachments());
-        System.out.println("rule2 stringlist:"+rule2.getConditions().getContainsSubjectStrings());
-        System.out.println("rule2 actions move to folder:"+rule2.getActions().getMoveToFolder());
-        System.out.println("rule2 actions stringlist redirectTo :"+rule2.getActions().getRedirectToRecipients().getItems().get(0));
+//        Rule rule2 = ewsRuleService.transformRuleEntity(ruleEntity);
+//        System.out.println("rule2:"+rule2);
+//        System.out.println("rule2 bool:"+rule2.getConditions().getHasAttachments());
+//        System.out.println("rule2 stringlist:"+rule2.getConditions().getContainsSubjectStrings());
+//        System.out.println("rule2 actions move to folder:"+rule2.getActions().getMoveToFolder());
+//        System.out.println("rule2 actions stringlist redirectTo :"+rule2.getActions().getRedirectToRecipients().getItems().get(0));
     }
 
     //testok

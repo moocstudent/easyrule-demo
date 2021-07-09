@@ -1,11 +1,13 @@
 package com.example.easyruledemo.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.EwsTopicEntity;
+import com.example.easyruledemo.enums.FolderNameEnum;
 import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.mapper.EwsMailMapper;
 import com.example.easyruledemo.service.IEwsEmailService;
@@ -103,27 +105,14 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
                 .orderByDesc(EwsMailEntity::getMailId)
                 .list();
         List<ItemActionType> ruleEnums = Arrays.asList(ruleTypes);
-        long validRuleEnumCount = mailEntityList.stream()
-                .filter(mail -> ruleEnums.stream()
-                        .filter(d->mail.getTopicId()!=null && mail.getTopicId()!="")
-                        .filter(ruleType -> {
-                            EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
-                            System.out.println(topic);
-                            return topic.getTopicConfig().indexOf(ruleType.getKey()) > -1;
-                        })
-                        .count() > 0)
-                .count();
-        if (validRuleEnumCount == 0) {
-            return Collections.emptyList();
-        }
         //过滤符合当前传入ruleTypes的mailEntity
         List<EwsMailEntity> ewsMailList = ruleEnums.stream()
                 .map(ruleType -> {
                     return mailEntityList.stream()
                             .filter(mail -> {
                                 EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
-                                System.out.println(topic);
-                                return topic.getTopicConfig().indexOf(ruleType.getKey()) > -1;
+                                JSONObject ruleConfigJsonObject = JSONObject.parseObject(topic.getTopicConfig());
+                                return ruleConfigJsonObject.containsKey(ruleType.getCode());
                             })
                             .collect(Collectors.toList());
                 })
@@ -132,14 +121,31 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
                     return validRuleEml1;
                 }).orElse(Collections.emptyList());
         log.info("valid ruleTypes mail list:{}",ewsMailList);
+        if (ewsMailList.size()==0){
+            log.warn("并没有符合这次要求的email");
+            return Collections.emptyList();
+        }
         //根据topicConfig以及给定需要的
+        Map<String,EwsFoldersEntity> nameFolderMap = new HashMap<>();
         for(EwsMailEntity mail:ewsMailList){
             EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
             String topicConfig = topic.getTopicConfig();
+            log.info("topicConfig:{}",topicConfig);
             List<EwsRuleEntity> ewsRuleEntityList = ewsRuleService.filterRuleByConfigEnum(topicConfig, ruleEnums);
+            List<Long> ruleIdList = ewsRuleEntityList.stream()
+                    .map(rule -> {
+                        return rule.getRuleId();
+                    }).collect(Collectors.toList());
+            log.info("email 获取mailConfig:");
             mail.setMailRulesValidThisTime(ewsRuleEntityList);
-//            ewsRuleService.filterRuleByConfigEnum(mail.)
-//            List<EwsRuleEntity> rulesByTopicId = ewsRuleService.getRulesByTopicId(mail.getTopicId());
+            log.info("query ruleIdList:{}",ruleIdList);
+            if(ruleIdList.size()==0){
+                throw new RuntimeException("获取到ruleIdList为空,请检查重试.");
+            }
+            EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
+            mail.setMailFolders(foldersEntity);
+            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
+            mail.setMailFoldersMap(nameFolderMap);
         }
         log.info("满足itemActionType条件的mail:"+ewsMailList);
         return ewsMailList;

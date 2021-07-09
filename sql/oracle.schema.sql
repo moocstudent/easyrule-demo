@@ -24,7 +24,6 @@ create table ews_rule
 create table ews_mail_folders
 (
     ews_folder_id varchar2(1000) primary key,
-    folder_id     varchar2(3000) not null,
     folder_code   varchar2(1500) not null unique,
     folder_name   varchar2(2000) unique,
     delete_flag   number(1) default 0 check (delete_flag in (0, 1))
@@ -36,6 +35,8 @@ create table ews_rule_folder_relation
     relation_id   varchar2(1000) primary key,
     rule_id       varchar2(1000) not null,
     ews_folder_id varchar2(1000) not null,
+    folder_id     varchar2(3000) not null,
+    mail_id       varchar2(1000) not null,
     delete_flag   number(1) default 0 check (delete_flag in (0, 1))
 );
 
@@ -43,7 +44,7 @@ create table ews_rule_folder_relation
 create table ews_mail_config
 (
     mail_id     varchar2(1000) primary key,
-    email        varchar2(1500) not null unique,
+    email       varchar2(1500) not null unique,
     password    varchar2(2000) not null,
     topic_id    varchar2(1000),
     delete_flag number(1) default 0 check (delete_flag in (0, 1))
