@@ -2,6 +2,7 @@ package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
+import com.example.easyruledemo.entity.EwsRuleEntity;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
 
@@ -49,6 +50,7 @@ public interface IEwsFolderService {
     Boolean saveOrUpdateFolder(EwsFoldersEntity ewsFoldersEntity);
 
     //保存或更新folder根据folderId(unionId)
+    @Deprecated
     Boolean saveOrUpdateByFUnionId(EwsFoldersEntity ewsFoldersEntity);
 
     EwsFoldersEntity getByEmail(String email);
@@ -65,6 +67,7 @@ public interface IEwsFolderService {
 
     //获取folder名称集合根据规则id
 //    List<String> listFolderNamesByRuleId(String ruleId);
+    @Deprecated
     List<String> listFolderNamesByRuleId(Long ruleId);
 
     //查folder实体根据ruleId
@@ -76,6 +79,12 @@ public interface IEwsFolderService {
 
     //生成folder根据主题,获取未执行操作的文件夹的folderId实体list用于newEmail事件监听
     List<FolderId> listFolderIdByTopicIdUnAction(String topicId);
+
+    //根据folderCode查找一个文件夹
+   List<EwsFoldersEntity> findByFolderCode(String folderCode);
+
+    //根据给定规则idlist,以及对应folderCode,查一个文件夹
+    EwsFoldersEntity findInRuleRelation(List<?> ruleIdList,String folderCode);
 
 
 

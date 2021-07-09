@@ -26,12 +26,13 @@ import java.util.List;
 @ApiModel("ews收件主题配置实体")
 public class EwsTopicEntity {
 
-//    @TableId(type = IdType.ASSIGN_UUID)
-//    private String topicId;
-//
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty("主题表主键")
-    private Long topicId;
+    private String topicId;
+//
+//    @TableId(type = IdType.AUTO)
+//    @ApiModelProperty("主题表主键")
+//    private Long topicId;
 
     @ApiModelProperty(value = "主题名称",required = true)
     private String topicName;

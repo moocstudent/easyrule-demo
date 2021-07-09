@@ -157,20 +157,6 @@ public class SubscriptionContainer {
      * 不判断,直接取消全部订阅，根据传入的mailList
      */
     public static void unsubscriptionByMailList(List<EwsMailEntity> mailConfigList) {
-//        mailConfigList.stream()
-//                .map(mail->{
-//                    String mailKey = mail.getEmail() + mail.getPassword();
-//                    String key = SUBSCRIPTION_KEY_INIT+ LocalDate.now()+mailKey;
-//                    try {
-//                        ExchangeService onlyService = EwsExContainer.getExchangeService(mail.getEmail(), mail.getPassword());
-//                        //根据key查询subscriptionId
-//                        String subscriptionId = subcriptionService.getSubscriptionIdByKey(key);
-//                        onlyService.unsubscribe(subscriptionId);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    return 1;
-//                }).count();
         mailConfigList.forEach(mail -> {
             String mailKey = mail.getEmail() + mail.getPassword();
             String key = SUBSCRIPTION_KEY_INIT + LocalDate.now() + mailKey;
@@ -227,7 +213,7 @@ public class SubscriptionContainer {
      * @return
      */
     public static Integer initialSubscriptionToday(List<EwsMailEntity> mailConfigList) {
-//        unsubscriptionByMailList(mailConfigList);
+        unsubscriptionByMailList(mailConfigList);
         String todaySubscriptionKeyPrefix = SUBSCRIPTION_KEY_INIT + LocalDate.now();
         PullSubscription emailNotifySubscription = null;
         int count = 0;
@@ -258,7 +244,7 @@ public class SubscriptionContainer {
             return pullSubscriptionMap.get(todaySubscriptionKeyFull);
         }
         PullSubscription emailNotifySubscription =
-                getEmailNotifySubscription(ONE_DAY_MINUTES, mailConfig);
+                getEmailNotifySubscription(ONE_DAY_MINUTES, mailConfig,todaySubscriptionKeyFull);
         pullSubscriptionMap.put(todaySubscriptionKeyFull, emailNotifySubscription);
         return emailNotifySubscription;
     }
@@ -338,7 +324,7 @@ public class SubscriptionContainer {
             String pullSubscriptionId = pullSubscription.getId();
             log.info("pullSubscriptionId:{}", pullSubscriptionId);
             Boolean saveSubscription = subcriptionService
-                    .saveOrUpdateSubcription(
+                    .saveOrUpdateSubcriptionByKey(
                             EwsSubscriptionEntity
                                     .builder()
                                     .subscriptionId(pullSubscriptionId)

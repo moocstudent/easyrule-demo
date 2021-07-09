@@ -53,8 +53,15 @@ public class EwsTopicController {
 
     @ApiOperation("根据邮件主键获取它的主题")
     @GetMapping("/findTopic/{mailId}")
-    public void topicByMailId(@PathVariable("mailId") String mailId){
-        EwsTopicEntity topicByMailId = ewsTopicService.getTopicByMailId(mailId);
-        System.out.println("find topic by mailId:"+topicByMailId);
+    public Result topicByMailId(@PathVariable("mailId") String mailId){
+        return ResultUtil.success(ewsTopicService.getTopicByMailId(mailId));
+    }
+
+    @ApiOperation("根据邮件主键获取它的主题")
+    @GetMapping("/disable/{topicId}/{bothRules}")
+    public Result disabledTopic(@PathVariable("topicId") String topicId,@PathVariable("bothRules") Boolean bothRules){
+        //disabled the topic
+        //bothRules-> rules->disable
+        return null;
     }
 }

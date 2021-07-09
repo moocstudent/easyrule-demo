@@ -35,9 +35,12 @@ public class EwsMailEntity {
 
 //    @TableId(type = IdType.ASSIGN_UUID)
 //    private String mailId;
-    @TableId(type = IdType.AUTO)
+//    @TableId(type = IdType.AUTO)
+//    @ApiModelProperty("邮件配置表主键")
+//    private Long mailId;
+    @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty("邮件配置表主键")
-    private Long mailId;
+    private String mailId;
 
     @ApiModelProperty(value = "邮件地址",required = true)
     private String email;

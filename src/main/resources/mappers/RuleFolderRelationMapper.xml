@@ -1,65 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.easyruledemo.mapper.EwsFoldersMapper">
-
-
-    <!-- auto generated map -->
-    <resultMap id="BaseResultMap" type="com.example.easyruledemo.entity.EwsFoldersEntity">
-        <id column="ews_folder_id"  property="ewsFolderId"/>
-        <result column="folder_code" property="folderCode"/>
-        <result column="folder_name" property="folderName"/>
-        <result column="folder_id" property="folderId"/>
-        <result column="delete_flag" property="deleteFlag"/>
-<!--        <result column="rule_type" property="ruleT"/>-->
-    </resultMap>
+<mapper namespace="com.example.easyruledemo.mapper.EwsRuleFolderRelationMapper">
 
     <resultMap id="RelationMap" type="com.example.easyruledemo.entity.relation.EwsRuleFolderRelation">
         <id column="relation_id"  property="relationId"/>
         <result column="rule_id" property="ruleId"/>
         <result column="ews_folder_id" property="ewsFolderId"/>
+        <result column="folder_id" property="folderId"/>
+        <result column="folder_code" property="folderCode"/>
+        <result column="folder_name" property="folderName"/>
+        <result column="mail_id" property="mailId"/>
         <result column="delete_flag" property="deleteFlag"/>
     </resultMap>
     <!-- auto generated base column list -->
-    <sql id="Base_Column_List">
-        ews_folder_id,folder_id,folder_code,folder_name,delete_flag
-    </sql>
-
     <sql id="Relation_Column_List">
-        relation_id,rule_id,ews_folder_id,delete_flag
+        f.folder_code,f.folder_name,r.relation_id,r.rule_id,r.ews_folder_id,r.folder_id,r.mail_id,r.delete_flag
     </sql>
 
-    <select id="listFolderByRuleId" resultMap="RelationMap">
-        select
-        <include refid="Relation_Column_List"/>
-        from ews_mail_folders
-        where ews_folder_id in
-        (select r.ews_folder_id
-        from ews_rule_folder_relation r
-        where r.rule_id = #{ruleId})
-    </select>
+    <sql id="Just_Relation_Column_List">
+        r.relation_id,r.rule_id,r.ews_folder_id,r.folder_id,r.mail_id,r.delete_flag
+    </sql>
 
-    <select id="findFolderByFolderCode" resultMap="BaseResultMap">
-        select
-            r.folder_id,f.folder_code,f.folder_name
+    <select id="listFolderRelationByRuleId" resultMap="RelationMap">
+        select <include refid="Relation_Column_List" />
         from ews_mail_folders f left join ews_rule_folder_relation r
         on f.ews_folder_id = r.ews_folder_id
-        where f.folder_code = #{folderCode}
-        and f.delete_flag = 0 and r.delete_flag = 0
+        where r.rule_id = #{ruleId}
     </select>
 
-    <!--一个topic下的rule不能重复,ruleId不能重复,对应folder_code不重复(根据rule_level添加时)-->
-    <select id="findFolderByFolderCodeAndRuleIds" resultMap="BaseResultMap">
-        select
-            r.folder_id,f.folder_code,f.folder_name
+    <select id="findOneByConditions" resultMap="RelationMap">
+        select <include refid="Just_Relation_Column_List" />
         from ews_mail_folders f left join ews_rule_folder_relation r
-                                          on f.ews_folder_id = r.ews_folder_id
-        where f.folder_code = #{folderCode}
-          and f.delete_flag = 0 and r.delete_flag = 0
-          and r.rule_id in
-        <foreach collection="ruleIds" item="id" index="index" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
+        on f.ews_folder_id = r.ews_folder_id
+        where r.rule_id = #{param1}
+        and f.folder_code = #{param2}
+        and r.mail_id = #{param3}
     </select>
+
 
     <!--    <sql id="Alias_Column_List">-->
 <!--        gra.repay_all_id, gra.org_num, gra.company_scale, gra.loan_no, gra.loan_amount, gra.interest_amount-->

@@ -29,14 +29,16 @@ public class EwsFoldersEntity {
     //使用单个文件id存一条形式
 
     //主键
-//    @TableId(type = IdType.ASSIGN_UUID)
-//    private String ewsFolderId;
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty("文件夹表主键")
-    private Long ewsFolderId;
+    private String ewsFolderId;
+//    @TableId(type = IdType.AUTO)
+//    @ApiModelProperty("文件夹表主键")
+//    private Long ewsFolderId;
 
     //floderId字符串
-    @ApiModelProperty("文件夹id字符串,规则生成到邮箱后产生,不可被修改")
+//    @ApiModelProperty("文件夹id字符串,规则生成到邮箱后产生,不可被修改")
+    @TableField(exist = false)
     private String folderId;
 
     //attach-un-download

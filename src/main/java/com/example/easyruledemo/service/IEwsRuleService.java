@@ -35,7 +35,7 @@ public interface IEwsRuleService {
     @Deprecated
     Integer deleteRuleByEmAddr(String emailAddr);
 
-    //
+    //删除规则
     Integer deleteRuleByEmAddr(EwsMailEntity ewsMail);
 
     //testok 让邮件中的规则disabled不再奏效
@@ -49,7 +49,7 @@ public interface IEwsRuleService {
     Integer disabledRuleByEmAddr(EwsMailEntity ewsMail);
 
     //将数据库中的ruleEntity转换为可用的ewsRule
-    Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity);
+    Rule transformRuleEntity(EwsRuleEntity ewsRuleEntity,EwsMailEntity ewsMail);
 
     //根据主题id获取旗下rule list
     List<EwsRuleEntity> getRulesByTopicId(String topicId);

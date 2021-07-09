@@ -20,7 +20,6 @@ create table ews_rule
 create table ews_mail_folders
 (
     ews_folder_id bigint(20) primary key,
-    folder_id     varchar(3000),
     folder_code   varchar(1500) not null,
     folder_name   varchar(2000) not null,
     delete_flag   tinyint(1) default 0 check (delete_flag in (0, 1))
@@ -30,8 +29,10 @@ create table ews_mail_folders
 create table ews_rule_folder_relation
 (
     relation_id   bigint(20) primary key,
-    rule_id       bigint(20) not null,
-    ews_folder_id bigint(20) not null,
+    rule_id       bigint(20)    not null,
+    ews_folder_id bigint(20)    not null,
+    folder_id     varchar(3000) not null,
+    mail_id       bigint(20)    not null,
     delete_flag   tinyint(1) default 0 check (delete_flag in (0, 1))
 );
 
@@ -39,7 +40,7 @@ create table ews_rule_folder_relation
 create table ews_mail_config
 (
     mail_id     bigint(20) primary key,
-    email        varchar(1500) not null,
+    email       varchar(1500) not null,
     password    varchar(2000) not null,
     topic_id    bigint(20),
     delete_flag tinyint(1) default 0 check (delete_flag in (0, 1))

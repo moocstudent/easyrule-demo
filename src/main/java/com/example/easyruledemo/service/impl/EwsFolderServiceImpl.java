@@ -10,6 +10,7 @@ import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.mapper.EwsFoldersMapper;
 import com.example.easyruledemo.service.IEwsFolderService;
 import com.example.easyruledemo.service.IEwsRuleService;
+import com.example.easyruledemo.service.IRuleFolderRelationService;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -36,6 +37,8 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     private IEwsRuleService ewsRuleService;
     @Autowired
     private IEwsFolderService ewsFolderService;
+    @Autowired
+    private IRuleFolderRelationService ruleFolderRelationService;
 
     @Override
     public List<EwsFoldersEntity> listSelective(EwsFoldersEntity ewsFolders) {
@@ -66,8 +69,13 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
             return folderId.toString();
         } catch (Exception e) {
+            //判定如果是已经存在文件夹的异常
+            if (e.getMessage().indexOf("A folder with the specified name already exists.")>-1){
+                log.error("该邮箱:{},该文件夹:{} 已经创建.",mailConfig.getEmail(),folderName);
+                return null;
+            }
             e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -162,14 +170,15 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
     @Override
     public Boolean saveOrUpdateByFUnionId(EwsFoldersEntity ewsFoldersEntity) {
-        if (ewsFoldersEntity.getFolderId()==null && ewsFoldersEntity.getFolderId()==""){
-            return baseMapper.insert(ewsFoldersEntity)>0? Boolean.TRUE:Boolean.FALSE;
-        }
-        LambdaQueryWrapper<EwsFoldersEntity> updateWrapper
-                = new LambdaQueryWrapper<EwsFoldersEntity>()
-                .eq(EwsFoldersEntity::getFolderId,ewsFoldersEntity.getFolderId())
-                .eq(EwsFoldersEntity::getDeleteFlag,0);
-        return this.saveOrUpdate(ewsFoldersEntity,updateWrapper);
+//        if (ewsFoldersEntity.getFolderId()==null && ewsFoldersEntity.getFolderId()==""){
+//            return baseMapper.insert(ewsFoldersEntity)>0? Boolean.TRUE:Boolean.FALSE;
+//        }
+//        LambdaQueryWrapper<EwsFoldersEntity> updateWrapper
+//                = new LambdaQueryWrapper<EwsFoldersEntity>()
+//                .eq(EwsFoldersEntity::getFolderId,ewsFoldersEntity.getFolderId())
+//                .eq(EwsFoldersEntity::getDeleteFlag,0);
+//        return this.saveOrUpdate(ewsFoldersEntity,updateWrapper);
+        return null;
     }
 
     @Override
@@ -185,7 +194,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
     @Override
     public List<FolderId> listFolderIdByRuleId(Long ruleId) {
-        return this.listFolderByRuleId(ruleId)
+        return ruleFolderRelationService.listByRuleId(ruleId)
                 .stream()
                 .filter(folder -> folder.getFolderId() != null && folder.getFolderId().length() > 0)
                 .map(folder -> {
@@ -202,13 +211,17 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
     @Override
     public List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId) {
-        return this.listFolderByRuleId(ruleId)
+        return ruleFolderRelationService.listByRuleId(ruleId)
                 .stream()
-                .filter(folder ->  folder.getFolderId() != null && folder.getFolderId().length() > 0
-                    && folder.getFolderCode().indexOf("un")>-1
+                .filter(folder ->  {
+                    log.info("folderCode:{}",folder.getFolderCode());
+                    return folder.getFolderId() != null && folder.getFolderId().length() > 0
+                            && folder.getFolderCode().indexOf("un")>-1;
+                        }
                 ).map(folder->{
                     FolderId folderId = null;
                     try {
+                        log.info("folderId unionId:{}",folder.getFolderId());
                         folderId = new FolderId(folder.getFolderId());
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -253,6 +266,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     @Override
     public List<FolderId> listFolderIdByTopicIdUnAction(String topicId) {
         List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
+        log.info("rules:{}",rules);
         List<FolderId> folderIdList = rules.stream()
                 .map(rule -> {
                     List<FolderId> folderIds = this.listFolderIdByRuleIdJustUnAction(rule.getRuleId());
@@ -264,8 +278,19 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
                 })
                 .filter(collectList -> collectList != null && collectList.size() != 0)
                 .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
-
+        log.info("获取的文件id列表:");
+        folderIdList.forEach(System.out::println);
         return folderIdList;
+    }
+
+    @Override
+    public List<EwsFoldersEntity> findByFolderCode(String folderCode) {
+        return baseMapper.findFolderByFolderCode(folderCode);
+    }
+
+    @Override
+    public EwsFoldersEntity findInRuleRelation(List<?> ruleIdList, String folderCode) {
+        return baseMapper.findFolderByFolderCodeAndRuleIds(ruleIdList,folderCode);
     }
 
 //    @Override

@@ -23,6 +23,9 @@ public interface ISubscriptionService {
     //在创建订阅后进行新增一个订阅信息
     Boolean saveOrUpdateSubcription(EwsSubscriptionEntity ewsSubscription);
 
+    //根据key保存或更新
+    Boolean saveOrUpdateSubcriptionByKey(EwsSubscriptionEntity ewsSubscription);
+
     //根据mapKey获取订阅id 或者无返回null
     String getSubscriptionIdByKey(String key);
 

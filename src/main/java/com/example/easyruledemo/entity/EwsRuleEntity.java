@@ -28,11 +28,12 @@ import javax.persistence.Transient;
 @ApiModel("ews规则配置实体")
 public class EwsRuleEntity {
 
-    //    @TableId(type = IdType.ASSIGN_UUID)
-//    private String ruleId;
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty("规则表主键")
-    private Long ruleId;
+    private String ruleId;
+//    @TableId(type = IdType.AUTO)
+//    @ApiModelProperty("规则表主键")
+//    private Long ruleId;
 
     @ApiModelProperty(value = "规则名称",required = true)
     private String displayName;
