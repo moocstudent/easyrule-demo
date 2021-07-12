@@ -118,13 +118,12 @@ public class MailActionsThread extends Thread{
                         }
 //                        ((FileAttachment) attach).load(savePath+File.separator +attachName);
                         ((FileAttachment) attach).load(savePath+attachName);
-                        log.info("保存主题:"+emailMessage.getSubject()+"附件"+(savePath+attachName));
+                        log.info("保存主题:"+emailMessage.getSubject()+"附件"+(savePath+File.separator+attachName));
                         //如果copyPath不为空,则进行文件拷贝,否则不然
                         if(!StringUtils.isEmpty(copyPath)){
-//                            copyFileByChannelTransfer(savePath+File.separator+attachName,copyPath+File.separator+attachName);
-                            copyFileByChannelTransfer(savePath+attachName,copyPath+attachName);
+                            copyFileByChannelTransfer(savePath+File.separator+attachName,copyPath+File.separator+attachName);
                             log.info("拷贝邮件:{}附件 从:{}到指定目录中:{}",emailMessage.getSubject(),
-                                    savePath+attachName,copyPath+attachName);
+                                    savePath+File.separator+attachName,copyPath+File.separator+attachName);
                         }
                     }else{
                         log.error("邮件:{}没有附件,规则判断出错",emailMessage.getSubject());

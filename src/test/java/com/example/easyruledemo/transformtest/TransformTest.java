@@ -107,7 +107,8 @@ class TransformTest extends BaseTest {
     @Test
     public void transferTopicAndRuleJson(){
         EwsRuleEntity rule1 = EwsRuleEntity.builder()
-                .ruleId(111L) //正式oracle是字符串
+//                .ruleId(111L) //正式oracle是字符串
+                .ruleId("str1") //正式oracle是字符串
                 .displayName("rule 1")
                 .ruleDesc("desc of rule")
                 .priority(1)
@@ -117,7 +118,8 @@ class TransformTest extends BaseTest {
                 .ruleType(RuleType.MOVE.getCode())
                 .build();
         EwsRuleEntity rule2 = EwsRuleEntity.builder()
-                .ruleId(222L) //正式oracle是字符串
+//                .ruleId(222L) //正式oracle是字符串
+                .ruleId("str2") //正式oracle是字符串
                 .displayName("rule 2")
                 .ruleDesc("desc of rule")
                 .priority(2)

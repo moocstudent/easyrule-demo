@@ -1,20 +1,20 @@
 spring:
   # 数据源类型配置
-#  datasource:
-#      driverClassName: com.mysql.cj.jdbc.Driver
-#      url: jdbc:mysql://127.0.0.1:3306/ews-cute?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&serverTimezone=Asia/Shanghai
-#      username: root
-#      password: xxx112
-#      global:
-#        enabled: true
-#        databaseId: mysql
-#        idType: AUTO
-
   datasource:
-      driverClassName: oracle.jdbc.driver.OracleDriver
-      url: jdbc:oracle:thin:@ip:1521:dev
-      username: xxx
-      password: xxx
+      driverClassName: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/ews-cute?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&serverTimezone=Asia/Shanghai
+      username: root
+      password: zhangqi1112
+      global:
+        enabled: true
+        databaseId: mysql
+        idType: AUTO
+
+#  datasource:
+#      driverClassName: oracle.jdbc.driver.OracleDriver
+#      url: jdbc:oracle:thin:@ip:1521:dev
+#      username: xxx
+#      password: xxx
 
 mybatis-plus:
   mapper-locations: classpath:mappers/*.xml

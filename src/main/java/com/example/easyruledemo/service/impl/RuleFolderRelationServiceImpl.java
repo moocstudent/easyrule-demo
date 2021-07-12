@@ -40,6 +40,11 @@ public class RuleFolderRelationServiceImpl extends ServiceImpl<EwsRuleFolderRela
     }
 
     @Override
+    public List<EwsRuleFolderRelation> listByRuleId(String ruleId) {
+        return baseMapper.listFolderRelationByRuleId(ruleId);
+    }
+
+    @Override
     public EwsRuleFolderRelation findOneByCondition(Long ruleId, Long ewsFolderId,Long mailId) {
         LambdaQueryWrapper<EwsRuleFolderRelation> queryWrapper
                 =new LambdaQueryWrapper<EwsRuleFolderRelation>()
@@ -52,6 +57,11 @@ public class RuleFolderRelationServiceImpl extends ServiceImpl<EwsRuleFolderRela
 
     @Override
     public EwsRuleFolderRelation findOneByConditionCode(Long ruleId, String folderCode, Long mailId) {
+        return baseMapper.findOneByConditions(ruleId,folderCode,mailId);
+    }
+
+    @Override
+    public EwsRuleFolderRelation findOneByConditionCode(String ruleId, String folderCode, String mailId) {
         return baseMapper.findOneByConditions(ruleId,folderCode,mailId);
     }
 

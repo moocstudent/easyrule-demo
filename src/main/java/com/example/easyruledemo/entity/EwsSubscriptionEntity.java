@@ -25,7 +25,6 @@ import java.util.Date;
 @ApiModel("ews订阅实体")
 public class EwsSubscriptionEntity {
 
-
     //    @TableId(type = IdType.ASSIGN_UUID)
 //    private String topicId;
 //

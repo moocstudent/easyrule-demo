@@ -376,7 +376,7 @@ public class SubscriptionContainer {
             String pullSubscriptionId = pullSubscription.getId();
             log.info("pullSubscriptionId:{}", pullSubscriptionId);
             Boolean saveSubscription = subcriptionService
-                    .saveOrUpdateSubcription(
+                    .saveOrUpdateSubcriptionByKey(
                             EwsSubscriptionEntity
                                     .builder()
                                     .subscriptionId(pullSubscriptionId)

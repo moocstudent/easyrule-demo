@@ -17,10 +17,13 @@ public interface IRuleFolderRelationService {
 
     List<EwsRuleFolderRelation> listByRuleId(Long ruleId);
 
+    List<EwsRuleFolderRelation> listByRuleId(String ruleId);
+
     //根据条件查询关联,获取其中folderId为主要目的
     EwsRuleFolderRelation findOneByCondition(Long ruleId,Long ewsFolderId,Long mailId);
     //同上 不过用folderCode
     EwsRuleFolderRelation findOneByConditionCode(Long ruleId,String folderCode,Long mailId);
+    EwsRuleFolderRelation findOneByConditionCode(String ruleId,String folderCode,String mailId);
 
     //动态获取规则文件夹关联
     List<EwsRuleFolderRelation> listSelective(EwsRuleFolderRelation relation);

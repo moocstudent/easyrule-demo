@@ -210,6 +210,23 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     }
 
     @Override
+    public List<FolderId> listFolderIdByRuleId(String ruleId) {
+        return ruleFolderRelationService.listByRuleId(ruleId)
+                .stream()
+                .filter(folder -> folder.getFolderId() != null && folder.getFolderId().length() > 0)
+                .map(folder -> {
+                    FolderId folderId = null;
+                    try {
+                        folderId = new FolderId(folder.getFolderId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return folderId;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId) {
         return ruleFolderRelationService.listByRuleId(ruleId)
                 .stream()
@@ -217,6 +234,28 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
                     log.info("folderCode:{}",folder.getFolderCode());
                     return folder.getFolderId() != null && folder.getFolderId().length() > 0
                             && folder.getFolderCode().indexOf("un")>-1;
+                        }
+                ).map(folder->{
+                    FolderId folderId = null;
+                    try {
+                        log.info("folderId unionId:{}",folder.getFolderId());
+                        folderId = new FolderId(folder.getFolderId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return folderId;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FolderId> listFolderIdByRuleIdJustUnAction(String ruleId) {
+        return ruleFolderRelationService.listByRuleId(ruleId)
+                .stream()
+                .filter(folder ->  {
+                            log.info("folderCode:{}",folder.getFolderCode());
+                            return folder.getFolderId() != null && folder.getFolderId().length() > 0
+                                    && folder.getFolderCode().indexOf("un")>-1;
                         }
                 ).map(folder->{
                     FolderId folderId = null;

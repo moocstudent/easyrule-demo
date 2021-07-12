@@ -61,9 +61,11 @@ public interface IEwsFolderService {
     //查folderId集合根据规则id
 //    List<FolderId> listFolderIdByRuleId(String ruleId);
     List<FolderId> listFolderIdByRuleId(Long ruleId);
+    List<FolderId> listFolderIdByRuleId(String ruleId);
 
     //获取该规则下未执行action的folderId实体
     List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId);
+    List<FolderId> listFolderIdByRuleIdJustUnAction(String ruleId);
 
     //获取folder名称集合根据规则id
 //    List<String> listFolderNamesByRuleId(String ruleId);
