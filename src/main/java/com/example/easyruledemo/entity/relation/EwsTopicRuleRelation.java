@@ -28,15 +28,15 @@ public class EwsTopicRuleRelation {
 //    private String relationId;
     @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty("关联表主键")
-    private String relationId;
+    private Long relationId;
 //    @TableId(type = IdType.AUTO)
 //    @ApiModelProperty("关联表主键")
 //    private Long relationId;
 
     @ApiModelProperty(value = "主题表主键",required = true)
-    private String topicId;
+    private Long topicId;
     @ApiModelProperty(value = "规则表主键",required = true)
-    private String ruleId;
+    private Long ruleId;
 
     //关联时,ruleLevel在同一个topic中不能重复
     @ApiModelProperty(value = "规则等级,一个主题下不能重复",required = true)

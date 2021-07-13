@@ -28,9 +28,9 @@ import javax.persistence.Transient;
 @ApiModel("ews规则配置实体")
 public class EwsRuleEntity {
 
-    @TableId(type = IdType.ASSIGN_UUID)
+    @TableId(type = IdType.AUTO)
     @ApiModelProperty("规则表主键")
-    private String ruleId;
+    private Long ruleId;
 //    @TableId(type = IdType.AUTO)
 //    @ApiModelProperty("规则表主键")
 //    private Long ruleId;
@@ -110,6 +110,9 @@ public class EwsRuleEntity {
      */
     @ApiModelProperty("是否在异常中")
     private Boolean isInError;
+
+    @ApiModelProperty(value = "激活状态",notes = "1:激活,0关闭")
+    private Integer active;
 
     private Integer deleteFlag;
 

@@ -19,6 +19,7 @@ public interface IEwsTopicService {
     Integer updateOne(EwsTopicEntity ewsTopic);
 
     Integer delOne(String topicId);
+    Integer delOne(Long topicId);
 
     List<EwsTopicEntity> getList(EwsTopicEntity ewsTopic);
 
@@ -26,9 +27,10 @@ public interface IEwsTopicService {
     List<EwsTopicEntity> listSelective(EwsTopicEntity ewsTopic);
 
     //根据mail主键获取收件主题
-    EwsTopicEntity getTopicByMailId(String mailId);
+//    EwsTopicEntity getTopicByMailId(String mailId);
     EwsTopicEntity getTopicByMailId(Long mailId);
 
     //根据topicId查一个
     EwsTopicEntity findOne(String topicId);
+    EwsTopicEntity findOne(Long topicId);
 }

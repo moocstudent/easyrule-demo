@@ -73,7 +73,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
          * 如有的需要进行附件下载，有的需要进行邮件清理，会分为不同的task执行
          */
         EwsMailEntity mailConfigEntity = EwsMailEntity.builder()
-                .mailId("9id")
+//                .mailId("9id")
 //                .mailId(1L)
                 .email("implementsteam@outlook.com")
                 .password("zhangqi1112")
@@ -81,7 +81,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
                         .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
                 .build();
         EwsMailEntity mailConfigEntity2 = EwsMailEntity.builder()
-                .mailId("9id")
+//                .mailId("9id")
 //                .mailId(1L)
                 .email("frankimplements@outlook.com")
                 .password("zhangqi1112")
@@ -132,7 +132,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
             String topicConfig = topic.getTopicConfig();
             log.info("topicConfig:{}",topicConfig);
             List<EwsRuleEntity> ewsRuleEntityList = ewsRuleService.filterRuleByConfigEnum(topicConfig, ruleEnums);
-            List<String> ruleIdList = ewsRuleEntityList.stream()
+            List<Long> ruleIdList = ewsRuleEntityList.stream()
                     .map(rule -> {
                         return rule.getRuleId();
                     }).collect(Collectors.toList());
@@ -178,6 +178,11 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
 
     @Override
     public Integer delOne(String mailId) {
+        return baseMapper.deleteById(mailId);
+    }
+
+    @Override
+    public Integer delOne(Long mailId) {
         return baseMapper.deleteById(mailId);
     }
 

@@ -46,13 +46,13 @@ public class EwsFoldersController {
 
     @ApiOperation("根据主键获取文件夹")
     @GetMapping("/{ewsFolderId}")
-    public Result oneFolder(@PathVariable("ewsFolderId") String ewsFolderId){
+    public Result oneFolder(@PathVariable("ewsFolderId") Long ewsFolderId){
         return ResultUtil.success(ewsFolderService.getByPriKey(ewsFolderId));
     }
 
     @ApiOperation("根据主键删除文件夹")
     @DeleteMapping("/{ewsFolderId}")
-    public Result delFolder(@PathVariable("ewsFolderId") String ewsFolderId){
+    public Result delFolder(@PathVariable("ewsFolderId") Long ewsFolderId){
         return ResultUtil.success(ewsFolderService.delByPriKey(ewsFolderId));
     }
 

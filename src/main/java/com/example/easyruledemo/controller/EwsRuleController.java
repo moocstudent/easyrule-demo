@@ -42,13 +42,13 @@ public class EwsRuleController {
 
     @ApiOperation("根据主键获取规则")
     @GetMapping("/{ruleId}")
-    public Result oneRule(@PathVariable("ruleId") String ruleId) {
+    public Result oneRule(@PathVariable("ruleId") Long ruleId) {
         return ResultUtil.success(ewsRuleService.findOne(ruleId));
     }
 
     @ApiOperation("根据主键删除规则")
     @DeleteMapping("/{ruleId}")
-    public Result delRule(@PathVariable("ruleId") String ruleId) {
+    public Result delRule(@PathVariable("ruleId") Long ruleId) {
         return ResultUtil.success(ewsRuleService.delOne(ruleId));
     }
 

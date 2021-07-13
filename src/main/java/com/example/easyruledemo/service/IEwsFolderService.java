@@ -32,6 +32,7 @@ public interface IEwsFolderService {
 
     //根据主键删除
     Integer delByPriKey(String ewsFolderId);
+    Integer delByPriKey(Long ewsFolderId);
 
     //todo get folderId by email
     //todo 先通过topicId查ruleId,ruleId查folderId 暂不使用这个
@@ -57,6 +58,7 @@ public interface IEwsFolderService {
 
     //根据主键获取文件夹实体
     EwsFoldersEntity getByPriKey(String ewsFolderId);
+    EwsFoldersEntity getByPriKey(Long ewsFolderId);
 
     //查folderId集合根据规则id
 //    List<FolderId> listFolderIdByRuleId(String ruleId);
@@ -81,6 +83,7 @@ public interface IEwsFolderService {
 
     //生成folder根据主题,获取未执行操作的文件夹的folderId实体list用于newEmail事件监听
     List<FolderId> listFolderIdByTopicIdUnAction(String topicId);
+    List<FolderId> listFolderIdByTopicIdUnAction(Long topicId);
 
     //根据folderCode查找一个文件夹
    List<EwsFoldersEntity> findByFolderCode(String folderCode);

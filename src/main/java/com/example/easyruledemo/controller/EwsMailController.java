@@ -41,13 +41,13 @@ public class EwsMailController {
 
     @ApiOperation("根据邮件主键获取一个")
     @GetMapping("/{mailId}")
-    public Result oneMail(@PathVariable("mailId") String mailId){
+    public Result oneMail(@PathVariable("mailId") Long mailId){
         return ResultUtil.success(ewsEmailService.findOne(mailId));
     }
 
     @ApiOperation("删除邮箱")
     @DeleteMapping("/{mailId}")
-    public Result delMail(@PathVariable("mailId") String mailId){
+    public Result delMail(@PathVariable("mailId") Long mailId){
         return ResultUtil.success(ewsEmailService.delOne(mailId));
     }
 }

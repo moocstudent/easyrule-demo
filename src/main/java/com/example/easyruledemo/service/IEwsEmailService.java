@@ -38,5 +38,6 @@ public interface IEwsEmailService {
 
     // delete one
     Integer delOne(String mailId);
+    Integer delOne(Long mailId);
 
 }

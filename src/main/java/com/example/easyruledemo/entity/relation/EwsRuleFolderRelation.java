@@ -30,17 +30,17 @@ public class EwsRuleFolderRelation {
 //    @TableId(type = IdType.AUTO)
 //    @ApiModelProperty("关联表主键")
 //    private Long relationId;
-    @TableId(type = IdType.ASSIGN_UUID)
+    @TableId(type = IdType.AUTO)
     @ApiModelProperty("关联表主键")
-    private String relationId;
+    private Long relationId;
 
 
     @ApiModelProperty(value = "规则表主键",required = true)
-    private String ruleId;
+    private Long ruleId;
 
     //pk of folder table
     @ApiModelProperty(value = "文件表主键",required = true)
-    private String ewsFolderId;
+    private Long ewsFolderId;
 
     @TableField(exist = false)
     private String folderCode;
@@ -48,7 +48,7 @@ public class EwsRuleFolderRelation {
     private String folderName;
 
     @ApiModelProperty(value = "email表主键",required = true)
-    private String mailId;
+    private Long mailId;
 
     //unionId
     @ApiModelProperty("用于生成文件夹的folderId unionId,不回显")

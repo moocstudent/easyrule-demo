@@ -47,6 +47,11 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
     }
 
     @Override
+    public Integer delOne(Long topicId) {
+        return baseMapper.deleteById(topicId);
+    }
+
+    @Override
     public List<EwsTopicEntity> getList(EwsTopicEntity ewsTopic) {
         return null;
     }
@@ -62,21 +67,21 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
                 .list();
     }
 
-    @Transactional
-    @Override
-    public EwsTopicEntity getTopicByMailId(String mailId) {
-        EwsMailEntity mail = ewsEmailService.findOne(mailId);
-        String topicId = null;
-        if(mail!=null){
-            topicId = mail.getTopicId();
-        }
-        return baseMapper.selectById(topicId);
-    }
+//    @Transactional
+//    @Override
+//    public EwsTopicEntity getTopicByMailId(String mailId) {
+//        EwsMailEntity mail = ewsEmailService.findOne(mailId);
+//        String topicId = null;
+//        if(mail!=null){
+//            topicId = mail.getTopicId();
+//        }
+//        return baseMapper.selectById(topicId);
+//    }
 
     @Override
     public EwsTopicEntity getTopicByMailId(Long mailId) {
         EwsMailEntity mail = ewsEmailService.findOne(mailId);
-        String topicId = null;
+        Long topicId = null;
         if(mail!=null){
             topicId = mail.getTopicId();
         }
@@ -85,6 +90,11 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
 
     @Override
     public EwsTopicEntity findOne(String topicId) {
+        return baseMapper.selectById(topicId);
+    }
+
+    @Override
+    public EwsTopicEntity findOne(Long topicId) {
         return baseMapper.selectById(topicId);
     }
 

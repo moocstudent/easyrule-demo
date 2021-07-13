@@ -32,9 +32,9 @@ public class EwsSubscriptionEntity {
 //    @ApiModelProperty("主题表主键")
 //    private Long ewsSubscriptionId;
     //
-    @TableId(type = IdType.ASSIGN_UUID)
+    @TableId(type = IdType.AUTO)
     @ApiModelProperty("主题表主键")
-    private String ewsSubscriptionId;
+    private Long ewsSubscriptionId;
 
     @ApiModelProperty(value = "主题id",required = true)
     private String subscriptionId;

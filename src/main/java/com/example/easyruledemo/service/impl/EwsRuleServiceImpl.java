@@ -308,6 +308,11 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
+    public List<EwsRuleEntity> getRulesByTopicId(Long topicId) {
+        return baseMapper.listRuleByTopicId(topicId);
+    }
+
+    @Override
     public Integer saveOne(EwsRuleEntity ewsRule) {
         return baseMapper.insert(ewsRule);
     }
@@ -387,7 +392,17 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
+    public EwsRuleEntity findOne(Long ruleId) {
+        return baseMapper.selectById(ruleId);
+    }
+
+    @Override
     public Integer delOne(String ruleId) {
+        return baseMapper.deleteById(ruleId);
+    }
+
+    @Override
+    public Integer delOne(Long ruleId) {
         return baseMapper.deleteById(ruleId);
     }
 

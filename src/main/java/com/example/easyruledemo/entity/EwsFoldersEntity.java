@@ -29,9 +29,9 @@ public class EwsFoldersEntity {
     //使用单个文件id存一条形式
 
     //主键
-    @TableId(type = IdType.ASSIGN_UUID)
+    @TableId(type = IdType.AUTO)
     @ApiModelProperty("文件夹表主键")
-    private String ewsFolderId;
+    private Long ewsFolderId;
 //    @TableId(type = IdType.AUTO)
 //    @ApiModelProperty("文件夹表主键")
 //    private Long ewsFolderId;
@@ -60,6 +60,8 @@ public class EwsFoldersEntity {
     //todo 这里将不再使用这个字段,将从邮箱对应topic对应的rule对应rule需要的文件夹来获取
     //todo 现在只是测试用
 //    private List<String> folderNames;
+    @ApiModelProperty(value = "激活状态",notes = "1:激活,0关闭")
+    private Integer active;
 
     @ApiModelProperty("删除标记,1已删除,0未删除")
     private Integer deleteFlag;

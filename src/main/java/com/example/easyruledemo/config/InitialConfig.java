@@ -54,7 +54,7 @@ public class InitialConfig {
                 = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D);
         log.info("邮箱文件夹初始化:{}", mailConfigList);
         Integer createFolderSizeByMailList = mailConfigList.stream()
-                .filter(mail -> mail.getTopicId() != null && mail.getTopicId().length() > 0)
+                .filter(mail -> mail.getTopicId() != null)
                 .map(mail -> {
                     /**
                      * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
@@ -168,7 +168,7 @@ public class InitialConfig {
         log.info("邮箱规则初始化:{}", mailConfigList);
 
         List<Integer> fireRuleCodeList = mailConfigList.stream()
-                .filter(mail -> mail.getTopicId() != null && mail.getTopicId().length() > 0)
+                .filter(mail -> mail.getTopicId() != null)
                 .map(mail -> {
                     /**
                      * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
@@ -206,7 +206,7 @@ public class InitialConfig {
         log.info("邮箱规则初始化:{}", mailConfigList);
 
         List<Integer> fireRuleCodeList = mailConfigList.stream()
-                .filter(mail -> mail.getTopicId() != null && mail.getTopicId().length() > 0)
+                .filter(mail -> mail.getTopicId() != null)
                 .map(mail -> {
                     /**
                      * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
@@ -244,7 +244,7 @@ public class InitialConfig {
         log.info("邮箱规则初始化:{}", mailConfig);
 
         List<Integer> fireRuleCodeList = Stream.of(mailConfig)
-                .filter(mail -> mail.getTopicId() != null && mail.getTopicId().length() > 0)
+                .filter(mail -> mail.getTopicId() != null)
                 .map(mail -> {
                     /**
                      * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听

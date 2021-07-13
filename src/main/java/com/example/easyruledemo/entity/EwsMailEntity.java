@@ -40,7 +40,7 @@ public class EwsMailEntity {
 //    private Long mailId;
     @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty("邮件配置表主键")
-    private String mailId;
+    private Long mailId;
 
     @ApiModelProperty(value = "邮件地址",required = true)
     private String email;
@@ -56,7 +56,7 @@ public class EwsMailEntity {
 
     //每个邮箱对应一个收件主题
     @ApiModelProperty("[下拉选择赋值]该邮件关联的收件主题id")
-    private String topicId;
+    private Long topicId;
 
     /**
      * 这里联查回来,做为该邮件的创建文件夹初始化依据
@@ -78,6 +78,9 @@ public class EwsMailEntity {
     @ApiModelProperty("【web不传入】满足本次条件的mailRuleList集合")
     @TableField(exist = false)
     private List<EwsRuleEntity> mailRulesValidThisTime;
+
+    @ApiModelProperty(value = "激活状态",notes = "1:激活,0关闭")
+    private Integer active;
 
     private Integer deleteFlag;
 

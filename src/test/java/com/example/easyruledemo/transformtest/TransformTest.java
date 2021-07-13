@@ -51,13 +51,13 @@ class TransformTest extends BaseTest {
     @Test
     public void testTransform1(){
         //testok
-        String json = "{'containsSubjectStrings':['带附件','htf'],'hasAttachments':'true'}";
-        String json2 = "{'assignCategories':['111','222'],'markAsRead':'true'}";
+        String conditions = "{'containsSubjectStrings':['带附件','htf'],'hasAttachments':'true'}";
+        String actions2 = "{'assignCategories':['111','222'],'markAsRead':'true'}";
 
         EwsRuleEntity build = EwsRuleEntity.builder()
                 .displayName("123 peach")
-                .conditions(json)
-                .actions(json2)
+                .conditions(conditions)
+                .actions(actions2)
                 .priority(1)
                 .build();
 //        Rule rule1 = ewsRuleService.transformRuleEntity(build);
@@ -82,6 +82,7 @@ class TransformTest extends BaseTest {
                 .build();
 
         String json3 = "{'containsSubjectStrings':['带附件','htf'],'hasAttachments':'true'}";
+        String actions = "{'moveToFolder':'attach-un-download','makeAsRead':'true'}";
         EwsActionsEntity actionsEntity = EwsActionsEntity.builder()
                 .moveToFolder("folderId-unionId-00000000folder")
                 .redirectToRecipients(Arrays.asList("implementsteam@163.com"))
@@ -108,7 +109,7 @@ class TransformTest extends BaseTest {
     public void transferTopicAndRuleJson(){
         EwsRuleEntity rule1 = EwsRuleEntity.builder()
 //                .ruleId(111L) //正式oracle是字符串
-                .ruleId("str1") //正式oracle是字符串
+//                .ruleId("str1") //正式oracle是字符串
                 .displayName("rule 1")
                 .ruleDesc("desc of rule")
                 .priority(1)
@@ -119,7 +120,7 @@ class TransformTest extends BaseTest {
                 .build();
         EwsRuleEntity rule2 = EwsRuleEntity.builder()
 //                .ruleId(222L) //正式oracle是字符串
-                .ruleId("str2") //正式oracle是字符串
+//                .ruleId("str2") //正式oracle是字符串
                 .displayName("rule 2")
                 .ruleDesc("desc of rule")
                 .priority(2)

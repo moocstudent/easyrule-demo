@@ -16,4 +16,5 @@ public interface EwsRuleMapper extends BaseMapper<EwsRuleEntity> {
 
     //根据topicId查询ruleList
     List<EwsRuleEntity> listRuleByTopicId(String topicId);
+    List<EwsRuleEntity> listRuleByTopicId(Long topicId);
 }

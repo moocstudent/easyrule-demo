@@ -28,7 +28,7 @@ public class EwsTopicEntity {
 
     @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty("主题表主键")
-    private String topicId;
+    private Long topicId;
 //
 //    @TableId(type = IdType.AUTO)
 //    @ApiModelProperty("主题表主键")
@@ -46,6 +46,9 @@ public class EwsTopicEntity {
      */
     @ApiModelProperty(value = "主题配置串,根据子规则类型生成",required = true)
     private String topicConfig;
+
+    @ApiModelProperty(value = "激活状态",notes = "1:激活,0关闭")
+    private Integer active;
 
     private Integer deleteFlag;
 

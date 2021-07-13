@@ -42,13 +42,13 @@ public class RuleFolderRelationController {
 
     @ApiOperation("根据主键查询一个")
     @GetMapping("/{relationId}")
-    public Result oneRelation(@PathVariable("relationId") String relationId){
+    public Result oneRelation(@PathVariable("relationId") Long relationId){
         return ResultUtil.success(ruleFolderRelationService.findOne(relationId));
     }
 
     @ApiOperation("根据主键删除一个")
     @DeleteMapping("/{relationId}")
-    public Result delRelation(@PathVariable("relationId") String relationId){
+    public Result delRelation(@PathVariable("relationId") Long relationId){
         return ResultUtil.success(ruleFolderRelationService.delRelation(relationId));
     }
 

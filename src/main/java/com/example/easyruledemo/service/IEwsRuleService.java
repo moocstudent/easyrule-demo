@@ -53,6 +53,7 @@ public interface IEwsRuleService {
 
     //根据主题id获取旗下rule list
     List<EwsRuleEntity> getRulesByTopicId(String topicId);
+    List<EwsRuleEntity> getRulesByTopicId(Long topicId);
 
     //保存一个规则
     Integer saveOne(EwsRuleEntity ewsRule);
@@ -72,9 +73,11 @@ public interface IEwsRuleService {
 
     //查找一个,根据规则id
     EwsRuleEntity findOne(String ruleId);
+    EwsRuleEntity findOne(Long ruleId);
 
     //删除一个规则
     Integer delOne(String ruleId);
+    Integer delOne(Long ruleId);
 
     /**
      * 根据传入ruleId组合为topicConfig json串

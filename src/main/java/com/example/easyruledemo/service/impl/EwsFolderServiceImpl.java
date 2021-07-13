@@ -110,6 +110,11 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     }
 
     @Override
+    public Integer delByPriKey(Long ewsFolderId) {
+        return baseMapper.deleteById(ewsFolderId);
+    }
+
+    @Override
     public List<FolderId> getWatchingFolderList(List<String> emailList) {
         return emailList.stream()
                 .map(em -> {
@@ -189,6 +194,11 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
     @Override
     public EwsFoldersEntity getByPriKey(String ewsFolderId) {
+        return baseMapper.selectById(ewsFolderId);
+    }
+
+    @Override
+    public EwsFoldersEntity getByPriKey(Long ewsFolderId) {
         return baseMapper.selectById(ewsFolderId);
     }
 
@@ -304,6 +314,26 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
     @Override
     public List<FolderId> listFolderIdByTopicIdUnAction(String topicId) {
+        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
+        log.info("rules:{}",rules);
+        List<FolderId> folderIdList = rules.stream()
+                .map(rule -> {
+                    List<FolderId> folderIds = this.listFolderIdByRuleIdJustUnAction(rule.getRuleId());
+                    return folderIds;
+                })
+                .reduce((x, y) -> {
+                    x.addAll(y);
+                    return x;
+                })
+                .filter(collectList -> collectList != null && collectList.size() != 0)
+                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
+        log.info("获取的文件id列表:");
+        folderIdList.forEach(System.out::println);
+        return folderIdList;
+    }
+
+    @Override
+    public List<FolderId> listFolderIdByTopicIdUnAction(Long topicId) {
         List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
         log.info("rules:{}",rules);
         List<FolderId> folderIdList = rules.stream()

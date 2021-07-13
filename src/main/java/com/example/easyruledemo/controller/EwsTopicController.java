@@ -41,25 +41,25 @@ public class EwsTopicController {
 
     @ApiOperation("根据主键查询一个")
     @GetMapping("/{topicId}")
-    public Result oneTopic(@PathVariable("topicId") String topicId){
+    public Result oneTopic(@PathVariable("topicId") Long topicId){
         return ResultUtil.success(ewsTopicService.findOne(topicId));
     }
 
     @ApiOperation("根据主键删除一个")
     @DeleteMapping("/{topicId}")
-    public Result delTopic(@PathVariable("topicId") String topicId){
+    public Result delTopic(@PathVariable("topicId") Long topicId){
         return ResultUtil.success(ewsTopicService.delOne(topicId));
     }
 
     @ApiOperation("根据邮件主键获取它的主题")
     @GetMapping("/findTopic/{mailId}")
-    public Result topicByMailId(@PathVariable("mailId") String mailId){
+    public Result topicByMailId(@PathVariable("mailId") Long mailId){
         return ResultUtil.success(ewsTopicService.getTopicByMailId(mailId));
     }
 
     @ApiOperation("根据邮件主键获取它的主题")
     @GetMapping("/disable/{topicId}/{bothRules}")
-    public Result disabledTopic(@PathVariable("topicId") String topicId,@PathVariable("bothRules") Boolean bothRules){
+    public Result disabledTopic(@PathVariable("topicId") Long topicId,@PathVariable("bothRules") Boolean bothRules){
         //disabled the topic
         //bothRules-> rules->disable
         return null;
