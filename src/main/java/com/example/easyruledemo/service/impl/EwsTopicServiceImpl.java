@@ -1,8 +1,9 @@
 package com.example.easyruledemo.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsTopicEntity;
 import com.example.easyruledemo.mapper.EwsTopicMapper;
@@ -86,6 +87,17 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
     @Override
     public EwsTopicEntity findOne(String topicId) {
         return baseMapper.selectById(topicId);
+    }
+
+    @Override
+    public Integer inactive(String topicId) {
+        LambdaUpdateWrapper<EwsTopicEntity> updateWrapper =
+                new LambdaUpdateWrapper<EwsTopicEntity>()
+                        .eq(EwsTopicEntity::getTopicId,topicId)
+                        .eq(EwsTopicEntity::getDeleteFlag,0);
+        EwsTopicEntity ewsTopicEntity
+                = EwsTopicEntity.builder().active(0).topicId(topicId).build();
+        return baseMapper.update(ewsTopicEntity,updateWrapper);
     }
 
 }

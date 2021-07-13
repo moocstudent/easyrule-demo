@@ -2,9 +2,11 @@ package com.example.easyruledemo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
+import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
@@ -402,6 +404,17 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             configJson.put(itemActionType, rule.getRuleId());
         });
         return configJson.toJSONString();
+    }
+
+    @Override
+    public Integer inactive(String ruleId) {
+        LambdaUpdateWrapper<EwsRuleEntity> updateWrapper =
+                new LambdaUpdateWrapper<EwsRuleEntity>()
+                        .eq(EwsRuleEntity::getRuleId,ruleId)
+                        .eq(EwsRuleEntity::getDeleteFlag,0);
+        EwsRuleEntity ewsRuleEntity
+                = EwsRuleEntity.builder().active(0).ruleId(ruleId).build();
+        return baseMapper.update(ewsRuleEntity,updateWrapper);
     }
 
     //testok

@@ -56,4 +56,11 @@ public class EwsFoldersController {
         return ResultUtil.success(ewsFolderService.delByPriKey(ewsFolderId));
     }
 
+    //713
+    @ApiOperation("根据主键设定为未激活状态")
+    @DeleteMapping("/{ewsFolderId}")
+    public Result inactiveFolder(@PathVariable("ewsFolderId") String ewsFolderId){
+        return ResultUtil.success(ewsFolderService.inactive(ewsFolderId));
+    }
+
 }

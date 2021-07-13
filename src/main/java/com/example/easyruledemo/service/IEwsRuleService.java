@@ -82,5 +82,7 @@ public interface IEwsRuleService {
      */
     String configTheTopicConfigStr(List ids);
 
-
+    //713
+    //设定到未激活状态
+    Integer inactive(String ruleId);
 }

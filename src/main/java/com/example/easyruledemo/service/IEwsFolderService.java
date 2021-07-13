@@ -89,6 +89,8 @@ public interface IEwsFolderService {
     EwsFoldersEntity findInRuleRelation(List<?> ruleIdList,String folderCode);
 
 
-
+    //713
+    //设定到未激活状态
+    Integer inactive(String ewsFolderId);
 
 }

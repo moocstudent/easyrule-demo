@@ -1,6 +1,7 @@
 package com.example.easyruledemo.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
@@ -152,6 +153,11 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     }
 
     @Override
+    public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, List<String> ruleTypeList) {
+        return null;
+    }
+
+    @Override
     public EwsMailEntity findOne(String mailId) {
         return baseMapper.selectById(mailId);
     }
@@ -179,6 +185,17 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     @Override
     public Integer delOne(String mailId) {
         return baseMapper.deleteById(mailId);
+    }
+
+    @Override
+    public Integer inactive(String mailId) {
+        LambdaUpdateWrapper<EwsMailEntity> updateWrapper =
+                new LambdaUpdateWrapper<EwsMailEntity>()
+                        .eq(EwsMailEntity::getMailId,mailId)
+                        .eq(EwsMailEntity::getDeleteFlag,0);
+        EwsMailEntity ewsMailEntity
+                = EwsMailEntity.builder().active(0).mailId(mailId).build();
+        return baseMapper.update(ewsMailEntity,updateWrapper);
     }
 
 }

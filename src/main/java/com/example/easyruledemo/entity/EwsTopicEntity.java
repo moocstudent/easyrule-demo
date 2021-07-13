@@ -47,6 +47,9 @@ public class EwsTopicEntity {
     @ApiModelProperty(value = "主题配置串,根据子规则类型生成",required = true)
     private String topicConfig;
 
+    @ApiModelProperty("激活标记,1已激活,0未激活")
+    private Integer active;
+
     private Integer deleteFlag;
 
 }

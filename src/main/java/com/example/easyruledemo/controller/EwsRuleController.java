@@ -62,5 +62,11 @@ public class EwsRuleController {
         );
     }
 
+    //713
+    @ApiOperation("根据主键设定为未激活状态")
+    @DeleteMapping("/{ruleId}")
+    public Result inactiveRule(@PathVariable("ruleId") String ruleId){
+        return ResultUtil.success(ewsRuleService.inactive(ruleId));
+    }
 
 }

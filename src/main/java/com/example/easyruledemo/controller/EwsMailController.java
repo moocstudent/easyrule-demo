@@ -50,4 +50,14 @@ public class EwsMailController {
     public Result delMail(@PathVariable("mailId") String mailId){
         return ResultUtil.success(ewsEmailService.delOne(mailId));
     }
+
+    //713
+    @ApiOperation("根据主键设定为未激活状态")
+    @DeleteMapping("/{mailId}")
+    public Result inactiveMail(@PathVariable("mailId") String mailId){
+        return ResultUtil.success(ewsEmailService.inactive(mailId));
+    }
+
+
+
 }

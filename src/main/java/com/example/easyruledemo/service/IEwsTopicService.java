@@ -31,4 +31,8 @@ public interface IEwsTopicService {
 
     //根据topicId查一个
     EwsTopicEntity findOne(String topicId);
+
+    //713
+    //设定到未激活状态
+    Integer inactive(String topicId);
 }

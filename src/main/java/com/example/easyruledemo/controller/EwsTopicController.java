@@ -64,4 +64,12 @@ public class EwsTopicController {
         //bothRules-> rules->disable
         return null;
     }
+
+    //713
+    @ApiOperation("根据主键设定为未激活状态")
+    @DeleteMapping("/{topicId}")
+    public Result inactiveTopic(@PathVariable("topicId") String topicId){
+        return ResultUtil.success(ewsTopicService.inactive(topicId));
+    }
+
 }

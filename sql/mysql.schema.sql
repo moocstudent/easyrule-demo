@@ -13,6 +13,7 @@ create table ews_rule
     actions          varchar(3000) not null,
     item_action_type char(9)       not null,
     item_actions     varchar(2000) not null,
+    active           tinyint(1),
     delete_flag      tinyint(1) default 0 check (delete_flag in (0, 1))
 );
 
@@ -22,6 +23,7 @@ create table ews_mail_folders
     ews_folder_id bigint(20) primary key,
     folder_code   varchar(1500) not null,
     folder_name   varchar(2000) not null,
+    active        tinyint(1),
     delete_flag   tinyint(1) default 0 check (delete_flag in (0, 1))
 );
 
@@ -43,6 +45,7 @@ create table ews_mail_config
     email       varchar(1500) not null,
     password    varchar(2000) not null,
     topic_id    bigint(20),
+    active      tinyint(1),
     delete_flag tinyint(1) default 0 check (delete_flag in (0, 1))
 );
 
@@ -53,6 +56,7 @@ create table ews_mail_topic
     topic_name   varchar(2000) not null,
     topic_desc   varchar(3000),
     topic_config varchar(3000),
+    active       tinyint(1),
     delete_flag  tinyint(1) default 0 check (delete_flag in (0, 1))
 );
 

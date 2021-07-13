@@ -26,6 +26,8 @@ public interface IEwsEmailService {
     //获取mailConfig符合某种规则类型的
     List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, ItemActionType... ruleTypes);
 
+    List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig,List<String> ruleTypeList);
+
     //根据主键查1个
     EwsMailEntity findOne(String mailId);
     EwsMailEntity findOne(Long mailId);
@@ -38,5 +40,9 @@ public interface IEwsEmailService {
 
     // delete one
     Integer delOne(String mailId);
+
+    //713
+    //设定到未激活状态
+    Integer inactive(String mailId);
 
 }

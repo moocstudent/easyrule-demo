@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Transient;
 
 /**
  * @Author: zhangQi
@@ -44,9 +43,8 @@ public class EwsRuleVO {
     /**
      * 权重1在规则的最下
      */
-    @Transient
     @ApiModelProperty("规则权重")
-    private Integer priority;
+    private transient Integer priority;
 
     /**
      * 是否启用

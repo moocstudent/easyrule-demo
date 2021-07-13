@@ -17,4 +17,16 @@ public enum ItemActionType {
     private String code;
     private String key;
     private String description;
+
+    public static ItemActionType getEnum(String itemActionCode) {
+        ItemActionType[] enumValues = ItemActionType.values();
+        for (ItemActionType itemAction:enumValues) {
+            if (itemAction.getCode().equals(itemActionCode.trim())) {
+                return itemAction;
+            }
+        }
+        throw new RuntimeException("获取itemActionType异常");
+//        return null;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.easyruledemo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
@@ -330,6 +331,17 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     @Override
     public EwsFoldersEntity findInRuleRelation(List<?> ruleIdList, String folderCode) {
         return baseMapper.findFolderByFolderCodeAndRuleIds(ruleIdList,folderCode);
+    }
+
+    @Override
+    public Integer inactive(String ewsFolderId) {
+        LambdaUpdateWrapper<EwsFoldersEntity> updateWrapper =
+                new LambdaUpdateWrapper<EwsFoldersEntity>()
+                .eq(EwsFoldersEntity::getEwsFolderId,ewsFolderId)
+                .eq(EwsFoldersEntity::getDeleteFlag,0);
+        EwsFoldersEntity ewsFoldersEntity
+                = EwsFoldersEntity.builder().active(0).ewsFolderId(ewsFolderId).build();
+        return baseMapper.update(ewsFoldersEntity,updateWrapper);
     }
 
 //    @Override
