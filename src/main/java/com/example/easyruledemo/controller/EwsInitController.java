@@ -28,7 +28,7 @@ public class EwsInitController {
     @ApiOperation("初始化文件夹以及规则")
     @PostMapping("/mailFolderRules")
     public Result initMailFoldersAndFireRules(@RequestBody ItemActionTypeBo itemActionTypeBo){
-        return ResultUtil.success( ewsInitService.initMailFoldersAndFireRules(itemActionTypeBo.getItemActionType()));
+        return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(itemActionTypeBo.getItemActionType()));
     }
 
 }

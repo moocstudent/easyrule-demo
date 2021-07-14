@@ -12,6 +12,7 @@ import com.example.easyruledemo.mapper.EwsFoldersMapper;
 import com.example.easyruledemo.service.IEwsFolderService;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.service.IRuleFolderRelationService;
+import com.example.easyruledemo.util.BeanUtil;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -166,7 +167,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
     @Override
     public Boolean saveOrUpdateFolder(EwsFoldersEntity ewsFoldersEntity) {
-        return super.saveOrUpdate(ewsFoldersEntity);
+        return super.saveOrUpdate(BeanUtil.getTrimClass(ewsFoldersEntity).get());
     }
 
     @Override

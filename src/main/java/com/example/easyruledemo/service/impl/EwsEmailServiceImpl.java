@@ -15,6 +15,7 @@ import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsFolderService;
 import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.service.IEwsTopicService;
+import com.example.easyruledemo.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
@@ -169,7 +170,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
 
     @Override
     public Boolean saveOrUpdateEmail(EwsMailEntity ewsMail) {
-        return super.saveOrUpdate(ewsMail);
+        return super.saveOrUpdate(BeanUtil.getTrimClass(ewsMail).get());
     }
 
     @Override
