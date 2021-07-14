@@ -45,8 +45,14 @@ public class EwsExContainer {
         ExchangeCredentials credentials = new WebCredentials(email, password);
         service.setCredentials(credentials);
         try {
-            service.setUrl(new URI(EX_URI));
+            service.autodiscoverUrl(email);
+//            service.setUrl(new URI(EX_URI));
+//            service.autodiscoverUrl(email,redirectionUrl -> {
+//                return redirectionUrl.toLowerCase().startsWith("https://");
+//            });
         } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("exchangeService:"+service);

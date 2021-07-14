@@ -6,6 +6,7 @@ import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
 import com.example.easyruledemo.entity.relation.EwsTopicRuleRelation;
 import com.example.easyruledemo.mapper.EwsTopicRuleRelationMapper;
 import com.example.easyruledemo.service.ITopicRuleRelationService;
+import com.example.easyruledemo.util.BeanUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -20,7 +21,7 @@ public class TopicRuleRelationServiceImpl extends ServiceImpl<EwsTopicRuleRelati
         implements ITopicRuleRelationService {
     @Override
     public Boolean saveOrUpdateRelation(EwsTopicRuleRelation relation) {
-        return super.saveOrUpdate(relation);
+        return super.saveOrUpdate(BeanUtil.getTrimClass(relation).get());
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
 import com.example.easyruledemo.mapper.EwsRuleFolderRelationMapper;
 import com.example.easyruledemo.service.IRuleFolderRelationService;
+import com.example.easyruledemo.util.BeanUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,7 +22,7 @@ public class RuleFolderRelationServiceImpl extends ServiceImpl<EwsRuleFolderRela
         implements IRuleFolderRelationService {
     @Override
     public Boolean saveOrUpdateRelation(EwsRuleFolderRelation relation) {
-        return super.saveOrUpdate(relation);
+        return super.saveOrUpdate(BeanUtil.getTrimClass(relation).get());
     }
 
     @Override

@@ -319,7 +319,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
 
     @Override
     public Boolean saveOrUpdateRule(EwsRuleEntity ewsRule) {
-        return super.saveOrUpdate(ewsRule);
+        return super.saveOrUpdate(BeanUtil.getTrimClass(ewsRule).get());
     }
 
     @Override

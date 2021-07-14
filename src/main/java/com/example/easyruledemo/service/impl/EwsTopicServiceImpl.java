@@ -8,6 +8,7 @@ import com.example.easyruledemo.entity.EwsTopicEntity;
 import com.example.easyruledemo.mapper.EwsTopicMapper;
 import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsTopicService;
+import com.example.easyruledemo.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
 
     @Override
     public Boolean saveOrUpdateTopic(EwsTopicEntity ewsTopic) {
-        return super.saveOrUpdate(ewsTopic);
+        return super.saveOrUpdate(BeanUtil.getTrimClass(ewsTopic).get());
     }
 
     @Override
