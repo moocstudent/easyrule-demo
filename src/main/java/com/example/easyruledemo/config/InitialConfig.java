@@ -1,6 +1,5 @@
 package com.example.easyruledemo.config;
 
-import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
@@ -8,16 +7,12 @@ import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.service.*;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
-import microsoft.exchange.webservices.data.property.complex.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

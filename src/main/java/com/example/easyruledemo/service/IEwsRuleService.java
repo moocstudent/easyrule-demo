@@ -68,8 +68,8 @@ public interface IEwsRuleService {
     List<EwsRuleEntity> listRulesByTopicConfig(String topicConfig);
 
     //过滤规则根据配置串以及枚举
-    List<EwsRuleEntity> filterRuleByConfigEnum(String config, ItemActionType... ruleTypes);
-    List<EwsRuleEntity> filterRuleByConfigEnum(String config,List<ItemActionType> ruleEnums);
+    List<EwsRuleEntity> filterRuleByConfigEnum(String config, ItemActionType... itemActionTypes);
+    List<EwsRuleEntity> filterRuleByConfigEnum(String config,List<ItemActionType> itemActionTypeList);
 
     //查找一个,根据规则id
     EwsRuleEntity findOne(String ruleId);

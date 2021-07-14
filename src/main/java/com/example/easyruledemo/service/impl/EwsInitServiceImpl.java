@@ -35,6 +35,7 @@ public class EwsInitServiceImpl
 
     @Override
     public Integer initMailFoldersAndFireRules(List<String> itemActionTypeList) {
+//        ItemActionType.
         //the all mailConfig valid ItemActionTypes
         List<EwsMailEntity> mailConfigList
                 = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D);
@@ -73,6 +74,11 @@ public class EwsInitServiceImpl
 
         log.info("创建该邮件list下初始化的文件夹共:{}个,根据类型:{},该初始化只执行一次", createFolderSizeByMailList, ItemActionType.D.getDescription());
         return createFolderSizeByMailList;
+    }
+
+    @Override
+    public Integer initSubscription(List<String> itemActionTypeList) {
+        return null;
     }
 
 

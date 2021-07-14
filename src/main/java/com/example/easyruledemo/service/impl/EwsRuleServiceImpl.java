@@ -339,9 +339,9 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
-    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, ItemActionType... ruleTypes) {
+    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, ItemActionType... itemActionTypes) {
         JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
-        List<ItemActionType> ruleEnums = Arrays.asList(ruleTypes);
+        List<ItemActionType> ruleEnums = Arrays.asList(itemActionTypes);
         List<String> ruleIdList = ruleEnums.stream()
                 .filter(rull -> {
                     return ruleConfigJsonObject.containsKey(rull.getCode());
@@ -363,10 +363,10 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     }
 
     @Override
-    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, List<ItemActionType> ruleEnums) {
+    public List<EwsRuleEntity> filterRuleByConfigEnum(String config, List<ItemActionType> itemActionTypeList) {
         JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
         log.info("configObject:{}",ruleConfigJsonObject);
-        List<String> ruleIdList = ruleEnums.stream()
+        List<String> ruleIdList = itemActionTypeList.stream()
                 .filter(rull -> {
                     return ruleConfigJsonObject.containsKey(rull.getCode());
                 })

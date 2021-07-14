@@ -31,4 +31,9 @@ public class EwsInitController {
         return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(itemActionTypeBo.getItemActionType()));
     }
 
+    //设定全天邮箱监听以及事件监听的初始化接口
+    public Result initSubscription(@RequestBody ItemActionTypeBo itemActionTypeBo){
+        return ResultUtil.success();
+    }
+
 }

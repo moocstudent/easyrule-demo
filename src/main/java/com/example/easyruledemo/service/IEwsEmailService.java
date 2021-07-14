@@ -24,7 +24,8 @@ public interface IEwsEmailService {
     List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig);
 
     //获取mailConfig符合某种规则类型的
-    List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, ItemActionType... ruleTypes);
+    List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, ItemActionType... itemActionTypes);
+    List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, List<ItemActionType> itemActionTypeList);
 
     //根据主键查1个
     EwsMailEntity findOne(String mailId);

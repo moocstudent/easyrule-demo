@@ -153,6 +153,62 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     }
 
     @Override
+    public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig, List<ItemActionType> itemActionTypeList) {
+        //查包含指定ruleType的ewsMail集合
+        List<EwsMailEntity> mailEntityList = new LambdaQueryChainWrapper<EwsMailEntity>(baseMapper)
+                .eq(EwsMailEntity::getDeleteFlag, 0)
+                .eq(!StringUtils.isEmpty(mailConfig.getEmail()), EwsMailEntity::getEmail, mailConfig.getEmail())
+                .eq(!StringUtils.isEmpty(mailConfig.getTopicId()), EwsMailEntity::getTopicId, mailConfig.getTopicId())
+//                .eq(StringUtils.isEmpty(mailConfig.getHost()), EwsMailEntity::getHost, mailConfig.getHost())
+                .orderByDesc(EwsMailEntity::getMailId)
+                .list();
+        //过滤符合当前传入ruleTypes的mailEntity
+        List<EwsMailEntity> ewsMailList = itemActionTypeList.stream()
+                .map(ruleType -> {
+                    return mailEntityList.stream()
+                            .filter(mail -> {
+                                EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
+                                JSONObject ruleConfigJsonObject = JSONObject.parseObject(topic.getTopicConfig());
+                                return ruleConfigJsonObject.containsKey(ruleType.getCode());
+                            })
+                            .collect(Collectors.toList());
+                })
+                .reduce((validRuleEml1, validRuleEml2) -> {
+                    validRuleEml1.addAll(validRuleEml2);
+                    return validRuleEml1;
+                }).orElse(Collections.emptyList());
+        log.info("valid ruleTypes mail list:{}",ewsMailList);
+        if (ewsMailList.size()==0){
+            log.warn("并没有符合这次要求的email");
+            return Collections.emptyList();
+        }
+        //根据topicConfig以及给定需要的
+        Map<String,EwsFoldersEntity> nameFolderMap = new HashMap<>();
+        for(EwsMailEntity mail:ewsMailList){
+            EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
+            String topicConfig = topic.getTopicConfig();
+            log.info("topicConfig:{}",topicConfig);
+            List<EwsRuleEntity> ewsRuleEntityList = ewsRuleService.filterRuleByConfigEnum(topicConfig, itemActionTypeList);
+            List<Long> ruleIdList = ewsRuleEntityList.stream()
+                    .map(rule -> {
+                        return rule.getRuleId();
+                    }).collect(Collectors.toList());
+            log.info("email 获取mailConfig:");
+            mail.setMailRulesValidThisTime(ewsRuleEntityList);
+            log.info("query ruleIdList:{}",ruleIdList);
+            if(ruleIdList.size()==0){
+                throw new RuntimeException("获取到ruleIdList为空,请检查重试.");
+            }
+            EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
+            mail.setMailFolders(foldersEntity);
+            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
+            mail.setMailFoldersMap(nameFolderMap);
+        }
+        log.info("满足itemActionType条件的mail:"+ewsMailList);
+        return ewsMailList;
+    }
+
+    @Override
     public EwsMailEntity findOne(String mailId) {
         return baseMapper.selectById(mailId);
     }
