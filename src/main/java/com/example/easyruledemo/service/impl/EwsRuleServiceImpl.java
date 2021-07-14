@@ -99,6 +99,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         List<RuleOperation> ruleList = new ArrayList<RuleOperation>();
         ruleList.add(createOperation);
         try {
+            log.info("开始执行邮件:{} 的规则.",ewsMail.getEmail());
             //执行规则更新
             EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .updateInboxRules(ruleList, true);
@@ -283,6 +284,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         String copyToFolder = ewsActionsEntity.getCopyToFolder();
         if (!StringUtils.isEmpty(moveToFolder)) {
             //根据枚举和mailId查folderId
+            log.info("根据ruleId:{}和mailId:{}",ewsRuleEntity.getRuleId(),ewsMail.getMailId());
             EwsRuleFolderRelation oneByConditionCode = ruleFolderRelationService.findOneByConditionCode(ewsRuleEntity.getRuleId(), moveToFolder, ewsMail.getMailId());
             log.info("folderId in rule impl move:{}",oneByConditionCode.getFolderId());
             ewsActionsEntity.setMoveToFolder(oneByConditionCode.getFolderId());

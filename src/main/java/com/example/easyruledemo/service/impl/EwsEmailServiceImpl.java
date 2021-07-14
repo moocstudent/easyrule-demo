@@ -16,7 +16,6 @@ import com.example.easyruledemo.service.IEwsRuleService;
 import com.example.easyruledemo.service.IEwsTopicService;
 import com.example.easyruledemo.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
-import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

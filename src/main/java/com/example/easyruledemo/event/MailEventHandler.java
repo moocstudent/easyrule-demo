@@ -1,9 +1,9 @@
-package com.example.easyruledemo.rules;
+package com.example.easyruledemo.event;
 
 import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
-import lombok.Data;
+import com.example.easyruledemo.rules.MailActionsThread;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
@@ -16,21 +16,13 @@ import java.time.LocalDateTime;
 
 /**
  * @Author: zhangQi
- * @Date: 2021-07-05 11:14
- * mailEvents多线程处理
+ * @Date: 2021-07-14 16:48
  */
 @Slf4j
-@Data
-public class MailEventsThread extends Thread {
+public class MailEventHandler {
 
-    private EwsMailEntity mailConfig;
 
-    public MailEventsThread(EwsMailEntity mailConfig){
-        this.mailConfig = mailConfig;
-    }
-
-    @Override
-    public void start() {
+    public static void event(EwsMailEntity mailConfig){
         try {
             //todo 需要改为每天初始化subscriptionContainer后等待几分钟再拉取
             log.info("start poll email event : {}" + LocalDateTime.now());

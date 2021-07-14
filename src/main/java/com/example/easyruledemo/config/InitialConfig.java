@@ -42,7 +42,7 @@ public class InitialConfig {
      * todo 做成接口单独调用产生文件夹,根据email主体
      * testok
      */
-    @PostConstruct
+//    @PostConstruct
     public void initMailFoldersAndFireRules() {
         //the all mailConfig valid ItemActionTypes
         List<EwsMailEntity> mailConfigList

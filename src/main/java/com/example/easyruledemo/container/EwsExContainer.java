@@ -45,8 +45,10 @@ public class EwsExContainer {
         ExchangeCredentials credentials = new WebCredentials(email, password);
         service.setCredentials(credentials);
         try {
-            service.autodiscoverUrl(email);
-//            service.setUrl(new URI(EX_URI));
+            //FIXME 正式使用
+//            service.autodiscoverUrl(email);
+            //FIXME 优化代码时外网使用
+            service.setUrl(new URI(EX_URI));
 //            service.autodiscoverUrl(email,redirectionUrl -> {
 //                return redirectionUrl.toLowerCase().startsWith("https://");
 //            });

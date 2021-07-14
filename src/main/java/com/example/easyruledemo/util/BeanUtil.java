@@ -55,11 +55,11 @@ public class BeanUtil {
         }));
     }
 
-    public static void main(String[] args) {
-        EwsMailEntity build = EwsMailEntity.builder().email("hello@163.com ").password("123").build();
-
-        Optional<EwsMailEntity> trimClass = getTrimClass(build);
-        EwsMailEntity ewsMailEntity = trimClass.get();
-        System.out.println(ewsMailEntity.getEmail());
-    }
+//    public static void main(String[] args) {
+//        EwsMailEntity build = EwsMailEntity.builder().email("hello@163.com ").password("123").build();
+//
+//        Optional<EwsMailEntity> trimClass = getTrimClass(build);
+//        EwsMailEntity ewsMailEntity = trimClass.get();
+//        System.out.println(ewsMailEntity.getEmail());
+//    }
 }

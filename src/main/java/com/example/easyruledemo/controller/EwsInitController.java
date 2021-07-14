@@ -25,15 +25,26 @@ public class EwsInitController {
     @Autowired
     private IEwsInitService ewsInitService;
 
+    /**
+     * 设定符合要求的邮件初始化文件夹和规则
+     * @param itemActionTypeBo
+     * @return
+     */
     @ApiOperation("初始化文件夹以及规则")
     @PostMapping("/mailFolderRules")
     public Result initMailFoldersAndFireRules(@RequestBody ItemActionTypeBo itemActionTypeBo){
         return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(itemActionTypeBo.getItemActionType()));
     }
 
-    //设定全天邮箱监听以及事件监听的初始化接口
+    /**
+     * 设定全天邮箱监听以及事件监听的初始化接口
+     * @param itemActionTypeBo
+     * @return
+     */
+    @ApiOperation("初始化邮件订阅")
+    @PostMapping("/mailSubscription")
     public Result initSubscription(@RequestBody ItemActionTypeBo itemActionTypeBo){
-        return ResultUtil.success();
+        return ResultUtil.success(ewsInitService.initSubscription(itemActionTypeBo.getItemActionType()));
     }
 
 }

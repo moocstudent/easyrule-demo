@@ -164,11 +164,12 @@ public class SubscriptionContainer {
                 ExchangeService onlyService = EwsExContainer.getExchangeService(mail.getEmail(), mail.getPassword());
                 //根据key查询subscriptionId
                 String subscriptionId = subcriptionService.getSubscriptionIdByKey(key);
+                log.info("subscriptionId:{}",subscriptionId);
                 if (subscriptionId != null) {
                     onlyService.unsubscribe(subscriptionId);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
                 throw new RuntimeException("取消订阅异常");
             }
         });
@@ -213,7 +214,11 @@ public class SubscriptionContainer {
      * @return
      */
     public static Integer initialSubscriptionToday(List<EwsMailEntity> mailConfigList) {
-        unsubscriptionByMailList(mailConfigList);
+        try {
+            unsubscriptionByMailList(mailConfigList);
+        } catch (Exception e) {
+            log.error("取消订阅异常,开始再次初始化订阅.");
+        }
         String todaySubscriptionKeyPrefix = SUBSCRIPTION_KEY_INIT + LocalDate.now();
         PullSubscription emailNotifySubscription = null;
         int count = 0;
@@ -225,6 +230,8 @@ public class SubscriptionContainer {
             emailNotifySubscription = getEmailNotifySubscription(ONE_DAY_MINUTES, mailConfig, key);
 
             pullSubscriptionMap.put(key, emailNotifySubscription);
+
+            log.info("emailNotifySubscriptionMap:{}",pullSubscriptionMap);
             count++;
         }
         initialCount = count;
@@ -241,6 +248,7 @@ public class SubscriptionContainer {
         String todaySubscriptionKeyFull = SUBSCRIPTION_KEY_INIT + LocalDate.now() + mailConfig.getEmail() + mailConfig.getPassword();
         log.info("todaySubscriptionKeyFull is:" + todaySubscriptionKeyFull);
         if (pullSubscriptionMap.get(todaySubscriptionKeyFull) != null) {
+            log.info("获取订阅实例:{}",pullSubscriptionMap.get(todaySubscriptionKeyFull));
             return pullSubscriptionMap.get(todaySubscriptionKeyFull);
         }
         PullSubscription emailNotifySubscription =
@@ -400,7 +408,9 @@ public class SubscriptionContainer {
                 }
             }
             e.printStackTrace();
-            throw new RuntimeException("get subscription error:" + e);
+            log.error("get subscription error:"+e);
+            return null;
+//            throw new RuntimeException("get subscription error:" + e);
         }
     }
 

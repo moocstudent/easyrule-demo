@@ -349,7 +349,6 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
                 .filter(collectList -> collectList != null && collectList.size() != 0)
                 .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
         log.info("获取的文件id列表:");
-        folderIdList.forEach(System.out::println);
         return folderIdList;
     }
 

@@ -3,6 +3,7 @@ package com.example.easyruledemo.task;
 import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.enums.ItemActionType;
+import com.example.easyruledemo.event.MailEventHandler;
 import com.example.easyruledemo.rules.MailEventsThread;
 import com.example.easyruledemo.service.IEwsEmailService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class EmailEventTask {
      * fixme 执行初始化订阅前,需要一次性创建被监测邮箱的初始化文件夹
      */
 //    @Scheduled(cron = "0 0 1 * * ?")
-    @PostConstruct
+//    @PostConstruct
     public void initialAttachSubscriptionToday(){
         log.info("开始初始化今日邮箱订阅监听");
         Integer size = SubscriptionContainer.initialSubscriptionToday(ewsEmailService
@@ -60,8 +61,11 @@ public class EmailEventTask {
                     .getMailConfigList(EwsMailEntity.builder().build(),
                     /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.D);
             for (EwsMailEntity mailConfig : mailConfigList){
-                MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
-                mailEventsThread.start();
+                log.info("mailConfig in event task:{}",mailConfig);
+
+                MailEventHandler.event(mailConfig);
+//                MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
+//                mailEventsThread.start();
             }
 //            executeThisDay++;
         } catch (Exception e) {

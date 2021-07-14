@@ -70,6 +70,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
                         .eq(EwsSubscriptionEntity::getDeleteFlag, 0);
         List list = Optional.ofNullable(baseMapper.selectList(queryWrapper)).orElse(Collections.EMPTY_LIST);
         if (list.size()==0){
+            //没有这个key,则进行新增,不传id
             return this.saveOrUpdateSubcription(ewsSubscription);
         }
         //有的话则更新

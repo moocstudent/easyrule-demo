@@ -1,9 +1,11 @@
 package com.example.easyruledemo.service.impl;
 
+import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
 import com.example.easyruledemo.enums.ItemActionType;
+import com.example.easyruledemo.rules.MailEventsThread;
 import com.example.easyruledemo.service.*;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -33,12 +35,13 @@ public class EwsInitServiceImpl
     @Autowired
     private IEwsFolderService ewsFolderService;
 
+    @Transactional
     @Override
     public Integer initMailFoldersAndFireRules(List<String> itemActionTypeList) {
 //        ItemActionType.
         //the all mailConfig valid ItemActionTypes
         List<EwsMailEntity> mailConfigList
-                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D);
+                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.getEnumList(itemActionTypeList));
         log.info("邮箱文件夹初始化:{}", mailConfigList);
         Integer createFolderSizeByMailList = mailConfigList.stream()
                 .filter(mail -> mail.getTopicId() != null )
@@ -55,6 +58,7 @@ public class EwsInitServiceImpl
                             .map(ruleFolderRelation -> {
                                 //根据ruleId查回来文件夹list,创建文件夹,返回folderId unionId,放入关联表
                                 Integer ruleNeedsFoldersSize = this.createRuleNeedsFolders(ruleFolderRelation, mail);
+                                log.info("创建了规则需要的文件夹共{}个.",ruleNeedsFoldersSize);
                                 //初始化规则
                                 initialRules(mail);
                                 return ruleNeedsFoldersSize;
@@ -78,7 +82,34 @@ public class EwsInitServiceImpl
 
     @Override
     public Integer initSubscription(List<String> itemActionTypeList) {
-        return null;
+        List<EwsMailEntity> mailConfigList
+                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.getEnumList(itemActionTypeList));
+        log.info("initSubscription:");
+        mailConfigList.forEach(System.out::println);
+       return SubscriptionContainer.initialSubscriptionToday(mailConfigList);
+    }
+
+    @Override
+    public Integer initEmailAttachEventPoll(List<String> itemActionTypeList) {
+        if(!(SubscriptionContainer.getInitialCount()>0)){
+            log.info("如果subscription监听未初始化,则不进行事件处理");
+            return 0;
+        }
+        int mailEventCount = 0;
+        try {
+            List<EwsMailEntity> mailConfigList = ewsEmailService
+                    .getMailConfigList(EwsMailEntity.builder().build(),
+                            /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.getEnumList(itemActionTypeList));
+            for (EwsMailEntity mailConfig : mailConfigList){
+                MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
+                mailEventsThread.start();
+                mailEventCount++;
+            }
+//            executeThisDay++;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return mailEventCount;
     }
 
 
@@ -111,7 +142,7 @@ public class EwsInitServiceImpl
     }
 
     private Boolean createRuleNeedsFoldersSingle(EwsRuleFolderRelation relation, EwsMailEntity mailConfig) {
-        log.info("新生成文件夹:{}",relation.getFolderName());
+        log.info("邮箱:{}新生成文件夹:{}", mailConfig.getEmail(),relation.getFolderName());
         String folderUnionId = ewsFolderService.createFolder(relation.getFolderName(), WellKnownFolderName.Inbox, mailConfig);
         log.info("folderUnionId 新生成:{}", folderUnionId);
         if (folderUnionId != null) {
@@ -141,6 +172,7 @@ public class EwsInitServiceImpl
                     /**
                      * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
                      */
+                    log.info("本次执行了email:{}的规则.",mailConfig.getEmail());
                     List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(mail.getTopicId());
                     log.info("rules in initial:{}", rules);
                     return rules.stream()
@@ -163,7 +195,7 @@ public class EwsInitServiceImpl
                 })
                 .get();
         int fireRuleCode = fireRuleCodeList.size();
-        log.info("执行规则条数:{}", fireRuleCode);
+        log.info("邮箱:{}执行规则条数:{}", mailConfig.getEmail(),fireRuleCode);
     }
 
 }
