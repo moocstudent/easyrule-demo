@@ -47,7 +47,7 @@ public class EmailEventTask {
         log.info("今日邮箱订阅监听完成,监听数量:{}个", size);
     }
 
-    @Scheduled(cron = "*/30 * * * * ?")
+//    @Scheduled(cron = "*/30 * * * * ?")
     public void streamEmailEventPoll(){
         List<EwsMailEntity> mailConfigList = ewsEmailService
                 .getMailConfigList(EwsMailEntity.builder().build(),
@@ -88,11 +88,13 @@ public class EmailEventTask {
 //            mailEventsThread.start();
         }
     }
+
+
     /**
      * todo 将监听事件分离化
      * 邮件监听
      */
-//    @Scheduled(cron = "*/30 * * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     public void emailAttachEventPoll() {
 //        if(!(SubscriptionContainer.getInitialCount()>0)){
 //            log.info("如果subscription监听未初始化,则不进行事件处理");

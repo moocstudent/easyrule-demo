@@ -32,6 +32,7 @@ import java.util.Random;
 @Component
 public class SubscriptionContainer {
     // 单例map
+    ThreadLocal<PullSubscription> pullSubscriptionThreadLocal = new ThreadLocal<>();
     private static Map<String, PullSubscription> pullSubscriptionMap = new HashMap<>();
     private static Map<String, StreamingSubscription> streamSubscriptionMap = new HashMap<>();
     private static Map<String, PullSubscription> customSubscriptionMap = new HashMap<>();
@@ -274,7 +275,8 @@ public class SubscriptionContainer {
             log.info("a new subscribe is coming : {}", todaySubscriptionKeyPrefix + keySuffix);
             emailNotifySubscription = getEmailNotifySubscription(ONE_DAY_MINUTES, mailConfig, key);
 
-            pullSubscriptionMap.put(key, emailNotifySubscription);
+//            pullSubscriptionMap.put(key, emailNotifySubscription);
+
 
             log.info("emailNotifySubscriptionMap:{}", pullSubscriptionMap);
             count++;
@@ -469,7 +471,6 @@ public class SubscriptionContainer {
                 if (e.getMessage().indexOf("have exceeded the available subscriptions for your account") > -1) {
                     log.warn("创建subscribe错误,已经进行了订阅,请勿重复订阅.");
                     //如果重复订阅不抛出异常 返回原有的订阅主体
-
                     log.info("pullSubscriptionMap.get(key):{}", pullSubscriptionMap.get(key)); //sometimes null
                     PullSubscription subscription = subcriptionService.unAndInitOne(mailConfig, key);
                     if (subscription != null) {
