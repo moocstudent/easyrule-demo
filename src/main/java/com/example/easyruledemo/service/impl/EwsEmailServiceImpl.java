@@ -67,33 +67,40 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     @Deprecated
     public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig) {
 
+        //查包含指定ruleType的ewsMail集合
+        List<EwsMailEntity> mailEntityList = new LambdaQueryChainWrapper<EwsMailEntity>(baseMapper)
+                .eq(EwsMailEntity::getDeleteFlag, 0)
+                .eq(!StringUtils.isEmpty(mailConfig.getEmail()), EwsMailEntity::getEmail, mailConfig.getEmail())
+                .eq(!StringUtils.isEmpty(mailConfig.getTopicId()), EwsMailEntity::getTopicId, mailConfig.getTopicId())
+//                .eq(StringUtils.isEmpty(mailConfig.getHost()), EwsMailEntity::getHost, mailConfig.getHost())
+                .orderByDesc(EwsMailEntity::getMailId)
+                .list();
 
-        //for test
-        /**
-         * LambdaQuery
-         * .eq(MailConfigEntity::根据关联表查询符合这次要求的集合，
-         * 如有的需要进行附件下载，有的需要进行邮件清理，会分为不同的task执行
-         */
-        EwsMailEntity mailConfigEntity = EwsMailEntity.builder()
-                .mailId("9id")
-//                .mailId(1L)
-                .email("implementsteam@outlook.com")
-                .password("zhangqi1112")
-                .mailFolders(EwsFoldersEntity.builder()
-                        .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
-                .build();
-        EwsMailEntity mailConfigEntity2 = EwsMailEntity.builder()
-                .mailId("9id")
-//                .mailId(1L)
-                .email("frankimplements@outlook.com")
-                .password("zhangqi1112")
-                .mailFolders(EwsFoldersEntity.builder()
-                        .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
-                .build();
-        List mailConfigList = new ArrayList<>();
-        mailConfigList.add(mailConfigEntity);
-        mailConfigList.add(mailConfigEntity2);
-        return mailConfigList;
+        String mailId = mailConfig.getMailId();
+        EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mailId);
+        JSONObject ruleConfigJsonObject = JSONObject.parseObject(topic.getTopicConfig());
+
+        //根据topicConfig以及给定需要的
+        Map<String,EwsFoldersEntity> nameFolderMap = new HashMap<>();
+            EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mail.getMailId());
+            String topicConfig = topic.getTopicConfig();
+            log.info("topicConfig:{}",topicConfig);
+            List<EwsRuleEntity> ewsRuleEntityList = ewsRuleService.listRulesByTopicConfig(topicConfig);
+            List<String> ruleIdList = ewsRuleEntityList.stream()
+                    .map(rule -> {
+                        return rule.getRuleId();
+                    }).collect(Collectors.toList());
+            log.info("email 获取mailConfig:");
+            mail.setMailRulesValidThisTime(ewsRuleEntityList);
+            log.info("query ruleIdList:{}",ruleIdList);
+            if(ruleIdList.size()==0){
+                throw new RuntimeException("获取到ruleIdList为空,请检查重试.");
+            }
+            EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
+            mail.setMailFolders(foldersEntity);
+            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
+            mail.setMailFoldersMap(nameFolderMap);
+
     }
 
     @Override
