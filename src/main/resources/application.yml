@@ -1,5 +1,5 @@
 spring:
-  # 数据源类型配置
+ #  数据源类型配置
   datasource:
       driverClassName: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://127.0.0.1:3306/ews-cute?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&serverTimezone=Asia/Shanghai
@@ -11,17 +11,18 @@ spring:
         idType: AUTO
 
 #  datasource:
-#      driverClassName: oracle.jdbc.driver.OracleDriver
-#      url: jdbc:oracle:thin:@ip:1521:dev
-#      username: xxx
-#      password: xxx
-
-mybatis-plus:
-  mapper-locations: classpath:mappers/*.xml
-  type-aliases-package: com.example.easyruledemo.entity
+#    url: jdbc:oracle:thin:@10.220.20.87:1521/orclpdb
+#    username: OMS_DEV
+#    password: oms_dev
+#    driver-class-name: oracle.jdbc.driver.OracleDriver
+#
+#mybatis-plus:
+#  mapper-locations: classpath:mappers/*.xml
+#  type-aliases-package: com.example.easyruledemo.entity
 
 
 
 server:
   port: 93
+
 

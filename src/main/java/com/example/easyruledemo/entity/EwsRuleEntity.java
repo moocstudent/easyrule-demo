@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Transient;
 
 /**
  * @Author: zhangQi
@@ -51,11 +50,10 @@ public class EwsRuleEntity {
      * 在配置一个规则主题时,按照拖动顺序
      * 设定该规则的优先级,数值越小越靠上
      */
-    @Transient
 //    @ApiModelProperty("规则权重")
     @ApiModelProperty("【不传入】权重等级，从关联表拿取")
     @TableField(exist = false)
-    private Integer priority;
+    private transient Integer priority;
 
     /**
      * 是否启用

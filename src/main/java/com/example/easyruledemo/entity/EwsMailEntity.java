@@ -16,7 +16,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Transient;
 import java.util.List;
 import java.util.Map;
 
@@ -65,19 +64,16 @@ public class EwsMailEntity {
      */
 //    @Transient
 //    private Map<String,EwsFoldersEntity> mailFolders;
-    @Transient
     @ApiModelProperty(value = "【web不传入】")
     @TableField(exist = false)
-    private Map<String, EwsFoldersEntity> mailFoldersMap;
-    @Transient
+    private transient Map<String, EwsFoldersEntity> mailFoldersMap;
     @ApiModelProperty("【web不传入】")
     @TableField(exist = false)
-    private EwsFoldersEntity mailFolders;
+    private transient EwsFoldersEntity mailFolders;
     //满足本次条件的mailRuleList集合
-    @Transient
     @ApiModelProperty("【web不传入】满足本次条件的mailRuleList集合")
     @TableField(exist = false)
-    private List<EwsRuleEntity> mailRulesValidThisTime;
+    private transient List<EwsRuleEntity> mailRulesValidThisTime;
 
     @ApiModelProperty(value = "激活状态",notes = "1:激活,0关闭")
     private Integer active;

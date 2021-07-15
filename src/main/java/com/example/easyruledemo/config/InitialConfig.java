@@ -46,7 +46,7 @@ public class InitialConfig {
     public void initMailFoldersAndFireRules() {
         //the all mailConfig valid ItemActionTypes
         List<EwsMailEntity> mailConfigList
-                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D);
+                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build());
         log.info("邮箱文件夹初始化:{}", mailConfigList);
         Integer createFolderSizeByMailList = mailConfigList.stream()
                 .filter(mail -> mail.getTopicId() != null)

@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Transient;
 import java.util.List;
 
 /**
@@ -53,9 +52,8 @@ public class EwsFoldersEntity {
 //    //创建folder后保存id到相关表 这里联查回来的
     //todo 这里将不再使用这个字段,将从邮箱对应topic对应的rule对应rule需要的文件夹来获取
     //todo 现在只是测试用
-    @Transient
     @TableField(exist = false)
-    private List<String> folderIds;
+    private transient List<String> folderIds;
 //
     //todo 这里将不再使用这个字段,将从邮箱对应topic对应的rule对应rule需要的文件夹来获取
     //todo 现在只是测试用
