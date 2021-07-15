@@ -14,13 +14,16 @@ public interface IEwsInitService {
      * @return
      */
     Integer initMailFoldersAndFireRules(List<String> itemActionTypeList);
+    Integer initMailFoldersAndFireRules(Long mailId);
+
+
 
     /**
-     * 初始化订阅
-     * @param itemActionTypeList 邮件执行文件执行类型获取邮件list并开启订阅
-     * @return
+     * 初始化订阅和邮箱事件轮询归入一个方法内共同执行
      */
-    Integer initSubscription(List<String> itemActionTypeList);
+    Integer initSubscriptionAndEventPoll(Long mailId);
+
+
 
     /**
      * 无法设定每30秒一次,暂时还依旧使用Scheduled

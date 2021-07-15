@@ -45,7 +45,7 @@ public class EmailNotifyDelegate implements StreamingSubscriptionConnection.INot
         if(itemCount>0){
             // Now retrieve the Subject property of all the new emails in one call to EWS.
             try {
-                ServiceResponseCollection<GetItemResponse> responses = EwsExContainer.defaultExchangeService().bindToItems(newEmailIds, new PropertySet(ItemSchema.Subject));
+                ServiceResponseCollection<GetItemResponse> responses = EwsExContainer.defaultExchangeService().bindToItems(newEmailIds, new PropertySet(ItemSchema.Attachments));
                 System.out.println("count=======" + responses.getCount());
 
                 //this.listBox1.Items.Add(string.Format("{0} new mail(s)", newMailsIds.Count));
@@ -55,6 +55,8 @@ public class EmailNotifyDelegate implements StreamingSubscriptionConnection.INot
                     System.out.println("count=======" + responses.getClass().getName());
                     System.out.println("subject=======" + response.getItem().getSubject());
                     System.out.println("i don't need:"+response.getItem().getId());
+                    System.out.println("i don't need:"+response.getItem().getAttachments());
+
                     // Console.WriteLine("subject====" + response.Item.Subject);
                 }
             } catch (Exception e) {

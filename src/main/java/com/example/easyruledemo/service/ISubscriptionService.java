@@ -2,6 +2,7 @@ package com.example.easyruledemo.service;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsSubscriptionEntity;
+import microsoft.exchange.webservices.data.notification.PullSubscription;
 
 import java.util.List;
 
@@ -39,5 +40,27 @@ public interface ISubscriptionService {
      * @return
      */
     Integer updateByKey(EwsSubscriptionEntity ewsSubscriptionEntity);
+
+    /**
+     * 初始化订阅
+     * @param itemActionTypeList 邮件执行文件执行类型获取邮件list并开启订阅
+     * @return
+     */
+    Integer initSubscription(List<String> itemActionTypeList);
+
+    /**
+     * 取消掉该邮件的订阅
+     * @param mailId
+     * @return
+     */
+    Integer unSubscription(Long mailId);
+
+    /**
+     * 取消订阅并初始化一个新的放入map
+     * @param mailEntity
+     * @param key
+     * @return
+     */
+    PullSubscription unAndInitOne(EwsMailEntity mailEntity,String key);
 
 }

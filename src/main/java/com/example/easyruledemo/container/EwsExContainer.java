@@ -38,6 +38,7 @@ public class EwsExContainer {
      */
     public static ExchangeService getExchangeService(String email,String password){
         String key = email+password;
+        log.info("get exchange service by key:{}",key);
         if(exchangeServiceMap.get(key)!=null){
             log.info("exchangeServiceMap get ok:{}",exchangeServiceMap.get(key));
             return exchangeServiceMap.get(key);

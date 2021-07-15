@@ -11,9 +11,7 @@ import com.example.easyruledemo.service.ISubscriptionService;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.notification.EventType;
-import microsoft.exchange.webservices.data.notification.PullSubscription;
-import microsoft.exchange.webservices.data.notification.StreamingSubscription;
-import microsoft.exchange.webservices.data.notification.StreamingSubscriptionConnection;
+import microsoft.exchange.webservices.data.notification.*;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @Author: zhangQi
@@ -36,6 +35,22 @@ public class SubscriptionContainer {
     private static Map<String, PullSubscription> pullSubscriptionMap = new HashMap<>();
     private static Map<String, StreamingSubscription> streamSubscriptionMap = new HashMap<>();
     private static Map<String, PullSubscription> customSubscriptionMap = new HashMap<>();
+
+    public static Map<String, PullSubscription> getPullSubscriptionMap() {
+        return pullSubscriptionMap;
+    }
+
+    public static void setPullSubscriptionMap(Map<String, PullSubscription> pullSubscriptionMap) {
+        SubscriptionContainer.pullSubscriptionMap = pullSubscriptionMap;
+    }
+
+    public static Map<String, StreamingSubscription> getStreamSubscriptionMap() {
+        return streamSubscriptionMap;
+    }
+
+    public static void setStreamSubscriptionMap(Map<String, StreamingSubscription> streamSubscriptionMap) {
+        SubscriptionContainer.streamSubscriptionMap = streamSubscriptionMap;
+    }
 
     //日级别
     final private static String SUBSCRIPTION_KEY_INIT = "one_day_subscription";
@@ -164,7 +179,7 @@ public class SubscriptionContainer {
                 ExchangeService onlyService = EwsExContainer.getExchangeService(mail.getEmail(), mail.getPassword());
                 //根据key查询subscriptionId
                 String subscriptionId = subcriptionService.getSubscriptionIdByKey(key);
-                log.info("subscriptionId:{}",subscriptionId);
+                log.info("subscriptionId:{}", subscriptionId);
                 if (subscriptionId != null) {
                     onlyService.unsubscribe(subscriptionId);
                 }
@@ -179,6 +194,36 @@ public class SubscriptionContainer {
         initialCount = 0;
         log.info("unsubscribeCount is:{}, and empty the subscriptionMap:{}, and set initialCount to 0",
                 mailConfigList.size(), pullSubscriptionMap.size());
+    }
+
+    /**
+     * 取消一个邮箱的订阅，根据传入的mail
+     */
+    public static Integer unsubscriptionByMail(EwsMailEntity mailConfig) {
+        String mailKey = mailConfig.getEmail() + mailConfig.getPassword();
+
+        String key = SUBSCRIPTION_KEY_INIT + LocalDate.now() + mailKey;
+        try {
+            ExchangeService onlyService = EwsExContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword());
+            //根据key查询subscriptionId
+            String subscriptionId = subcriptionService.getSubscriptionIdByKey(key);
+            log.info("subscriptionId:{}", subscriptionId);
+            if (subscriptionId != null) {
+                onlyService.unsubscribe(subscriptionId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+//                throw new RuntimeException("取消订阅异常");
+            log.error("取消订阅异常");
+        }
+
+        log.info("pullSubscriptionSize:{}", pullSubscriptionMap.size());
+
+        pullSubscriptionMap.clear();
+        initialCount = 0;
+        log.info("unsubscribeCount is:{}, and empty the subscriptionMap:{}, and set initialCount to 0",
+                1, pullSubscriptionMap.size());
+        return 1;
     }
 
 
@@ -231,7 +276,7 @@ public class SubscriptionContainer {
 
             pullSubscriptionMap.put(key, emailNotifySubscription);
 
-            log.info("emailNotifySubscriptionMap:{}",pullSubscriptionMap);
+            log.info("emailNotifySubscriptionMap:{}", pullSubscriptionMap);
             count++;
         }
         initialCount = count;
@@ -248,13 +293,26 @@ public class SubscriptionContainer {
         String todaySubscriptionKeyFull = SUBSCRIPTION_KEY_INIT + LocalDate.now() + mailConfig.getEmail() + mailConfig.getPassword();
         log.info("todaySubscriptionKeyFull is:" + todaySubscriptionKeyFull);
         if (pullSubscriptionMap.get(todaySubscriptionKeyFull) != null) {
-            log.info("获取订阅实例:{}",pullSubscriptionMap.get(todaySubscriptionKeyFull));
-            return pullSubscriptionMap.get(todaySubscriptionKeyFull);
+            log.info("获取订阅实例:{}", pullSubscriptionMap.get(todaySubscriptionKeyFull));
+            PullSubscription subscription = pullSubscriptionMap.get(todaySubscriptionKeyFull);
+            return subscription;
         }
         PullSubscription emailNotifySubscription =
-                getEmailNotifySubscription(ONE_DAY_MINUTES, mailConfig,todaySubscriptionKeyFull);
+                getEmailNotifySubscription(ONE_DAY_MINUTES, mailConfig, todaySubscriptionKeyFull);
         pullSubscriptionMap.put(todaySubscriptionKeyFull, emailNotifySubscription);
         return emailNotifySubscription;
+    }
+
+    /**
+     * 获取stream订阅主体
+     *
+     * @param mailConfig
+     * @return
+     */
+    public static StreamingSubscription getStreamSubscription(EwsMailEntity mailConfig) {
+        String key = STREAM_SUBSCRIPTION_KEY_INIT + LocalDate.now() + mailConfig.getEmail() + mailConfig.getPassword();
+        log.info("streamSubscriptionMap.size():{}", streamSubscriptionMap.size());
+        return streamSubscriptionMap.get(key);
     }
 
     /**
@@ -276,6 +334,7 @@ public class SubscriptionContainer {
         return emailNotifySubscription;
     }
 
+    //new
     public static PullSubscription initialSubscriptionToday(EwsMailEntity mailConfig) {
         String todaySubscriptionKeyPrefix = SUBSCRIPTION_KEY_INIT + LocalDate.now();
         String keySuffix = mailConfig.getEmail() + mailConfig.getPassword();
@@ -352,7 +411,12 @@ public class SubscriptionContainer {
                 if (e.getMessage().indexOf("have exceeded the available subscriptions for your account") > -1) {
                     log.warn("创建subscribe错误,已经进行了订阅,请勿重复订阅.");
                     //如果重复订阅不抛出异常
-                    return null;
+                    PullSubscription subscription = subcriptionService.unAndInitOne(mailConfig, key);
+                    if (subscription != null) {
+                        return subscription;
+                    } else {
+                        throw new RuntimeException("subscription 未知异常");
+                    }
                 }
             }
             e.printStackTrace();
@@ -370,6 +434,8 @@ public class SubscriptionContainer {
      */
     public static PullSubscription getEmailNotifySubscription(int timeoutMinutes, EwsMailEntity mailConfig, String key) {
         try {
+            List<FolderId> folderIds = ewsFolderService.listFolderIdByTopicIdUnAction(mailConfig.getTopicId());
+            log.info("getEmailNotifySubscription:{}", folderIds);
             //挂起一个订阅,有效时长timeoutMinutes 之后通过轮询查看事件
             PullSubscription pullSubscription = EwsExContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword())
                     //todo 这里的只是将字符串的folder unionId 转为folderId实体
@@ -377,9 +443,9 @@ public class SubscriptionContainer {
                     //implementsteam@outlook.com邮箱的folderId
 //                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderListForTest(),
                     //todo 通过ewsFolderService 根据topicId获取folderId实例list
-                    .subscribeToPullNotifications(ewsFolderService.listFolderIdByTopicIdUnAction(mailConfig.getTopicId()),
+                    .subscribeToPullNotifications(folderIds,
                             timeoutMinutes
-                            /* timeOut: the subscription will end if the server is not polled within 5 minutes. */, null /* watermark: null to start a new subscription. */,
+                            /* timeOut: the subscription will end if the server is not polled within 5 minutes. */, null/* watermark: null to start a new subscription. */,
                             EventType.NewMail, EventType.Created, EventType.Deleted);
             String pullSubscriptionId = pullSubscription.getId();
             log.info("pullSubscriptionId:{}", pullSubscriptionId);
@@ -396,19 +462,26 @@ public class SubscriptionContainer {
             log.info("进行了订阅主体的保存:{}", saveSubscription);
             return pullSubscription;
         } catch (Exception e) {
-            e.getMessage();
             if (e.getMessage() != null) {
                 if (e.getMessage().indexOf("401") > -1) {
                     log.error("邮箱权限错误,请核实邮箱账户有效性.");
                 }
                 if (e.getMessage().indexOf("have exceeded the available subscriptions for your account") > -1) {
                     log.warn("创建subscribe错误,已经进行了订阅,请勿重复订阅.");
-                    //如果重复订阅不抛出异常
-                    return null;
+                    //如果重复订阅不抛出异常 返回原有的订阅主体
+
+                    log.info("pullSubscriptionMap.get(key):{}", pullSubscriptionMap.get(key)); //sometimes null
+                    PullSubscription subscription = subcriptionService.unAndInitOne(mailConfig, key);
+                    if (subscription != null) {
+                        log.info("subscription:{}", subscription);
+                        return subscription;
+                    } else {
+                        throw new RuntimeException("subscription 未知异常");
+                    }
                 }
             }
             e.printStackTrace();
-            log.error("get subscription error:"+e);
+            log.error("get subscription error:" + e);
             return null;
 //            throw new RuntimeException("get subscription error:" + e);
         }
@@ -457,8 +530,9 @@ public class SubscriptionContainer {
      */
     public static StreamingSubscriptionConnection getEmailStreamSubcriptionConn(List<FolderId> foldersBeWatching, int lifeTimeMinutes) {
         StreamingSubscriptionConnection conn = null;
+        StreamingSubscription subscription = null;
         try {
-            StreamingSubscription subscription = EwsExContainer.defaultExchangeService().subscribeToStreamingNotifications(foldersBeWatching, EventType.NewMail);
+            subscription = EwsExContainer.defaultExchangeService().subscribeToStreamingNotifications(foldersBeWatching, EventType.NewMail);
             //StreamingSubscriptionConnection(service,lifetime[minutes])
             conn = new StreamingSubscriptionConnection(EwsExContainer.defaultExchangeService(), lifeTimeMinutes);
             conn.addSubscription(subscription);
@@ -467,8 +541,71 @@ public class SubscriptionContainer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+//        return conn;
+        try {
+            conn.open();
+            GetEventsResults events = subscription.getService().getEvents(subscription.getId(), null);
+            Iterable<ItemEvent> itemEvents = events.getItemEvents();
+            log.info("itemEvents hasNext:{}", itemEvents.iterator().hasNext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return conn;
-//        conn.open();
+////            Thread.sleep(30000);
+//        conn.close();
+    }
+
+
+    /**
+     * 获取stream的监测连接
+     *
+     * @param mailConfig      邮件
+     * @param lifeTimeMinutes conn生命力
+     * @return
+     */
+    public static StreamingSubscriptionConnection getEmailStreamSubcriptionConn(EwsMailEntity mailConfig, int lifeTimeMinutes) {
+        StreamingSubscriptionConnection conn = null;
+        StreamingSubscription subscription = null;
+        String key = STREAM_SUBSCRIPTION_KEY_INIT + LocalDate.now() + mailConfig.getEmail() + mailConfig.getPassword();
+        ExchangeService exchangeService = EwsExContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword());
+        try {
+            if (streamSubscriptionMap.get(key) != null) {
+                subscription = streamSubscriptionMap.get(key);
+            } else {
+                subscription = exchangeService.subscribeToStreamingNotifications(
+                        ewsFolderService.listFolderIdByTopicIdUnAction(mailConfig.getTopicId()), EventType.NewMail
+                );
+            }
+            //StreamingSubscriptionConnection(service,lifetime[minutes])
+            if (subscription != null) {
+                streamSubscriptionMap.put(key, subscription);
+            }
+            conn = new StreamingSubscriptionConnection(exchangeService, lifeTimeMinutes);
+            conn.addSubscription(subscription);
+            conn.addOnNotificationEvent(emailNotifyDelegate);
+            Boolean saveSubscription = subcriptionService
+                    .saveOrUpdateSubcriptionByKey(
+                            EwsSubscriptionEntity
+                                    .builder()
+                                    .subscriptionId(subscription.getId())
+                                    .subscriptionKey(key)
+                                    .subscriptionDate(LocalDateTime.now())
+                                    .subscriptionMinutes(30)
+                                    .build()
+                    );
+            log.info("进行了订阅主体的保存:{}", saveSubscription);
+            conn.addOnDisconnect(emailSubscriptionErrorDelegate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        return conn;
+        try {
+            conn.open();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return conn;
 ////            Thread.sleep(30000);
 //        conn.close();
     }

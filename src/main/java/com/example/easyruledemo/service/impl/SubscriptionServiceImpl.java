@@ -5,15 +5,22 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
+import com.example.easyruledemo.container.SubscriptionContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsSubscriptionEntity;
+import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.mapper.EwsSubscriptionMapper;
+import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.ISubscriptionService;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.ExchangeService;
+import microsoft.exchange.webservices.data.notification.PullSubscription;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +32,9 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, EwsSubscriptionEntity> implements ISubscriptionService {
+
+    @Autowired
+    private IEwsEmailService ewsEmailService;
 
     @Override
     public Integer unSubscriptionById(String subscriptionId, EwsMailEntity ewsMail) {
@@ -117,5 +127,44 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
         return baseMapper.update(ewsSubscriptionEntity, updateWrapper);
     }
 
+
+    @Override
+    public Integer initSubscription(List<String> itemActionTypeList) {
+        List<EwsMailEntity> mailConfigList
+                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.getEnumList(itemActionTypeList));
+        log.info("initSubscription:");
+        mailConfigList.forEach(System.out::println);
+        return SubscriptionContainer.initialSubscriptionToday(mailConfigList);
+    }
+
+
+    @Override
+    public Integer unSubscription(Long mailId) {
+        EwsMailEntity mailConfig = ewsEmailService.findOne(mailId);
+        return SubscriptionContainer.unsubscriptionByMail(mailConfig);
+    }
+
+    @Override
+    public PullSubscription unAndInitOne(EwsMailEntity mailEntity, String key) {
+        Integer unsubscription = SubscriptionContainer.unsubscriptionByMail(mailEntity);
+        PullSubscription subscription = null;
+        if(unsubscription>0){
+            subscription = SubscriptionContainer.initialSubscriptionToday(mailEntity);
+            Boolean saveSubscription = this
+                    .saveOrUpdateSubcriptionByKey(
+                            EwsSubscriptionEntity
+                                    .builder()
+                                    .subscriptionId(subscription.getId())
+                                    .subscriptionKey(key)
+                                    .subscriptionDate(LocalDateTime.now())
+                                    .subscriptionMinutes(1440)
+                                    .build()
+                    );
+            return subscription;
+        }else{
+            log.info("取消订阅异常 unAndInitOne");
+        }
+        return subscription;
+    }
 
 }

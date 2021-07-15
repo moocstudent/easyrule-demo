@@ -29,26 +29,29 @@ public class BeanUtil {
     }
 
     //转换object,字段对等
-    public static <T,E>Optional<T> getClass(Class<T> tClass,E e){
-        return Optional.ofNullable(e).map(Unchecked.function(item->{
+    public static <T, E> Optional<T> getClass(Class<T> tClass, E e) {
+        return Optional.ofNullable(e).map(Unchecked.function(item -> {
             T temp = tClass.newInstance();
-            copyProperties(item,temp);
+            copyProperties(item, temp);
             return temp;
         }));
     }
 
     //转换object,字段中string类型的进行trim去除空格
-    public static <E>Optional<E> getTrimClass(E e){
-        return Optional.ofNullable(e).map(Unchecked.function(item->{
+    public static <E> Optional<E> getTrimClass(E e) {
+        return Optional.ofNullable(e).map(Unchecked.function(item -> {
             Class<?> tClass = e.getClass();
             Field[] tDeclaredFields = tClass.getDeclaredFields();
-            for(Field tFiled:tDeclaredFields){
+            for (Field tFiled : tDeclaredFields) {
                 tFiled.setAccessible(true);
-                if(tFiled.getType().getTypeName().indexOf("String")>-1){
+                if (tFiled.getType().getTypeName().indexOf("String") > -1) {
                     System.out.println("string indexof");
-                    String trim = tFiled.get(e).toString().trim();
-                    System.out.println("trim:"+trim);
-                    tFiled.set(e,trim);
+                    String trim = null;
+                    if (tFiled.get(e) != null) {
+                        trim = tFiled.get(e).toString().trim();
+                    }
+                    System.out.println("trim:" + trim);
+                    tFiled.set(e, trim);
                 }
             }
             return e;
