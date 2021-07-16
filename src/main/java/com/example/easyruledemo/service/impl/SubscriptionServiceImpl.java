@@ -137,6 +137,12 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
         return SubscriptionContainer.initialSubscriptionToday(mailConfigList);
     }
 
+    @Override
+    public Integer initSubscription(Long mailId) {
+        EwsMailEntity mailConfig = ewsEmailService.findOne(mailId);
+        return SubscriptionContainer.getSubscriptionToday(mailConfig)!=null?1:0;
+    }
+
 
     @Override
     public Integer unSubscription(Long mailId) {

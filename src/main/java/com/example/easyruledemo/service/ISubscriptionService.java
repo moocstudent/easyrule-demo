@@ -47,6 +47,8 @@ public interface ISubscriptionService {
      * @return
      */
     Integer initSubscription(List<String> itemActionTypeList);
+    //初始化订阅
+    Integer initSubscription(Long mailId);
 
     /**
      * 取消掉该邮件的订阅

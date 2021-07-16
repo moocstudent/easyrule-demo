@@ -32,6 +32,7 @@ public interface IEwsInitService {
 
 
 
+
     /**
      * 无法设定每30秒一次,暂时还依旧使用Scheduled
      * 初始化邮件附件的下载轮询服务

@@ -211,11 +211,14 @@ public class SubscriptionContainer {
             log.info("subscriptionId:{}", subscriptionId);
             if (subscriptionId != null) {
                 onlyService.unsubscribe(subscriptionId);
+            }else{
+                return 1;
             }
         } catch (Exception e) {
             e.printStackTrace();
 //                throw new RuntimeException("取消订阅异常");
             log.error("取消订阅异常");
+            return -1;
         }
 
         log.info("pullSubscriptionSize:{}", pullSubscriptionMap.size());
@@ -224,7 +227,7 @@ public class SubscriptionContainer {
         initialCount = 0;
         log.info("unsubscribeCount is:{}, and empty the subscriptionMap:{}, and set initialCount to 0",
                 1, pullSubscriptionMap.size());
-        return 1;
+        return initialCount;
     }
 
 
