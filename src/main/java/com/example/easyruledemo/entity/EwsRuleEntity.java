@@ -51,9 +51,8 @@ public class EwsRuleEntity {
      * 设定该规则的优先级,数值越小越靠上
      */
 //    @ApiModelProperty("规则权重")
-    @ApiModelProperty("【不传入】权重等级，从关联表拿取")
-    @TableField(exist = false)
-    private transient Integer priority;
+    @ApiModelProperty("权重等级")
+    private int priority;
 
     /**
      * 是否启用

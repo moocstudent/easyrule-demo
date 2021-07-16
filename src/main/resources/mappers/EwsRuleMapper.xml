@@ -22,7 +22,7 @@
     </resultMap>
     <!-- auto generated base column list -->
     <sql id="Base_Column_List">
-        rule_id,display_name,rule_desc,rule_level,rule_type,is_enabled,is_not_supported,
+        rule_id,display_name,rule_desc,priority,rule_level,rule_type,is_enabled,is_not_supported,
         is_in_error,conditions,actions,item_action_type,item_actions,delete_flag
     </sql>
 

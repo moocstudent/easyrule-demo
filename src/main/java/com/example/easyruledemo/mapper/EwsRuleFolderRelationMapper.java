@@ -18,4 +18,7 @@ public interface EwsRuleFolderRelationMapper extends BaseMapper<EwsMailFolderRel
     //关联到ews_folder文件表,查询规则文件关联关系
     EwsMailFolderRelation findOneByConditions(Long ruleId, String folderCode, Long mailId);
     EwsMailFolderRelation findOneByConditions(String ruleId, String folderCode, String mailId);
+
+    //根据邮件id查关联表
+    List<EwsMailFolderRelation> findByConditions(Long mailId);
 }

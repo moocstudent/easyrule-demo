@@ -29,11 +29,19 @@
 
     <select id="findOneByConditions" resultMap="RelationMap">
         select <include refid="Just_Relation_Column_List" />
-        from ews_mail_folders f left join ews_rule_folder_relation r
+        from ews_mail_folders f left join ews_mail_folder_relation r
         on f.ews_folder_id = r.ews_folder_id
         where 1=1
         and f.folder_code = #{param2}
         and r.mail_id = #{param3}
+    </select>
+
+    <select id="findByConditions" resultMap="RelationMap">
+        select <include refid="Relation_Column_List" />
+        from ews_mail_folders f left join ews_mail_folder_relation r
+        on f.ews_folder_id = r.ews_folder_id
+        where 1=1
+        and r.mail_id = #{mailId}
     </select>
 
 

@@ -86,10 +86,6 @@ public class MailFolderRelationServiceImpl extends ServiceImpl<EwsRuleFolderRela
 
     @Override
     public List<EwsMailFolderRelation> findByMailId(Long mailId) {
-        LambdaQueryWrapper<EwsMailFolderRelation> queryWrapper
-                = new LambdaQueryWrapper<EwsMailFolderRelation>()
-                .eq(EwsMailFolderRelation::getMailId,mailId)
-                .eq(EwsMailFolderRelation::getDeleteFlag,0);
-        return baseMapper.selectList(queryWrapper);
+        return baseMapper.findByConditions(mailId);
     }
 }

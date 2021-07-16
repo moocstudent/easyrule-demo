@@ -35,55 +35,6 @@ public class InitialConfig {
     private IMailFolderRelationService ruleFolderRelationService;
 
     /**
-     * 初始化邮件文件夹,全部并根据itemActionType.D
-     * 也可以根据传入邮件来进行单条生成
-     * 这里是默认获取全部的进行生成
-     * todo 做成接口单独调用产生文件夹,根据email主体
-     * testok
-     */
-//    @PostConstruct
-    public void initMailFoldersAndFireRules() {
-        //the all mailConfig valid ItemActionTypes
-        List<EwsMailEntity> mailConfigList
-                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build());
-        log.info("邮箱文件夹初始化:{}", mailConfigList);
-        Integer createFolderSizeByMailList = mailConfigList.stream()
-                .filter(mail -> mail.getTopicId() != null)
-                .map(mail -> {
-                    /**
-                     * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
-                     */
-                    List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(mail.getTopicId());
-                    Integer createFolderSizeByTopicId = rules.stream()
-                            .map(rule -> {
-                                List<EwsMailFolderRelation> ruleFolderRelations = ruleFolderRelationService.listByRuleId(rule.getRuleId());
-                                return ruleFolderRelations;
-                            })
-                            .map(ruleFolderRelation -> {
-                                //根据ruleId查回来文件夹list,创建文件夹,返回folderId unionId,放入关联表
-                                Integer ruleNeedsFoldersSize = this.createRuleNeedsFolders(ruleFolderRelation, mail);
-                                //初始化规则
-                                initialRules(mail);
-                                return ruleNeedsFoldersSize;
-                            })
-                            .reduce((c1, c2) -> {
-                                c1 += c2;
-                                return c1;
-                            })
-                            .get();
-                    return createFolderSizeByTopicId;
-                })
-                .reduce((c1, c2) -> {
-                    c1 += c2;
-                    return c1;
-                })
-                .get();
-
-        log.info("创建该邮件list下初始化的文件夹共:{}个,根据类型:{},该初始化只执行一次", createFolderSizeByMailList, ItemActionType.D.getDescription());
-    }
-
-
-    /**
      * 生成folderId后继而保存回对应的folder实体中的folderId unionId中
      *
      * @param ewsFolders

@@ -6,6 +6,7 @@ import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
+import com.example.easyruledemo.entity.relation.EwsMailFolderRelation;
 import com.example.easyruledemo.mapper.EwsFoldersMapper;
 import com.example.easyruledemo.service.IEwsFolderService;
 import com.example.easyruledemo.service.IEwsRuleService;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -201,153 +204,185 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     }
 
     @Override
-    public List<FolderId> listFolderIdByRuleId(Long ruleId) {
-        return mailFolderRelationService.findByMailId(ruleId)
-                .stream()
-                .filter(folder -> folder.getFolderId() != null && folder.getFolderId().length() > 0)
-                .map(folder -> {
-                    FolderId folderId = null;
+    public List<FolderId> listFolderByMailId(Long mailId) {
+        List<EwsMailFolderRelation> folderRelations = mailFolderRelationService.findByMailId(mailId);
+        List<EwsMailFolderRelation> list = Optional.ofNullable(folderRelations).orElseThrow(
+                ()->new RuntimeException("请先设定邮箱文件夹关联关系.mail_folder_relation")
+        );
+        List<FolderId> collect = list.stream()
+                .filter(f->{return f.getFolderId()!=null && f.getFolderId().length()>0;})
+                .map(f -> {
+                    String folderIdUnionId = f.getFolderId();
                     try {
-                        folderId = new FolderId(folder.getFolderId());
+                        FolderId folderId = new FolderId(folderIdUnionId);
+                        return folderId;
                     } catch (Exception e) {
                         e.printStackTrace();
+                        return null;
                     }
-                    return folderId;
                 })
                 .collect(Collectors.toList());
+        return collect;
     }
 
     @Override
-    public List<FolderId> listFolderIdByRuleId(String ruleId) {
-        return ruleFolderRelationService.listByRuleId(ruleId)
-                .stream()
-                .filter(folder -> folder.getFolderId() != null && folder.getFolderId().length() > 0)
-                .map(folder -> {
-                    FolderId folderId = null;
-                    try {
-                        folderId = new FolderId(folder.getFolderId());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return folderId;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId) {
-        return ruleFolderRelationService.listByRuleId(ruleId)
-                .stream()
-                .filter(folder ->  {
-                    log.info("folderCode:{}",folder.getFolderCode());
-                    return folder.getFolderId() != null && folder.getFolderId().length() > 0;
-                        }
-                ).map(folder->{
-                    FolderId folderId = null;
-                    try {
-                        log.info("folderId unionId:{}",folder.getFolderId());
-                        folderId = new FolderId(folder.getFolderId());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return folderId;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<FolderId> listFolderIdByRuleIdJustUnAction(String ruleId) {
-        return ruleFolderRelationService.listByRuleId(ruleId)
-                .stream()
-                .filter(folder ->  {
-                            log.info("folderCode:{}",folder.getFolderCode());
-                            return folder.getFolderId() != null && folder.getFolderId().length() > 0
-                                    && folder.getFolderCode().indexOf("un")>-1;
-                        }
-                ).map(folder->{
-                    FolderId folderId = null;
-                    try {
-                        log.info("folderId unionId:{}",folder.getFolderId());
-                        folderId = new FolderId(folder.getFolderId());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return folderId;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<String> listFolderNamesByRuleId(Long ruleId) {
-        return this.listFolderByRuleId(ruleId)
-                .stream()
-                .filter(folder -> folder.getFolderName() != null && folder.getFolderName().length() > 0)
-                .map(folder -> folder.getFolderName())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<EwsFoldersEntity> listFolderByRuleId(Long ruleId) {
-        return baseMapper.listFolderByRuleId(ruleId);
+    public List<FolderId> listFolderByMailId(String mailId) {
+        return null;
     }
 
     @Override
     public List<FolderId> listFolderIdByTopicId(String topicId) {
-        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
-        List<FolderId> folderIdList = rules.stream()
-                .map(rule -> {
-                    List<FolderId> folderIds = this.listFolderIdByRuleId(rule.getRuleId());
-                    return folderIds;
-                })
-                .reduce((x, y) -> {
-                    x.addAll(y);
-                    return x;
-                })
-                .filter(collectList -> collectList != null && collectList.size() != 0)
-                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
-
-        return folderIdList;
+        return null;
     }
 
-    @Override
-    public List<FolderId> listFolderIdByTopicIdUnAction(String topicId) {
-        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
-        log.info("rules:{}",rules);
-        List<FolderId> folderIdList = rules.stream()
-                .map(rule -> {
-                    List<FolderId> folderIds = this.listFolderIdByRuleIdJustUnAction(rule.getRuleId());
-                    return folderIds;
-                })
-                .reduce((x, y) -> {
-                    x.addAll(y);
-                    return x;
-                })
-                .filter(collectList -> collectList != null && collectList.size() != 0)
-                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
-        log.info("获取的文件id列表:");
-        folderIdList.forEach(System.out::println);
-        return folderIdList;
-    }
+//    @Override
+//    public List<FolderId> listFolderIdByRuleId(Long ruleId) {
+//        return mailFolderRelationService.findByMailId(ruleId)
+//                .stream()
+//                .filter(folder -> folder.getFolderId() != null && folder.getFolderId().length() > 0)
+//                .map(folder -> {
+//                    FolderId folderId = null;
+//                    try {
+//                        folderId = new FolderId(folder.getFolderId());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    return folderId;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
-    @Override
-    public List<FolderId> listFolderIdByTopicIdUnAction(Long topicId) {
-        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
-        log.info("rules:{}",rules);
-        List<FolderId> folderIdList = rules.stream()
-                .map(rule -> {
-                    List<FolderId> folderIds = this.listFolderIdByRuleIdJustUnAction(rule.getRuleId());
-                    return folderIds;
-                })
-                .reduce((x, y) -> {
-                    x.addAll(y);
-                    return x;
-                })
-                .filter(collectList -> collectList != null && collectList.size() != 0)
-                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
-        log.info("获取的文件id列表:");
-        folderIdList.forEach(System.out::println);
-        return folderIdList;
-    }
+//    @Override
+//    public List<FolderId> listFolderIdByRuleId(String ruleId) {
+//        return mailFolderRelationService.listByRuleId(ruleId)
+//                .stream()
+//                .filter(folder -> folder.getFolderId() != null && folder.getFolderId().length() > 0)
+//                .map(folder -> {
+//                    FolderId folderId = null;
+//                    try {
+//                        folderId = new FolderId(folder.getFolderId());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    return folderId;
+//                })
+//                .collect(Collectors.toList());
+//    }
+//
+//    @Override
+//    public List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId) {
+//        return ruleFolderRelationService.listByRuleId(ruleId)
+//                .stream()
+//                .filter(folder ->  {
+//                    log.info("folderCode:{}",folder.getFolderCode());
+//                    return folder.getFolderId() != null && folder.getFolderId().length() > 0;
+//                        }
+//                ).map(folder->{
+//                    FolderId folderId = null;
+//                    try {
+//                        log.info("folderId unionId:{}",folder.getFolderId());
+//                        folderId = new FolderId(folder.getFolderId());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    return folderId;
+//                })
+//                .collect(Collectors.toList());
+//    }
+//
+//    @Override
+//    public List<FolderId> listFolderIdByRuleIdJustUnAction(String ruleId) {
+//        return ruleFolderRelationService.listByRuleId(ruleId)
+//                .stream()
+//                .filter(folder ->  {
+//                            log.info("folderCode:{}",folder.getFolderCode());
+//                            return folder.getFolderId() != null && folder.getFolderId().length() > 0
+//                                    && folder.getFolderCode().indexOf("un")>-1;
+//                        }
+//                ).map(folder->{
+//                    FolderId folderId = null;
+//                    try {
+//                        log.info("folderId unionId:{}",folder.getFolderId());
+//                        folderId = new FolderId(folder.getFolderId());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    return folderId;
+//                })
+//                .collect(Collectors.toList());
+//    }
+
+//    @Override
+//    public List<String> listFolderNamesByRuleId(Long ruleId) {
+//        return this.listFolderByRuleId(ruleId)
+//                .stream()
+//                .filter(folder -> folder.getFolderName() != null && folder.getFolderName().length() > 0)
+//                .map(folder -> folder.getFolderName())
+//                .collect(Collectors.toList());
+//    }
+//
+//    @Override
+//    public List<EwsFoldersEntity> listFolderByRuleId(Long ruleId) {
+//        return baseMapper.listFolderByRuleId(ruleId);
+//    }
+
+//    @Override
+//    public List<FolderId> listFolderIdByTopicId(String topicId) {
+//        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
+//        List<FolderId> folderIdList = rules.stream()
+//                .map(rule -> {
+//                    List<FolderId> folderIds = this.listFolderIdByRuleId(rule.getRuleId());
+//                    return folderIds;
+//                })
+//                .reduce((x, y) -> {
+//                    x.addAll(y);
+//                    return x;
+//                })
+//                .filter(collectList -> collectList != null && collectList.size() != 0)
+//                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
+//
+//        return folderIdList;
+//    }
+//
+//    @Override
+//    public List<FolderId> listFolderIdByTopicIdUnAction(String topicId) {
+//        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
+//        log.info("rules:{}",rules);
+//        List<FolderId> folderIdList = rules.stream()
+//                .map(rule -> {
+//                    List<FolderId> folderIds = this.listFolderIdByRuleIdJustUnAction(rule.getRuleId());
+//                    return folderIds;
+//                })
+//                .reduce((x, y) -> {
+//                    x.addAll(y);
+//                    return x;
+//                })
+//                .filter(collectList -> collectList != null && collectList.size() != 0)
+//                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
+//        log.info("获取的文件id列表:");
+//        folderIdList.forEach(System.out::println);
+//        return folderIdList;
+//    }
+//
+//    @Override
+//    public List<FolderId> listFolderIdByTopicIdUnAction(Long topicId) {
+//        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(topicId);
+//        log.info("rules:{}",rules);
+//        List<FolderId> folderIdList = rules.stream()
+//                .map(rule -> {
+//                    List<FolderId> folderIds = this.listFolderIdByRuleIdJustUnAction(rule.getRuleId());
+//                    return folderIds;
+//                })
+//                .reduce((x, y) -> {
+//                    x.addAll(y);
+//                    return x;
+//                })
+//                .filter(collectList -> collectList != null && collectList.size() != 0)
+//                .orElseThrow(() -> new RuntimeException("需要先初始化文件夹"));
+//        log.info("获取的文件id列表:");
+//        folderIdList.forEach(System.out::println);
+//        return folderIdList;
+//    }
 
     @Override
     public List<EwsFoldersEntity> findByFolderCode(String folderCode) {

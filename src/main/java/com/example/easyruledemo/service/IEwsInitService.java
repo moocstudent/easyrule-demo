@@ -14,15 +14,17 @@ public interface IEwsInitService {
      * @return
      */
     Integer initMailFoldersAndFireRules(List<String> itemActionTypeList);
-    Integer initMailFoldersAndFireRules(Long mailId);
+//    Integer initMailFoldersAndFireRules(Long mailId);
 
     //初始化邮件文件夹&初始化规则
     Integer initMailFoldersAndFireRules(Integer resetRuleCode);
 
     Integer initMailFoldersAndFireRules(Long mailId,Integer resetRuleCode);
 
-
-
+    //只初始化文件夹
+    Integer initMailFolder(Long mailId);
+    //只初始化规则
+    Integer initMailRules(Long mailId, Integer resetRuleCode);
     /**
      * 初始化订阅和邮箱事件轮询归入一个方法内共同执行
      */

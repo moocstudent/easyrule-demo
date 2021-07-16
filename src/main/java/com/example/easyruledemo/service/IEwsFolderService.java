@@ -62,28 +62,30 @@ public interface IEwsFolderService {
 
     //查folderId集合根据规则id
 //    List<FolderId> listFolderIdByRuleId(String ruleId);
-    List<FolderId> listFolderIdByRuleId(Long ruleId);
-    List<FolderId> listFolderIdByRuleId(String ruleId);
+//    List<FolderId> listFolderIdByRuleId(Long ruleId);
+//    List<FolderId> listFolderIdByRuleId(String ruleId);
 
     //获取该规则下未执行action的folderId实体
-    List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId);
-    List<FolderId> listFolderIdByRuleIdJustUnAction(String ruleId);
+//    List<FolderId> listFolderIdByRuleIdJustUnAction(Long ruleId);
+//    List<FolderId> listFolderIdByRuleIdJustUnAction(String ruleId);
 
+    List<FolderId> listFolderByMailId(Long mailId);
+    List<FolderId> listFolderByMailId(String mailId);
     //获取folder名称集合根据规则id
 //    List<String> listFolderNamesByRuleId(String ruleId);
     @Deprecated
-    List<String> listFolderNamesByRuleId(Long ruleId);
-
-    //查folder实体根据ruleId
-//    List<EwsFoldersEntity> listFolderByRuleId(String ruleId);
-    List<EwsFoldersEntity> listFolderByRuleId(Long ruleId);
+//    List<String> listFolderNamesByRuleId(Long ruleId);
+//
+//    //查folder实体根据ruleId
+////    List<EwsFoldersEntity> listFolderByRuleId(String ruleId);
+//    List<EwsFoldersEntity> listFolderByRuleId(Long ruleId);
 
     //生成folder根据主题id
     List<FolderId> listFolderIdByTopicId(String topicId);
 
     //生成folder根据主题,获取未执行操作的文件夹的folderId实体list用于newEmail事件监听
-    List<FolderId> listFolderIdByTopicIdUnAction(String topicId);
-    List<FolderId> listFolderIdByTopicIdUnAction(Long topicId);
+//    List<FolderId> listFolderIdByTopicIdUnAction(String topicId);
+//    List<FolderId> listFolderIdByTopicIdUnAction(Long topicId);
 
     //根据folderCode查找一个文件夹
    List<EwsFoldersEntity> findByFolderCode(String folderCode);

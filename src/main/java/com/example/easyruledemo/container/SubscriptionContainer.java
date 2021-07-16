@@ -386,7 +386,7 @@ public class SubscriptionContainer {
                     //implementsteam@outlook.com邮箱的folderId
 //                    .subscribeToPullNotifications(ewsFolderService.getWatchingFolderListForTest(),
                     //todo 通过ewsFolderService 根据topicId获取folderId实例list
-                    .subscribeToPullNotifications(ewsFolderService.listFolderIdByTopicIdUnAction(mailConfig.getTopicId()),
+                    .subscribeToPullNotifications(ewsFolderService.listFolderByMailId(mailConfig.getMailId()),
                             timeoutMinutes
                             /* timeOut: the subscription will end if the server is not polled within 5 minutes. */, null /* watermark: null to start a new subscription. */,
                             EventType.NewMail, EventType.Created, EventType.Deleted);
@@ -420,6 +420,9 @@ public class SubscriptionContainer {
                         throw new RuntimeException("subscription 未知异常");
                     }
                 }
+                if(e.getMessage().indexOf("The specified object was not found in the store., The process failed to get the correct properties.")>-1){
+                    log.warn("需要首先初始化该邮箱文件夹");
+                }
             }
             e.printStackTrace();
             throw new RuntimeException("get subscription error:" + e);
@@ -436,7 +439,7 @@ public class SubscriptionContainer {
      */
     public static PullSubscription getEmailNotifySubscription(int timeoutMinutes, EwsMailEntity mailConfig, String key) {
         try {
-            List<FolderId> folderIds = ewsFolderService.listFolderIdByTopicIdUnAction(mailConfig.getTopicId());
+            List<FolderId> folderIds = ewsFolderService.listFolderByMailId(mailConfig.getMailId());
             log.info("getEmailNotifySubscription:{}", folderIds);
             //挂起一个订阅,有效时长timeoutMinutes 之后通过轮询查看事件
             PullSubscription pullSubscription = EwsExContainer.getExchangeService(mailConfig.getEmail(), mailConfig.getPassword())
@@ -467,6 +470,7 @@ public class SubscriptionContainer {
             if (e.getMessage() != null) {
                 if (e.getMessage().indexOf("401") > -1) {
                     log.error("邮箱权限错误,请核实邮箱账户有效性.");
+                    return null;
                 }
                 if (e.getMessage().indexOf("have exceeded the available subscriptions for your account") > -1) {
                     log.warn("创建subscribe错误,已经进行了订阅,请勿重复订阅.");
@@ -480,6 +484,12 @@ public class SubscriptionContainer {
                         throw new RuntimeException("subscription 未知异常");
                     }
                 }
+                //
+                if(e.getMessage().indexOf("The specified object was not found in the store., The process failed to get the correct properties.")>-1){
+                    log.warn("需要首先初始化该邮箱文件夹");
+                    return null;
+                }
+
             }
             e.printStackTrace();
             log.error("get subscription error:" + e);
@@ -574,7 +584,7 @@ public class SubscriptionContainer {
                 subscription = streamSubscriptionMap.get(key);
             } else {
                 subscription = exchangeService.subscribeToStreamingNotifications(
-                        ewsFolderService.listFolderIdByTopicIdUnAction(mailConfig.getTopicId()), EventType.NewMail
+                        ewsFolderService.listFolderByMailId(mailConfig.getMailId()), EventType.NewMail
                 );
             }
             //StreamingSubscriptionConnection(service,lifetime[minutes])
