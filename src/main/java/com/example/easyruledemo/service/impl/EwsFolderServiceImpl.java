@@ -243,8 +243,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
                 .stream()
                 .filter(folder ->  {
                     log.info("folderCode:{}",folder.getFolderCode());
-                    return folder.getFolderId() != null && folder.getFolderId().length() > 0
-                            && folder.getFolderCode().indexOf("un")>-1;
+                    return folder.getFolderId() != null && folder.getFolderId().length() > 0;
                         }
                 ).map(folder->{
                     FolderId folderId = null;

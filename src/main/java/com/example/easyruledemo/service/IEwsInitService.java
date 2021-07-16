@@ -16,6 +16,11 @@ public interface IEwsInitService {
     Integer initMailFoldersAndFireRules(List<String> itemActionTypeList);
     Integer initMailFoldersAndFireRules(Long mailId);
 
+    //初始化邮件文件夹&初始化规则
+    Integer initMailFoldersAndFireRules(Integer resetRuleCode);
+
+    Integer initMailFoldersAndFireRules(Long mailId,Integer resetRuleCode);
+
 
 
     /**

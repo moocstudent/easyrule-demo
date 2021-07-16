@@ -16,13 +16,14 @@ spring:
 #    password: oms_dev
 #    driver-class-name: oracle.jdbc.driver.OracleDriver
 #
-#mybatis-plus:
-#  mapper-locations: classpath:mappers/*.xml
-#  type-aliases-package: com.example.easyruledemo.entity
+mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml
+  type-aliases-package: com.example.easyruledemo.entity
 
 
 
 server:
   port: 93
+
 
 

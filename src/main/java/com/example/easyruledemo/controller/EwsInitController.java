@@ -25,15 +25,18 @@ public class EwsInitController {
     @Autowired
     private ISubscriptionService subscriptionService;
 
-    /**
-     * 设定符合要求的邮件初始化文件夹和规则
-     * @param itemActionTypeBo
-     * @return
-     */
-    @ApiOperation("初始化文件夹以及规则")
-    @PostMapping("/mailFolderRules")
-    public Result initMailFoldersAndFireRules(@RequestBody ItemActionTypeBo itemActionTypeBo){
-        return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(itemActionTypeBo.getItemActionType()));
+//    @ApiOperation("初始化所有邮箱文件夹以及规则,resetRuleCode传1或者2,1为轻量级初始化(之前的取消应用但存在,这次的新加入),2为重量级初始化(之前的删除这次的覆盖)")
+    @GetMapping("/mailFolderRules/{resetRuleCode}")
+    @Deprecated
+    public Result initMailFoldersAndFireRules(@PathVariable("resetRuleCode") Integer resetRuleCode) {
+        return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(resetRuleCode));
+    }
+
+    //根据邮箱id初始化邮箱的对应文件夹和规则
+    @ApiOperation("初始化文件夹以及规则根据邮件id,resetRuleCode传1或者2,1为轻量级初始化(之前的取消应用但存在,这次的新加入),2为重量级初始化(之前的删除这次的覆盖)")
+    @GetMapping("/folderRules/{mailId}/{resetRuleCode}")
+    public Result initMailFoldersAndFireRules(@PathVariable("mailId") Long mailId,@PathVariable("resetRuleCode") Integer resetRuleCode){
+        return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(mailId,resetRuleCode));
     }
 
     /**
@@ -41,8 +44,9 @@ public class EwsInitController {
      * @param itemActionTypeBo
      * @return
      */
-    @ApiOperation("初始化邮件订阅")
+//    @ApiOperation("初始化邮件订阅")
     @PostMapping("/mailSubscription")
+    @Deprecated
     public Result initSubscription(@RequestBody ItemActionTypeBo itemActionTypeBo){
         return ResultUtil.success(subscriptionService.initSubscription(itemActionTypeBo.getItemActionType()));
     }

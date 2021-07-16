@@ -68,7 +68,7 @@ public class EwsInitServiceImpl
                                 Integer ruleNeedsFoldersSize = this.createRuleNeedsFolders(ruleFolderRelation, mail);
                                 log.info("创建了规则需要的文件夹共{}个.",ruleNeedsFoldersSize);
                                 //初始化规则
-                                initialRules(mail);
+                                initialRules(mail,0);
                                 return ruleNeedsFoldersSize;
                             })
                             .reduce((c1, c2) -> {
@@ -87,6 +87,93 @@ public class EwsInitServiceImpl
         log.info("创建该邮件list下初始化的文件夹共:{}个,根据类型:{},该初始化只执行一次", createFolderSizeByMailList, ItemActionType.D.getDescription());
         return createFolderSizeByMailList;
     }
+
+
+    @Override
+    public Integer initMailFoldersAndFireRules(Integer resetRuleCode) {
+        //the all mailConfig valid ItemActionTypes
+        List<EwsMailEntity> mailConfigList
+                = ewsEmailService.getMailConfigList(EwsMailEntity.builder().build());
+        log.info("邮箱文件夹初始化:{}", mailConfigList);
+        Integer createFolderSizeByMailList = mailConfigList.stream()
+                .filter(mail -> mail.getTopicId() != null )
+                .map(mail -> {
+                    /**
+                     * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
+                     */
+                    List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(mail.getTopicId());
+                    Integer createFolderSizeByTopicId = rules.stream()
+                            .map(rule -> {
+                                List<EwsRuleFolderRelation> ruleFolderRelations = ruleFolderRelationService.listByRuleId(rule.getRuleId());
+                                return ruleFolderRelations;
+                            })
+                            .map(ruleFolderRelation -> {
+                                //根据ruleId查回来文件夹list,创建文件夹,返回folderId unionId,放入关联表
+                                Integer ruleNeedsFoldersSize = this.createRuleNeedsFolders(ruleFolderRelation, mail);
+                                //初始化规则
+                                initialRules(mail,resetRuleCode);
+                                return ruleNeedsFoldersSize;
+                            })
+                            .reduce((c1, c2) -> {
+                                c1 += c2;
+                                return c1;
+                            })
+                            .get();
+                    return createFolderSizeByTopicId;
+                })
+                .reduce((c1, c2) -> {
+                    c1 += c2;
+                    return c1;
+                })
+                .get();
+
+        log.info("创建该邮件list下初始化的文件夹共:{}个,根据类型:{},该初始化只执行一次", createFolderSizeByMailList, ItemActionType.D.getDescription());
+        return createFolderSizeByMailList;
+    }
+
+    @Override
+    public Integer initMailFoldersAndFireRules(Long mailId, Integer resetRuleCode) {
+        //the all mailConfig valid ItemActionTypes
+        EwsMailEntity mailEntity = ewsEmailService.findOne(mailId);
+        log.info("邮箱文件夹初始化:{}", mailEntity);
+
+        Integer createFolderSizeByMailList =   Stream.of(mailEntity)
+                .filter(mail -> mail.getTopicId() != null )
+                .map(mail -> {
+                    /**
+                     * 一则主题对应多个规则,规则中创建的接收文件夹,可通过list放入pullSubscription来监听
+                     */
+                    List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(mail.getTopicId());
+                    Integer createFolderSizeByTopicId = rules.stream()
+                            .map(rule -> {
+                                List<EwsRuleFolderRelation> ruleFolderRelations = ruleFolderRelationService.listByRuleId(rule.getRuleId());
+                                return ruleFolderRelations;
+                            })
+                            .map(ruleFolderRelation -> {
+                                //根据ruleId查回来文件夹list,创建文件夹,返回folderId unionId,放入关联表
+                                Integer ruleNeedsFoldersSize = this.createRuleNeedsFolders(ruleFolderRelation, mail);
+                                log.info("创建了规则需要的文件夹共{}个.",ruleNeedsFoldersSize);
+                                //初始化规则
+                                initialRules(mail,resetRuleCode);
+                                return ruleNeedsFoldersSize;
+                            })
+                            .reduce((c1, c2) -> {
+                                c1 += c2;
+                                return c1;
+                            })
+                            .get();
+                    return createFolderSizeByTopicId;
+                })
+                .reduce((c1, c2) -> {
+                    c1 += c2;
+                    return c1;
+                })
+                .get();
+
+        log.info("创建该邮件list下初始化的文件夹共:{}个,根据类型:{},该初始化只执行一次", createFolderSizeByMailList, ItemActionType.D.getDescription());
+        return createFolderSizeByMailList;
+    }
+
 
     @Override
     public Integer initMailFoldersAndFireRules(Long mailId) {
@@ -111,7 +198,7 @@ public class EwsInitServiceImpl
                                 Integer ruleNeedsFoldersSize = this.createRuleNeedsFolders(ruleFolderRelation, mail);
                                 log.info("创建了规则需要的文件夹共{}个.",ruleNeedsFoldersSize);
                                 //初始化规则
-                                initialRules(mail);
+                                initialRules(mail,0);
                                 return ruleNeedsFoldersSize;
                             })
                             .reduce((c1, c2) -> {
@@ -260,8 +347,13 @@ public class EwsInitServiceImpl
      * 初始化规则
      * @param mailConfig
      */
-    public void initialRules(EwsMailEntity mailConfig) {
+    public void initialRules(EwsMailEntity mailConfig,Integer resetRuleCode) {
         log.info("邮箱规则初始化:{}", mailConfig);
+        if (resetRuleCode==1){
+            Integer disabledRuleByEmAddr = ewsRuleService.disabledRuleByEmAddr(mailConfig);
+        }else if(resetRuleCode==2){
+            Integer deleteRuleByEmAddr = ewsRuleService.deleteRuleByEmAddr(mailConfig);
+        }
 
         List<Integer> fireRuleCodeList = Stream.of(mailConfig)
                 .filter(mail -> mail.getTopicId() != null )
@@ -281,7 +373,8 @@ public class EwsInitServiceImpl
                                     log.info("This rule is fire !");
                                     return fireCode;
                                 } else {
-                                    throw new RuntimeException("no rule to fire");
+                                    log.error("no rule to fire");
+                                    return fireCode;
                                 }
                             })
                             .collect(Collectors.toList());

@@ -175,9 +175,10 @@ public class MailActionsThread extends Thread{
         }
         //下载完成后将文件移动入已下载附件文件夹
         //todo 赋值过去下载完成后移入的文件夹 同上 获取list的时候set回去
-        emailMessage.move(new FolderId(
-                mailConfig.getMailFoldersMap()
-                        .get(FolderNameEnum.ATTACH_ALREADY.getCode()).getFolderId())
-        );
+        //不再移动
+//        emailMessage.move(new FolderId(
+//                mailConfig.getMailFoldersMap()
+//                        .get(FolderNameEnum.ATTACH_ALREADY.getCode()).getFolderId())
+//        );
     }
 }

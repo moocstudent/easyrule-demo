@@ -104,11 +104,11 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .updateInboxRules(ruleList, true);
 //            EwsContainer.defaultExchangeService().update(ruleList,true);
+            return 1;
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }
-        return 1;
     }
 
     @Override
@@ -173,9 +173,10 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         System.out.println("Collection count: " + ruleCollection.getCount());
         List<RuleOperation> deleterules = new ArrayList<RuleOperation>();
         // Write the DisplayName and ID of each rule.
+        if(!(ruleCollection.getCount()>0)){
+            return 0;
+        }
         for (Rule rule : ruleCollection) {
-            System.out.println(rule.getDisplayName());
-            System.out.println(rule.getId());
             DeleteRuleOperation d = new DeleteRuleOperation(rule.getId());
             deleterules.add(d);
         }
@@ -240,11 +241,10 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             return -1;
         }
         System.out.println("Collection count: " + ruleCollection.getCount());
-        List<RuleOperation> disabledRules = new ArrayList<RuleOperation>();
-
-        if (ruleCollection.getCount() == 0) {
+        if(!(ruleCollection.getCount()>0)){
             return 0;
         }
+        List<RuleOperation> disabledRules = new ArrayList<RuleOperation>();
         // Write the DisplayName and ID of each rule.
         for (Rule rule : ruleCollection) {
             System.out.println(rule.getDisplayName());

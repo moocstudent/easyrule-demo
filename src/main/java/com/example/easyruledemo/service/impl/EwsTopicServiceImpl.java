@@ -9,6 +9,7 @@ import com.example.easyruledemo.mapper.EwsTopicMapper;
 import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsTopicService;
 import com.example.easyruledemo.util.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
  * @Date: 2021-07-05 17:25
  */
 @Service
+@Slf4j
 public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEntity>
         implements IEwsTopicService {
 
@@ -83,9 +85,11 @@ public class EwsTopicServiceImpl extends ServiceImpl<EwsTopicMapper, EwsTopicEnt
     public EwsTopicEntity getTopicByMailId(Long mailId) {
         EwsMailEntity mail = ewsEmailService.findOne(mailId);
         Long topicId = null;
+        log.info("mail:{}",mail);
         if(mail!=null){
             topicId = mail.getTopicId();
         }
+        log.info("topicId:{}",topicId);
         return baseMapper.selectById(topicId);
     }
 

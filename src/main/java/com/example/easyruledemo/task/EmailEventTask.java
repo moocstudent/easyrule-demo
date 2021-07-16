@@ -43,7 +43,7 @@ public class EmailEventTask {
     public void initialAttachSubscriptionToday() {
         log.info("开始初始化今日邮箱订阅监听");
         Integer size = SubscriptionContainer.initialSubscriptionToday(ewsEmailService
-                .getMailConfigList(EwsMailEntity.builder().build(), ItemActionType.D));
+                .getMailConfigList(EwsMailEntity.builder().build()));
         log.info("今日邮箱订阅监听完成,监听数量:{}个", size);
     }
 
@@ -102,9 +102,7 @@ public class EmailEventTask {
 //        }
         try {
             List<EwsMailEntity> mailConfigList = ewsEmailService
-                    .getMailConfigList(EwsMailEntity.builder().build(),
-//                    /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.D,ItemActionType.DC);
-                            /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.D, ItemActionType.DC);
+                    .getMailConfigList(EwsMailEntity.builder().build());
             log.info("emailAttachEventPoll emailList:{}", mailConfigList);
             for (EwsMailEntity mailConfig : mailConfigList) {
                 log.info("mailConfig in event task:{}", mailConfig);

@@ -62,36 +62,47 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
     }
 
     @Override
-    @Deprecated
     public List<EwsMailEntity> getMailConfigList(EwsMailEntity mailConfig) {
 
+        //查包含指定ruleType的ewsMail集合
+        List<EwsMailEntity> mailEntityList = new LambdaQueryChainWrapper<EwsMailEntity>(baseMapper)
+                .eq(EwsMailEntity::getDeleteFlag, 0)
+                .eq(!StringUtils.isEmpty(mailConfig.getEmail()), EwsMailEntity::getEmail, mailConfig.getEmail())
+                .eq(!StringUtils.isEmpty(mailConfig.getTopicId()), EwsMailEntity::getTopicId, mailConfig.getTopicId())
+//                .eq(StringUtils.isEmpty(mailConfig.getHost()), EwsMailEntity::getHost, mailConfig.getHost())
+                .orderByDesc(EwsMailEntity::getMailId)
+                .list();
+        //FIXME 先只设定一个邮箱
+        if(mailEntityList.size()>0){
+            mailConfig = mailEntityList.get(0);
+        }
+        Long mailId = mailConfig.getMailId();
+        EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mailId);
+        log.info("topic:{}",topic);
+        String topicConfig = topic.getTopicConfig();
+        JSONObject ruleConfigJsonObject = JSONObject.parseObject(topic.getTopicConfig());
 
-        //for test
-        /**
-         * LambdaQuery
-         * .eq(MailConfigEntity::根据关联表查询符合这次要求的集合，
-         * 如有的需要进行附件下载，有的需要进行邮件清理，会分为不同的task执行
-         */
-        EwsMailEntity mailConfigEntity = EwsMailEntity.builder()
-//                .mailId("9id")
-//                .mailId(1L)
-                .email("implementsteam@outlook.com")
-                .password("zhangqi1112")
-                .mailFolders(EwsFoldersEntity.builder()
-                        .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
-                .build();
-        EwsMailEntity mailConfigEntity2 = EwsMailEntity.builder()
-//                .mailId("9id")
-//                .mailId(1L)
-                .email("frankimplements@outlook.com")
-                .password("zhangqi1112")
-                .mailFolders(EwsFoldersEntity.builder()
-                        .folderIds(Arrays.asList("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==")).build())
-                .build();
-        List mailConfigList = new ArrayList<>();
-        mailConfigList.add(mailConfigEntity);
-        mailConfigList.add(mailConfigEntity2);
-        return mailConfigList;
+        Map<String, EwsFoldersEntity> nameFolderMap = new HashMap<>();
+        //根据topicConfig以及给定需要的
+        log.info("topicConfig:{}", topicConfig);
+        List<EwsRuleEntity> ewsRuleEntityList = ewsRuleService.listRulesByTopicConfig(topicConfig);
+        List<Long> ruleIdList = ewsRuleEntityList.stream()
+                .map(rule -> {
+                    return rule.getRuleId();
+                }).collect(Collectors.toList());
+        log.info("email 获取mailConfig:");
+        mailConfig.setMailRulesValidThisTime(ewsRuleEntityList);
+        log.info("query ruleIdList:{}", ruleIdList);
+        if (ruleIdList.size() == 0) {
+            throw new RuntimeException("获取到ruleIdList为空,请检查重试.");
+        }
+        //下载后不再转移文件夹,则注释,否则需要多配置,并根据不同规则设定的下载后文件转移文件夹code来获取
+//        EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
+//        mailConfig.setMailFolders(foldersEntity);
+//        nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(), foldersEntity);
+//        mailConfig.setMailFoldersMap(nameFolderMap);
+        return Arrays.asList(mailConfig);
+
     }
 
     @Override
@@ -200,7 +211,7 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
             }
             EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
             mail.setMailFolders(foldersEntity);
-            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
+//            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
             mail.setMailFoldersMap(nameFolderMap);
         }
         log.info("满足itemActionType条件的mail:"+ewsMailList);
