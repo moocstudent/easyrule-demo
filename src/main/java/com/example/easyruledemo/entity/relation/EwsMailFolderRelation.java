@@ -21,9 +21,9 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Builder
 @Accessors(chain = true)
-@TableName("ews_rule_folder_relation")
-@ApiModel("ews规则与文件夹关联表")
-public class EwsRuleFolderRelation {
+@TableName("ews_mail_folder_relation")
+@ApiModel("ews邮箱与文件夹关联表")
+public class EwsMailFolderRelation {
 
     //    @TableId(type = IdType.ASSIGN_UUID)
 //    private String relationId;
@@ -35,8 +35,8 @@ public class EwsRuleFolderRelation {
     private Long relationId;
 
 
-    @ApiModelProperty(value = "规则表主键",required = true)
-    private Long ruleId;
+//    @ApiModelProperty(value = "规则表主键",required = true)
+//    private Long ruleId;
 
     //pk of folder table
     @ApiModelProperty(value = "文件表主键",required = true)

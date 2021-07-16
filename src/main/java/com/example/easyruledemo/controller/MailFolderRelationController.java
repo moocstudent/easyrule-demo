@@ -1,9 +1,8 @@
 package com.example.easyruledemo.controller;
 
-import com.example.easyruledemo.entity.EwsTopicEntity;
-import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
+import com.example.easyruledemo.entity.relation.EwsMailFolderRelation;
 import com.example.easyruledemo.model.Result;
-import com.example.easyruledemo.service.IRuleFolderRelationService;
+import com.example.easyruledemo.service.IMailFolderRelationService;
 import com.example.easyruledemo.util.ResultUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,28 +14,28 @@ import org.springframework.web.bind.annotation.*;
  * @Date: 2021-07-09 15:18
  */
 @Api("ews规则文件夹关联接口")
-@RequestMapping("/ews/ruleFolder")
+@RequestMapping("/ews/mailFolder")
 @RestController
-public class RuleFolderRelationController {
+public class MailFolderRelationController {
 
     @Autowired
-    private IRuleFolderRelationService ruleFolderRelationService;
+    private IMailFolderRelationService ruleFolderRelationService;
 
     @ApiOperation("添加规则文件夹关联")
     @PostMapping
-    public Result addRelation(@RequestBody EwsRuleFolderRelation relation){
+    public Result addRelation(@RequestBody EwsMailFolderRelation relation){
         return ResultUtil.success(ruleFolderRelationService.saveOrUpdateRelation(relation));
     }
 
     @ApiOperation("更新规则文件夹关联")
     @PutMapping
-    public Result updateRelation(@RequestBody EwsRuleFolderRelation relation){
+    public Result updateRelation(@RequestBody EwsMailFolderRelation relation){
         return ResultUtil.success(ruleFolderRelationService.saveOrUpdateRelation(relation));
     }
 
     @ApiOperation("遍历关联")
     @PostMapping("/list")
-    public Result relationList(@RequestBody EwsRuleFolderRelation relation){
+    public Result relationList(@RequestBody EwsMailFolderRelation relation){
         return ResultUtil.success(ruleFolderRelationService.listSelective(relation));
     }
 

@@ -1,5 +1,6 @@
 package com.example.easyruledemo.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -7,7 +8,6 @@ import com.example.easyruledemo.entity.EwsFoldersEntity;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.EwsTopicEntity;
-import com.example.easyruledemo.enums.FolderNameEnum;
 import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.mapper.EwsMailMapper;
 import com.example.easyruledemo.service.IEwsEmailService;
@@ -80,7 +80,8 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
         EwsTopicEntity topic = ewsTopicService.getTopicByMailId(mailId);
         log.info("topic:{}",topic);
         String topicConfig = topic.getTopicConfig();
-        JSONObject ruleConfigJsonObject = JSONObject.parseObject(topic.getTopicConfig());
+//        JSONArray jsonArray = JSONObject.parseArray(topicConfig);
+//        List<EwsRuleEntity> ewsRuleEntityList = jsonArray.toJavaList(EwsRuleEntity.class);
 
         Map<String, EwsFoldersEntity> nameFolderMap = new HashMap<>();
         //根据topicConfig以及给定需要的
@@ -153,10 +154,10 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
             if(ruleIdList.size()==0){
                 throw new RuntimeException("获取到ruleIdList为空,请检查重试.");
             }
-            EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
-            mail.setMailFolders(foldersEntity);
-            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
-            mail.setMailFoldersMap(nameFolderMap);
+//            EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
+//            mail.setMailFolders(foldersEntity);
+//            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
+//            mail.setMailFoldersMap(nameFolderMap);
         }
         log.info("满足itemActionType条件的mail:"+ewsMailList);
         return ewsMailList;
@@ -209,10 +210,10 @@ public class EwsEmailServiceImpl extends ServiceImpl<EwsMailMapper, EwsMailEntit
             if(ruleIdList.size()==0){
                 throw new RuntimeException("获取到ruleIdList为空,请检查重试.");
             }
-            EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
-            mail.setMailFolders(foldersEntity);
-//            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
-            mail.setMailFoldersMap(nameFolderMap);
+//            EwsFoldersEntity foldersEntity = ewsFolderService.findInRuleRelation(ruleIdList, FolderNameEnum.ATTACH_ALREADY.getCode());
+//            mail.setMailFolders(foldersEntity);
+////            nameFolderMap.put(FolderNameEnum.ATTACH_ALREADY.getCode(),foldersEntity);
+//            mail.setMailFoldersMap(nameFolderMap);
         }
         log.info("满足itemActionType条件的mail:"+ewsMailList);
         return ewsMailList;

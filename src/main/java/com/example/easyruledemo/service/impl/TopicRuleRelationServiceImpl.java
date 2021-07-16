@@ -2,7 +2,6 @@ package com.example.easyruledemo.service.impl;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
 import com.example.easyruledemo.entity.relation.EwsTopicRuleRelation;
 import com.example.easyruledemo.mapper.EwsTopicRuleRelationMapper;
 import com.example.easyruledemo.service.ITopicRuleRelationService;

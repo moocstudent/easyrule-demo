@@ -1,12 +1,13 @@
 package com.example.easyruledemo.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
 import com.example.easyruledemo.entity.EwsMailEntity;
-import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
+import com.example.easyruledemo.entity.relation.EwsMailFolderRelation;
 import com.example.easyruledemo.entity.sub.EwsActionsEntity;
 import com.example.easyruledemo.entity.sub.EwsConditionsEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
@@ -14,7 +15,7 @@ import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.mapper.EwsRuleMapper;
 import com.example.easyruledemo.service.IEwsEmailService;
 import com.example.easyruledemo.service.IEwsRuleService;
-import com.example.easyruledemo.service.IRuleFolderRelationService;
+import com.example.easyruledemo.service.IMailFolderRelationService;
 import com.example.easyruledemo.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.property.complex.*;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity>
         implements IEwsRuleService {
     @Autowired
-    private IRuleFolderRelationService ruleFolderRelationService;
+    private IMailFolderRelationService ruleFolderRelationService;
     @Autowired
     private IEwsEmailService ewsEmailService;
 
@@ -93,13 +94,13 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     @Override
     public Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
         Rule rule = this.transformRuleEntity(ewsRuleEntity, ewsMail);
-        log.warn("transformRule:{}", rule);
+        log.info("transformRule:{}", rule);
         //是否启用
         CreateRuleOperation createOperation = new CreateRuleOperation(rule);
         List<RuleOperation> ruleList = new ArrayList<RuleOperation>();
         ruleList.add(createOperation);
         try {
-            log.info("开始执行邮件:{} 的规则.",ewsMail.getEmail());
+            log.info("开始执行邮件:{} 的规则.", ewsMail.getEmail());
             //执行规则更新
             EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .updateInboxRules(ruleList, true);
@@ -109,6 +110,33 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             e.printStackTrace();
             return -1;
         }
+    }
+
+    @Override
+    public Integer ewsRuleFire(List<EwsRuleEntity> ewsRuleEntityList, EwsMailEntity ewsMail) {
+        List<RuleOperation> ruleList = new ArrayList<RuleOperation>();
+        log.info("ewsRUlesize:{}",ewsRuleEntityList.size());
+        int fireSize =0;
+        for(EwsRuleEntity ruleEntity:ewsRuleEntityList){
+                    Rule rule = this.transformRuleEntity(ruleEntity, ewsMail);
+                    log.info("transformRule:{}", rule);
+                    CreateRuleOperation createOperation = new CreateRuleOperation(rule);
+                    ruleList.add(createOperation);
+            try {
+                log.info("开始执行邮件:{} 的规则.", ewsMail.getEmail());
+                //执行规则更新
+                EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
+                        .updateInboxRules(ruleList, true);
+//            EwsContainer.defaultExchangeService().update(ruleList,true);
+                fireSize++;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return -1;
+            }
+
+        }
+        return fireSize;
+
     }
 
     @Override
@@ -173,7 +201,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         System.out.println("Collection count: " + ruleCollection.getCount());
         List<RuleOperation> deleterules = new ArrayList<RuleOperation>();
         // Write the DisplayName and ID of each rule.
-        if(!(ruleCollection.getCount()>0)){
+        if (!(ruleCollection.getCount() > 0)) {
             return 0;
         }
         for (Rule rule : ruleCollection) {
@@ -241,7 +269,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             return -1;
         }
         System.out.println("Collection count: " + ruleCollection.getCount());
-        if(!(ruleCollection.getCount()>0)){
+        if (!(ruleCollection.getCount() > 0)) {
             return 0;
         }
         List<RuleOperation> disabledRules = new ArrayList<RuleOperation>();
@@ -284,15 +312,15 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         String copyToFolder = ewsActionsEntity.getCopyToFolder();
         if (!StringUtils.isEmpty(moveToFolder)) {
             //根据枚举和mailId查folderId
-            log.info("根据ruleId:{}和mailId:{}",ewsRuleEntity.getRuleId(),ewsMail.getMailId());
-            EwsRuleFolderRelation oneByConditionCode = ruleFolderRelationService.findOneByConditionCode(ewsRuleEntity.getRuleId(), moveToFolder, ewsMail.getMailId());
-            log.info("folderId in rule impl move:{}",oneByConditionCode.getFolderId());
+            log.info("根据ruleId:{}和mailId:{}", ewsRuleEntity.getRuleId(), ewsMail.getMailId());
+            EwsMailFolderRelation oneByConditionCode = ruleFolderRelationService.findOneByConditionCode(ewsRuleEntity.getRuleId(), moveToFolder, ewsMail.getMailId());
+            log.info("folderId in rule impl move:{}", oneByConditionCode.getFolderId());
             ewsActionsEntity.setMoveToFolder(oneByConditionCode.getFolderId());
         }
         if (!StringUtils.isEmpty(copyToFolder)) {
             //根据枚举和mailId查folderId
-            EwsRuleFolderRelation oneByConditionCode = ruleFolderRelationService.findOneByConditionCode(ewsRuleEntity.getRuleId(), copyToFolder, ewsMail.getMailId());
-            log.info("folderId in rule impl copy:{}",oneByConditionCode.getFolderId());
+            EwsMailFolderRelation oneByConditionCode = ruleFolderRelationService.findOneByConditionCode(ewsRuleEntity.getRuleId(), copyToFolder, ewsMail.getMailId());
+            log.info("folderId in rule impl copy:{}", oneByConditionCode.getFolderId());
             ewsActionsEntity.setCopyToFolder(oneByConditionCode.getFolderId());
         }
 
@@ -337,11 +365,14 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
 
     @Override
     public List<EwsRuleEntity> listRulesByTopicConfig(String topicConfig) {
-        return null;
+        JSONArray jsonArray = JSONObject.parseArray(topicConfig);
+        List<EwsRuleEntity> ewsRuleEntityList = jsonArray.toJavaList(EwsRuleEntity.class);
+        return ewsRuleEntityList;
     }
 
     @Override
     public List<EwsRuleEntity> filterRuleByConfigEnum(String config, ItemActionType... itemActionTypes) {
+        //TODO FIXME 需要改为array同上
         JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
         List<ItemActionType> ruleEnums = Arrays.asList(itemActionTypes);
         List<String> ruleIdList = ruleEnums.stream()
@@ -367,7 +398,7 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     @Override
     public List<EwsRuleEntity> filterRuleByConfigEnum(String config, List<ItemActionType> itemActionTypeList) {
         JSONObject ruleConfigJsonObject = JSONObject.parseObject(config);
-        log.info("configObject:{}",ruleConfigJsonObject);
+        log.info("configObject:{}", ruleConfigJsonObject);
         List<String> ruleIdList = itemActionTypeList.stream()
                 .filter(rull -> {
                     return ruleConfigJsonObject.containsKey(rull.getCode());
@@ -477,7 +508,8 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
                         declaredFieldActions.set(actions, thisEmailAddresses);
                     } else if (actionFName.endsWith("Folder")) {
                         FolderId thisFolderId = new FolderId(String.valueOf(actionF.get(ewsActionsEntity)));
-                        log.info("folder in reflect :{}",actionF.get(ewsActionsEntity));
+                        log.info("folder in reflect :{}", actionF.get(ewsActionsEntity));
+                        log.info("thisFolderId :{}", thisFolderId);
                         declaredFieldActions.set(actions, thisFolderId);
                     } else {
                         declaredFieldActions.set(actions, actionF.get(ewsActionsEntity));

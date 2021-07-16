@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.entity.sub.ItemActionsEntity;
-import com.example.easyruledemo.enums.FolderNameEnum;
 import com.example.easyruledemo.enums.ItemActionType;
 import lombok.Data;
 import lombok.SneakyThrows;

@@ -1,6 +1,5 @@
 package com.example.easyruledemo.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.container.EwsExContainer;
@@ -10,9 +9,8 @@ import com.example.easyruledemo.entity.EwsRuleEntity;
 import com.example.easyruledemo.mapper.EwsFoldersMapper;
 import com.example.easyruledemo.service.IEwsFolderService;
 import com.example.easyruledemo.service.IEwsRuleService;
-import com.example.easyruledemo.service.IRuleFolderRelationService;
+import com.example.easyruledemo.service.IMailFolderRelationService;
 import com.example.easyruledemo.util.BeanUtil;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.service.folder.Folder;
@@ -23,7 +21,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +36,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
     @Autowired
     private IEwsFolderService ewsFolderService;
     @Autowired
-    private IRuleFolderRelationService ruleFolderRelationService;
+    private IMailFolderRelationService mailFolderRelationService;
 
     @Override
     public List<EwsFoldersEntity> listSelective(EwsFoldersEntity ewsFolders) {
@@ -205,7 +202,7 @@ public class EwsFolderServiceImpl extends ServiceImpl<EwsFoldersMapper, EwsFolde
 
     @Override
     public List<FolderId> listFolderIdByRuleId(Long ruleId) {
-        return ruleFolderRelationService.listByRuleId(ruleId)
+        return mailFolderRelationService.findByMailId(ruleId)
                 .stream()
                 .filter(folder -> folder.getFolderId() != null && folder.getFolderId().length() > 0)
                 .map(folder -> {

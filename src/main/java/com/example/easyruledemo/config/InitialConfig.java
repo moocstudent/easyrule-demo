@@ -2,7 +2,7 @@ package com.example.easyruledemo.config;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
 import com.example.easyruledemo.entity.EwsRuleEntity;
-import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
+import com.example.easyruledemo.entity.relation.EwsMailFolderRelation;
 import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,7 +32,7 @@ public class InitialConfig {
     @Autowired
     private IEwsTopicService ewsTopicService;
     @Autowired
-    private IRuleFolderRelationService ruleFolderRelationService;
+    private IMailFolderRelationService ruleFolderRelationService;
 
     /**
      * 初始化邮件文件夹,全部并根据itemActionType.D
@@ -57,7 +56,7 @@ public class InitialConfig {
                     List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(mail.getTopicId());
                     Integer createFolderSizeByTopicId = rules.stream()
                             .map(rule -> {
-                                List<EwsRuleFolderRelation> ruleFolderRelations = ruleFolderRelationService.listByRuleId(rule.getRuleId());
+                                List<EwsMailFolderRelation> ruleFolderRelations = ruleFolderRelationService.listByRuleId(rule.getRuleId());
                                 return ruleFolderRelations;
                             })
                             .map(ruleFolderRelation -> {
@@ -109,7 +108,7 @@ public class InitialConfig {
      * @return
      */
     @Transactional
-    protected Integer createRuleNeedsFolders(List<EwsRuleFolderRelation> relation, EwsMailEntity mailConfig) {
+    protected Integer createRuleNeedsFolders(List<EwsMailFolderRelation> relation, EwsMailEntity mailConfig) {
         int createSize = 0;
         for (int i = 0; i < relation.size(); i++) {
             try {
@@ -129,7 +128,7 @@ public class InitialConfig {
         return createSize;
     }
 
-    private Boolean createRuleNeedsFoldersSingle(EwsRuleFolderRelation relation, EwsMailEntity mailConfig) {
+    private Boolean createRuleNeedsFoldersSingle(EwsMailFolderRelation relation, EwsMailEntity mailConfig) {
         log.info("新生成文件夹:{}",relation.getFolderName());
         String folderUnionId = ewsFolderService.createFolder(relation.getFolderName(), WellKnownFolderName.Inbox, mailConfig);
         log.info("folderUnionId 新生成:{}", folderUnionId);

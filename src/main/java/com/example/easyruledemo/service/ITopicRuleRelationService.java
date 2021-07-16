@@ -1,6 +1,5 @@
 package com.example.easyruledemo.service;
 
-import com.example.easyruledemo.entity.relation.EwsRuleFolderRelation;
 import com.example.easyruledemo.entity.relation.EwsTopicRuleRelation;
 
 import java.util.List;

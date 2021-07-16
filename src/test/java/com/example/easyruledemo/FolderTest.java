@@ -1,7 +1,6 @@
 package com.example.easyruledemo;
 
 import com.example.easyruledemo.entity.EwsMailEntity;
-import com.example.easyruledemo.enums.FolderNameEnum;
 import com.example.easyruledemo.service.IEwsFolderService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import org.junit.jupiter.api.Test;

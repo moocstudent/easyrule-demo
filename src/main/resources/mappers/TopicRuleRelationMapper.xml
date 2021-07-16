@@ -12,7 +12,7 @@
 <!--&lt;!&ndash;        <result column="rule_type" property="ruleT"/>&ndash;&gt;-->
 <!--    </resultMap>-->
 
-<!--    <resultMap id="RelationMap" type="com.example.easyruledemo.entity.relation.EwsRuleFolderRelation">-->
+<!--    <resultMap id="RelationMap" type="com.example.easyruledemo.entity.relation.EwsMailFolderRelation">-->
 <!--        <id column="relation_id"  property="relationId"/>-->
 <!--        <result column="rule_id" property="ruleId"/>-->
 <!--        <result column="ews_folder_id" property="ewsFolderId"/>-->

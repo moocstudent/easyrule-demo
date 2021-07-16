@@ -27,6 +27,7 @@ public interface IEwsRuleService {
 
     //执行规则
     Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity,EwsMailEntity ewsMail);
+    Integer ewsRuleFire(List<EwsRuleEntity> ewsRuleEntityList,EwsMailEntity ewsMail);
 
     //testok 获取某个邮箱的规则名称集合
     List<EwsRuleEntity> getEwsRulesByEmAddr(String emailAddr);
