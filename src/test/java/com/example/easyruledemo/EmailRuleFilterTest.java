@@ -40,18 +40,23 @@ class EmailRuleFilterTest extends BaseTest {
     }
 
     //testok
+    //testok
     @Test
-    public void testRuleFireEwsJustThisOne(){
-        ewsRuleService.ewsRuleFireJustThisOne(EwsRuleEntity
-                .builder()
-                .displayName("just this one 1")
-                .conditions(JSON.toJSONString(EwsConditionsEntity.builder()
-                .containsSubjectStrings(Arrays.asList("带附件")).build()))
-                .actions(JSON.toJSONString(EwsActionsEntity.builder()
-                .moveToFolder("AQMkADAwATM0MDAAMS0zNjVjLTZmODctMDACLTAwCgAuAAADRJzEnDGzDkiFHa7PpA6vRgEAL3jSJ1Y43EaEjeMalrFpowAAAiQTAAAA").build()))
-                .build(),
+    public void testRuleFireEwsJustThisOne() {
+        ewsRuleService.ewsRuleFire(EwsRuleEntity
+                        .builder()
+                        .displayName("just this one 1")
+                .priority(3)
+                        .conditions(JSON.toJSONString(EwsConditionsEntity.builder()
+                                .containsSubjectStrings(Arrays.asList("带附件"))
+                                .fromAddresses(Arrays.asList("34384068111111111@qq.com"))
+                                .build()))
+                        .actions(JSON.toJSONString(EwsActionsEntity.builder()
+                                .moveToFolder("attach").build()))
+                        .build(),
                 EwsMailEntity.builder()
-                        .email("frankimplements@outlook.com")
+                        .mailId(1L)
+                        .email("implementsteam@outlook.com")
                         .password("zhangqi1112")
                         .build());
 //                .moveToFolder("AQMkADAwATM0MDAAMS0zNjFkLTY1MWEtMDACLTAwCgAuAAADgRcCAFohSUCq+fGuJ055HwEAmSTpLTMl3E+ND/s/c1xWVQAAAWrq7QAAAA==").build()))
@@ -63,9 +68,9 @@ class EmailRuleFilterTest extends BaseTest {
     }
 
     @Test
-    public void testRuleDisabled(){
+    public void testRuleDisabled() {
         Integer disabledRuleByEmAddr = ewsRuleService.disabledRuleByEmAddr("implementsteam@outlook.com");
-        System.out.println("disabled rule:"+disabledRuleByEmAddr);
+        System.out.println("disabled rule:" + disabledRuleByEmAddr);
     }
 
     @Test
@@ -84,7 +89,6 @@ class EmailRuleFilterTest extends BaseTest {
                 .email("implementsteam@outlook.com").password("zhangqi1112").build());
         System.out.println("deleteSize:" + deleteRuleByEmAddr);
     }
-
 
 
 }

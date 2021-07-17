@@ -144,7 +144,6 @@ public class EwsInitServiceImpl
         log.info("邮箱文件夹初始化:{}", mailEntity);
 
         List<EwsMailFolderRelation> ruleFolderRelations = mailFolderRelationService.findByMailId(mailEntity.getMailId());
-        List<EwsRuleEntity> rules = ewsRuleService.getRulesByTopicId(mailEntity.getTopicId());
         //根据ruleId查回来文件夹list,创建文件夹,返回folderId unionId,放入关联表
         Integer ruleNeedsFoldersSize = this.createRuleNeedsFolders(ruleFolderRelations, mailEntity);
         log.info("创建了规则需要的文件夹共{}个.", ruleNeedsFoldersSize);
@@ -241,9 +240,9 @@ public class EwsInitServiceImpl
                     .getMailConfigList(EwsMailEntity.builder().build(),
                             /*邮件监听类型为下载以及下载并拷贝*/ItemActionType.getEnumList(itemActionTypeList));
             for (EwsMailEntity mailConfig : mailConfigList) {
-                MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
-                mailEventsThread.start();
-                mailEventCount++;
+//                MailEventsThread mailEventsThread = new MailEventsThread(mailConfig);
+//                mailEventsThread.start();
+//                mailEventCount++;
             }
 //            executeThisDay++;
         } catch (Exception e) {

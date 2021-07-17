@@ -96,6 +96,8 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
     public Integer ewsRuleFire(EwsRuleEntity ewsRuleEntity, EwsMailEntity ewsMail) {
         Rule rule = this.transformRuleEntity(ewsRuleEntity, ewsMail);
         log.info("transformRule:{}", rule);
+//        rule.getConditions().getFromAddresses().add("343840681@qq.com");
+//        rule.getExceptions().getFromAddresses().add("343840681@qq.com");
         //是否启用
         CreateRuleOperation createOperation = new CreateRuleOperation(rule);
         List<RuleOperation> ruleList = new ArrayList<RuleOperation>();
@@ -106,8 +108,6 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             EwsExContainer.getExchangeService(ewsMail.getEmail(), ewsMail.getPassword())
                     .updateInboxRules(ruleList, true);
 //            EwsContainer.defaultExchangeService().update(ruleList,true);
-            String changeKey = rule.getActions().getMoveToFolder().getChangeKey();
-
             return 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,11 +122,6 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         int fireSize = 0;
         Rule rule = null;
         CreateRuleOperation createOperation = null;
-//        rule = this.transformRuleEntity(ewsRuleEntityList.get(0), ewsMail);
-//
-//            createOperation = new CreateRuleOperation(rule);
-//
-//            ruleList.add(createOperation);
         for (EwsRuleEntity ruleEntity : ewsRuleEntityList) {
             fireSize++;
 
@@ -134,9 +129,8 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
             createOperation = new CreateRuleOperation(rule);
 
             ruleList.add(createOperation);
-
         }
-            log.info("ruleList:{}", ruleList);
+        log.info("ruleList:{}", ruleList);
             try {
                 log.info("开始执行邮件:{} 的规则.", ewsMail.getEmail());
                 //执行规则更新
@@ -148,7 +142,6 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
                 return -1;
             }
             return fireSize;
-
         }
 
         @Override
@@ -383,6 +376,12 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
         public List<EwsRuleEntity> listRulesByTopicConfig (String topicConfig){
             JSONArray jsonArray = JSONObject.parseArray(topicConfig);
             List<EwsRuleEntity> ewsRuleEntityList = jsonArray.toJavaList(EwsRuleEntity.class);
+            log.info("listRUlesByTopicCOnfig:{}",ewsRuleEntityList);
+            for (EwsRuleEntity ruleEntity : ewsRuleEntityList) {
+                EwsRuleEntity byId = this.getById(ruleEntity.getRuleId());
+                ruleEntity.setItemActions(byId.getItemActions());
+            }
+            log.info("ewsRuleList:{}",ewsRuleEntityList);
             return ewsRuleEntityList;
         }
 
@@ -483,13 +482,18 @@ public class EwsRuleServiceImpl extends ServiceImpl<EwsRuleMapper, EwsRuleEntity
                             StringList thisConditionList = new StringList((Iterable<String>) conditionF.get(ewsConditionsEntity));
                             declaredFieldPredicates.set(conditions, thisConditionList);
                         } else if (conditionFName.endsWith("Addresses")) {
-                            EmailAddressCollection thisEmailAddresses = new EmailAddressCollection();
+                            //attention! don't change
+//                            EmailAddressCollection thisEmailAddresses = new EmailAddressCollection();
                             List<String> dbFromEmailList = (List<String>) conditionF.get(ewsConditionsEntity);
+                            List<EmailAddress> emailAddresses = new ArrayList<>();
                             for (String from : dbFromEmailList) {
                                 log.info("from:{}",from);
-                                thisEmailAddresses.add(from);
+                                EmailAddress emailAddress = new EmailAddress(from);
+                                emailAddresses.add(emailAddress);
                             }
-                            declaredFieldPredicates.set(conditions, thisEmailAddresses);
+                            rule.getConditions().getFromAddresses().getItems().addAll(emailAddresses);
+//                            thisEmailAddresses.getItems().addAll(emailAddresses);
+//                            declaredFieldPredicates.set(conditions, thisEmailAddresses);
                         } else {
                             declaredFieldPredicates.set(conditions, conditionF.get(ewsConditionsEntity));
                         }

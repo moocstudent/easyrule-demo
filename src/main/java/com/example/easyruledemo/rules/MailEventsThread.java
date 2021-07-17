@@ -24,35 +24,41 @@ import java.time.LocalDateTime;
 @Data
 public class MailEventsThread extends Thread {
 
-    private EwsMailEntity mailConfig;
-    private PullSubscription pullSubscription;
+    private ThreadLocal<PullSubscription> pullSubscriptionTL = new ThreadLocal<>();
+    private ThreadLocal<EwsMailEntity> mailConfigTL = new ThreadLocal<>();
 
-    public MailEventsThread(EwsMailEntity mailConfig){
-        this.mailConfig = mailConfig;
-    }
+//    @Deprecated
+//    public MailEventsThread(EwsMailEntity mailConfig){
+//        this.mailConfig = mailConfig;
+//    }
 
     public MailEventsThread(EwsMailEntity mailConfig, PullSubscription subscription){
-        this.pullSubscription = subscription;
+        mailConfigTL.set(mailConfig);
+        pullSubscriptionTL.set(subscription);
     }
 
     @Override
     public void start() {
+        EwsMailEntity mailConfig = mailConfigTL.get();
+        PullSubscription subscription = pullSubscriptionTL.get();
         try {
             log.info("mailConfig in actions:{}",mailConfig);
             //todo 需要改为每天初始化subscriptionContainer后等待几分钟再拉取
             log.info("start poll email event : {}" + LocalDateTime.now());
 //            log.info("subscriptionId in events:{}",pullSubscription.getId());
-            GetEventsResults events = pullSubscription.getEvents();
+            GetEventsResults events = subscription.getEvents();
             System.out.println("----");
             // Loop through all item-related events.
+//            EventType.Status;
             for (ItemEvent itemEvent : events.getItemEvents()) {
                 if (itemEvent.getEventType() == EventType.NewMail) {
                     log.info("新的邮件已到达 itemId:{}" + itemEvent.getItemId());
+                    log.info("mailConfig:{}",mailConfig);
                     EmailMessage message = EmailMessage.bind(EwsExContainer.getExchangeService(
                             mailConfig.getEmail(), mailConfig.getPassword()),
                             itemEvent.getItemId()
                     );
-                    MailActionsThread actionsThread = new MailActionsThread(message,mailConfig);
+                    MailActionsThread actionsThread = new MailActionsThread(message, mailConfig);
                     actionsThread.start();
 //                    if (message.getHasAttachments()) {
 //                        AttachmentCollection attachments = message.getAttachments();
@@ -68,14 +74,15 @@ public class MailEventsThread extends Thread {
 //                                        .get(FolderNameEnum.ATTACH_ALREADY.getCode()).getFolderId())
 //                        );
 //                    }
-
-                } else if (itemEvent.getEventType() == EventType.Created) {
-                    Item item = Item.bind(EwsExContainer.getExchangeService(
-                            mailConfig.getEmail(), mailConfig.getPassword()),
-                            itemEvent.getItemId());
-                } else if (itemEvent.getEventType() == EventType.Deleted) {
-                    break;
                 }
+
+//                } else if (itemEvent.getEventType() == EventType.Created) {
+//                    Item item = Item.bind(EwsExContainer.getExchangeService(
+//                            mailConfig.getEmail(), mailConfig.getPassword()),
+//                            itemEvent.getItemId());
+//                } else if (itemEvent.getEventType() == EventType.Deleted) {
+//                    break;
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();

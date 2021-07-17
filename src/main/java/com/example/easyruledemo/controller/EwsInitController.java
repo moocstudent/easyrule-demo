@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class EwsInitController {
 
-//    public Result init
+    //    public Result init
     @Autowired
     private IEwsInitService ewsInitService;
     @Autowired
@@ -33,35 +33,35 @@ public class EwsInitController {
 //    }
 
     //根据邮箱id初始化邮箱的对应文件夹和规则
-    @ApiOperation("初始化文件夹以及规则根据邮件id,resetRuleCode传1或者2,1为轻量级初始化(之前的取消应用但存在,这次的新加入),2为重量级初始化(之前的删除这次的覆盖)")
-    @GetMapping("/folderRules/{mailId}/{resetRuleCode}")
-    public Result initMailFoldersAndFireRules(@PathVariable("mailId") Long mailId,@PathVariable("resetRuleCode") Integer resetRuleCode){
-        return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(mailId,resetRuleCode));
+//    @ApiOperation("初始化文件夹以及规则根据邮件id,resetRuleCode传1或者2,1为轻量级初始化(之前的取消应用但存在,这次的新加入),2为重量级初始化(之前的删除这次的覆盖)")
+//    @GetMapping("/folderRules/{mailId}/{resetRuleCode}")
+    public Result initMailFoldersAndFireRules(@PathVariable("mailId") Long mailId, @PathVariable("resetRuleCode") Integer resetRuleCode) {
+        return ResultUtil.success(ewsInitService.initMailFoldersAndFireRules(mailId, resetRuleCode));
     }
 
     @ApiOperation("初始化文件夹根据邮箱id")
     @GetMapping("/folder/{mailId}")
-    public Result initMailFolder(@PathVariable("mailId") Long mailId){
+    public Result initMailFolder(@PathVariable("mailId") Long mailId) {
         return ResultUtil.success(ewsInitService.initMailFolder(mailId));
     }
 
     @ApiOperation("初始化规则根据邮箱id")
     @GetMapping("/rules/{mailId}/{resetRuleCode}")
-    public Result initMailRules(@PathVariable("mailId") Long mailId,@PathVariable("resetRuleCode") Integer resetRuleCode){
-        return ResultUtil.success(ewsInitService.initMailRules(mailId,resetRuleCode));
+    public Result initMailRules(@PathVariable("mailId") Long mailId, @PathVariable("resetRuleCode") Integer resetRuleCode) {
+        return ResultUtil.success(ewsInitService.initMailRules(mailId, resetRuleCode));
     }
-
 
 
     /**
      * 设定全天邮箱监听以及事件监听的初始化接口
+     *
      * @param itemActionTypeBo
      * @return
      */
 //    @ApiOperation("初始化邮件订阅")
     @PostMapping("/mailSubscription")
     @Deprecated
-    public Result initSubscription(@RequestBody ItemActionTypeBo itemActionTypeBo){
+    public Result initSubscription(@RequestBody ItemActionTypeBo itemActionTypeBo) {
         return ResultUtil.success(subscriptionService.initSubscription(itemActionTypeBo.getItemActionType()));
     }
 
@@ -75,12 +75,13 @@ public class EwsInitController {
     //初始化单个邮箱的订阅以及事件轮询
     @ApiOperation("初始化邮件订阅根据邮件id")
     @GetMapping("/subscription/{mailId}")
-    public Result initSubscription(@PathVariable("mailId") Long mailId){
+    public Result initSubscription(@PathVariable("mailId") Long mailId) {
         return ResultUtil.success(ewsInitService.initSubscriptionAndEventPoll(mailId));
     }
+
     @ApiOperation("取消邮件订阅根据邮件id")
     @GetMapping("/unSubscription/{mailId}")
-    public Result unSubscription(@PathVariable("mailId") Long mailId){
+    public Result unSubscription(@PathVariable("mailId") Long mailId) {
         return ResultUtil.success(subscriptionService.unSubscription(mailId));
     }
 

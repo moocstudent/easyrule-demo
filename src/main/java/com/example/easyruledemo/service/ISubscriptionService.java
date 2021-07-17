@@ -29,6 +29,7 @@ public interface ISubscriptionService {
 
     //根据mapKey获取订阅id 或者无返回null
     String getSubscriptionIdByKey(String key);
+    String getSubscriptionIdByKeyLike(EwsMailEntity mailEntity);
 
     //动态获取订阅主体list
     List<EwsSubscriptionEntity> listSelective(EwsSubscriptionEntity ewsSubscription);

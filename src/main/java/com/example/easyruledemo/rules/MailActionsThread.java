@@ -35,19 +35,19 @@ public class MailActionsThread extends Thread{
     private String saveAttachPath = "";
 
     private String dateformat = "yyyy-MM-dd HH:mm:ss";
-    protected EmailMessage emailMessage = null;
-    protected EwsMailEntity mailConfig = null;
+    private ThreadLocal<EmailMessage> emailMessageTL = new ThreadLocal<>();
+    private ThreadLocal<EwsMailEntity> mailConfigTL = new ThreadLocal<>();
 //    protected List<EmailMessage> emailMessageList = null;
 
     public MailActionsThread(){}
 
-    public MailActionsThread(EmailMessage message){
-        this.emailMessage = message;
-    }
+//    public MailActionsThread(EmailMessage message){
+//        this.emailMessage = message;
+//    }
 
     public MailActionsThread(EmailMessage message, EwsMailEntity mailConfig){
-        this.emailMessage = message;
-        this.mailConfig = mailConfig;
+        emailMessageTL.set(message);
+        mailConfigTL.set(mailConfig);
     }
 
 //    public MailActionsThread(List<EmailMessage> messagesList){
@@ -82,6 +82,7 @@ public class MailActionsThread extends Thread{
      * @param nameFilter
      */
     public void saveAttachmentsFromEmail(String savePath,String copyPath,String nameFilter){
+        EmailMessage emailMessage = emailMessageTL.get();
         if(StringUtils.isEmpty(savePath)){
             log.error("保存路径不能为空");
             return;
@@ -158,6 +159,7 @@ public class MailActionsThread extends Thread{
     @SneakyThrows
     @Override
     public void start(){
+        EwsMailEntity mailConfig = mailConfigTL.get();
         List<EwsRuleEntity> rulesThisTime = mailConfig.getMailRulesValidThisTime();
         for(EwsRuleEntity rule:rulesThisTime){
             log.info("rule in thread:{}",rule);

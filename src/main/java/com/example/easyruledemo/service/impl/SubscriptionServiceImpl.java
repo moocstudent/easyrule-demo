@@ -109,6 +109,24 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
     }
 
     @Override
+    public String getSubscriptionIdByKeyLike(EwsMailEntity mailEntity) {
+        String keyLike = LocalDate.now()+mailEntity.getEmail()+mailEntity.getPassword();
+        log.info("getSubscriptionIdByKey invoke, the key like:{}", keyLike);
+        LambdaQueryWrapper<EwsSubscriptionEntity> queryWrapper = new LambdaQueryWrapper<EwsSubscriptionEntity>()
+                .like(EwsSubscriptionEntity::getSubscriptionKey, keyLike)
+                .eq(EwsSubscriptionEntity::getDeleteFlag, 0)
+                .orderByDesc(EwsSubscriptionEntity::getSubscriptionDate);
+        List<EwsSubscriptionEntity> subscriptionList
+                = Optional.ofNullable(baseMapper.selectList(queryWrapper)).orElse(Collections.EMPTY_LIST);
+        if (subscriptionList.size() > 0) {
+            EwsSubscriptionEntity ewsSubscription = subscriptionList.stream().findFirst().get();
+            return ewsSubscription.getSubscriptionId();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public List<EwsSubscriptionEntity> listSelective(EwsSubscriptionEntity ewsSubscription) {
         return new LambdaQueryChainWrapper<EwsSubscriptionEntity>(baseMapper)
                 .eq(EwsSubscriptionEntity::getDeleteFlag, 0)

@@ -6,6 +6,7 @@ import com.example.easyruledemo.enums.ItemActionType;
 import com.example.easyruledemo.event.MailEventHandler;
 import com.example.easyruledemo.rules.MailEventsThread;
 import com.example.easyruledemo.service.IEwsEmailService;
+import com.example.easyruledemo.service.ISubscriptionService;
 import lombok.extern.slf4j.Slf4j;
 import microsoft.exchange.webservices.data.notification.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class EmailEventTask {
 
     @Autowired
     private IEwsEmailService ewsEmailService;
+    @Autowired
+    private ISubscriptionService subcriptionService;
 
     /**
      * 每天凌晨1点执行一次
@@ -106,12 +109,12 @@ public class EmailEventTask {
             log.info("emailAttachEventPoll emailList:{}", mailConfigList);
             for (EwsMailEntity mailConfig : mailConfigList) {
                 log.info("mailConfig in event task:{}", mailConfig);
-//                PullSubscription subscription = SubscriptionContainer.initialSubscriptionToday(mailConfig);
+                String subscriptionIdByKeyLike = subcriptionService.getSubscriptionIdByKeyLike(mailConfig);
+                if(subscriptionIdByKeyLike==null){
+                    log.info("如果subscription监听未初始化,则不进行事件处理,请手动调用订阅初始化");
+                    return;
+                }
                 PullSubscription subscription = SubscriptionContainer.getSubscriptionToday(mailConfig);
-//                if (!(SubscriptionContainer.getPullSubscriptionMap().size() > 0)) {
-//                    log.info("如果subscription监听未初始化,则不进行事件处理");
-//                    return;
-//                }
                 log.info("subscription emailEventTask:{}",subscription);
                 if(subscription==null){
                     log.info("如果subscription监听未初始化,则不进行事件处理");
