@@ -157,7 +157,8 @@ public class SubscriptionContainer {
                     onlyService.unsubscribe(subscriptionId);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    throw new RuntimeException("取消订阅异常");
+                    log.error("取消订阅异常");
+//                    throw new RuntimeException("取消订阅异常");
                 }
             });
             log.info("pullSubscriptionSize:{}", pullSubscriptionMap.size());

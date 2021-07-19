@@ -42,8 +42,7 @@ public class MailEventsThread extends Thread {
         EwsMailEntity mailConfig = mailConfigTL.get();
         PullSubscription subscription = pullSubscriptionTL.get();
         try {
-            log.info("mailConfig in actions:{}",mailConfig);
-            //todo 需要改为每天初始化subscriptionContainer后等待几分钟再拉取
+            //todo 需要改为每天初始化subscriptionContainer后等待几分钟再拉取 或做为单独接口调一次执行一次轮询
             log.info("start poll email event : {}" + LocalDateTime.now());
 //            log.info("subscriptionId in events:{}",pullSubscription.getId());
             GetEventsResults events = subscription.getEvents();

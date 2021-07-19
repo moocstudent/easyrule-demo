@@ -25,7 +25,7 @@ public class EwsExContainer {
 
     //测试使用
     private static ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
-    private static ExchangeCredentials credentials = new WebCredentials("implementsteam@outlook.com", "zhangqi1112");
+    private static ExchangeCredentials credentials = new WebCredentials("implementsteam@outlook.com", "0");
     final private static String EX_URI = "https://outlook.office365.com/EWS/Exchange.asmx";
     //当WebCredentials相同时,则设置为单例,使用List<ExchangeService> 进行 单例 ExchangeService 管理
 
@@ -38,9 +38,9 @@ public class EwsExContainer {
      */
     public static ExchangeService getExchangeService(String email,String password){
         String key = email+password;
-        log.info("get exchange service by key:{}",key);
+//        log.info("get exchange service by key:{}",key);
         if(exchangeServiceMap.get(key)!=null){
-            log.info("exchangeServiceMap get ok:{}",exchangeServiceMap.get(key));
+//            log.info("exchangeServiceMap get ok:{}",exchangeServiceMap.get(key));
             return exchangeServiceMap.get(key);
         }
         ExchangeCredentials credentials = new WebCredentials(email, password);

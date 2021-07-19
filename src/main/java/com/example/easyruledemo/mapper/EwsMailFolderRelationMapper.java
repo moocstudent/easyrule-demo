@@ -11,7 +11,7 @@ import java.util.List;
  * @Date: 2021-07-09 10:10
  */
 @Repository
-public interface EwsRuleFolderRelationMapper extends BaseMapper<EwsMailFolderRelation> {
+public interface EwsMailFolderRelationMapper extends BaseMapper<EwsMailFolderRelation> {
     //遍历folderRelation根据ruleId
 //    List<EwsMailFolderRelation> listFolderRelationByRuleId(Long ruleId);
 //    List<EwsMailFolderRelation> listFolderRelationByRuleId(String ruleId);

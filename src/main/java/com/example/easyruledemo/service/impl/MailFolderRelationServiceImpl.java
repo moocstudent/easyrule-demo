@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.easyruledemo.entity.relation.EwsMailFolderRelation;
-import com.example.easyruledemo.mapper.EwsRuleFolderRelationMapper;
+import com.example.easyruledemo.mapper.EwsMailFolderRelationMapper;
 import com.example.easyruledemo.service.IMailFolderRelationService;
 import com.example.easyruledemo.util.BeanUtil;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.List;
  * @Date: 2021-07-09 10:13
  */
 @Service
-public class MailFolderRelationServiceImpl extends ServiceImpl<EwsRuleFolderRelationMapper, EwsMailFolderRelation>
+public class MailFolderRelationServiceImpl extends ServiceImpl<EwsMailFolderRelationMapper, EwsMailFolderRelation>
         implements IMailFolderRelationService {
     @Override
     public Boolean saveOrUpdateRelation(EwsMailFolderRelation relation) {

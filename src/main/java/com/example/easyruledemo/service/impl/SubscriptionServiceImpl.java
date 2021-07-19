@@ -130,9 +130,9 @@ public class SubscriptionServiceImpl extends ServiceImpl<EwsSubscriptionMapper, 
     public List<EwsSubscriptionEntity> listSelective(EwsSubscriptionEntity ewsSubscription) {
         return new LambdaQueryChainWrapper<EwsSubscriptionEntity>(baseMapper)
                 .eq(EwsSubscriptionEntity::getDeleteFlag, 0)
-                .like(StringUtils.isEmpty(ewsSubscription.getSubscriptionKey()), EwsSubscriptionEntity::getSubscriptionKey, ewsSubscription.getSubscriptionKey())
-                .eq(StringUtils.isEmpty(ewsSubscription.getSubscriptionMinutes()), EwsSubscriptionEntity::getSubscriptionMinutes, ewsSubscription.getSubscriptionMinutes())
-                .eq(StringUtils.isEmpty(ewsSubscription.getSubscriptionDate()), EwsSubscriptionEntity::getSubscriptionDate, ewsSubscription.getSubscriptionDate())
+                .like(!StringUtils.isEmpty(ewsSubscription.getSubscriptionKey()), EwsSubscriptionEntity::getSubscriptionKey, ewsSubscription.getSubscriptionKey())
+                .eq(!StringUtils.isEmpty(ewsSubscription.getSubscriptionMinutes()), EwsSubscriptionEntity::getSubscriptionMinutes, ewsSubscription.getSubscriptionMinutes())
+                .eq(!StringUtils.isEmpty(ewsSubscription.getSubscriptionDate()), EwsSubscriptionEntity::getSubscriptionDate, ewsSubscription.getSubscriptionDate())
                 .orderByDesc(EwsSubscriptionEntity::getEwsSubscriptionId)
                 .list();
     }
