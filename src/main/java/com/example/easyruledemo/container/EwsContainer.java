@@ -20,7 +20,7 @@ public class EwsContainer {
 
     //测试使用
     private static ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
-    private static ExchangeCredentials credentials = new WebCredentials("implementsteam@outlook.com", "zhangqi1112");
+    private static ExchangeCredentials credentials = new WebCredentials("implementsteam@outlook.com", "************");
     final private static String EX_URI = "https://outlook.office365.com/EWS/Exchange.asmx";
     //TODO 当WebCredentials相同时,则设置为单例,使用List<ExchangeService> 进行 单例 ExchangeService 管理
 
